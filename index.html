@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="assets/名子.png" type="image/png">
+    <title data-i18n="page_title">劉峻瑋 | Network Engineer & AIoT Developer</title>
+    <meta name="description" content="網路工程師與 AIoT/邊緣運算開發者個人網站。專注於底層基礎設施（Proxmox、Docker、OpenWrt）、ROS 2 無人機控制與 3D 列印數位製造。">
+    <meta name="keywords" content="網路工程師, AIoT, 邊緣運算, Proxmox, Docker, OpenWrt, ROS 2, 3D 列印, 個人網站, Portfolio">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="劉峻瑋 | Network Engineer & AIoT Developer">
+    <meta property="og:description" content="網路工程師與 AIoT/邊緣運算開發者個人網站。專注於 Proxmox、Docker、ROS 2、3D 列印。">
+    <meta property="og:image" content="assets/og-image.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <!-- Background mesh gradient and grid -->
+    <div class="bg-grid-overlay"></div>
+    <div class="bg-mesh bg-mesh-1"></div>
+    <div class="bg-mesh bg-mesh-2"></div>
+    <canvas id="bg-particles"></canvas>
+
+    <!-- Header & Navigation -->
+    <header class="navbar" id="navbar">
+        <div class="container navbar-container">
+            <a href="#" class="nav-logo">
+                <img src="assets/名子白.png" alt="Jun Wei Liu Logo" class="logo-img logo-dark-theme">
+                <img src="assets/名子.png" alt="Jun Wei Liu Logo" class="logo-img logo-light-theme">
+            </a>
+            
+            <nav class="nav-menu" id="nav-menu">
+                <ul>
+                    <li><a href="#about" class="nav-link active" id="nav-link-about" data-i18n="nav_about">關於我</a></li>
+                    <li><a href="#skills" class="nav-link" id="nav-link-skills" data-i18n="nav_skills">專業技能</a></li>
+                    <li><a href="#projects" class="nav-link" id="nav-link-projects" data-i18n="nav_projects">專案作品</a></li>
+                    <li><a href="#friends" class="nav-link" id="nav-link-friends" data-i18n="nav_friends">技術夥伴</a></li>
+                    <li><a href="#contact" class="nav-link" id="nav-link-contact" data-i18n="nav_contact">聯絡我</a></li>
+                </ul>
+            </nav>
+
+            <div class="nav-actions">
+                <div class="lang-dropdown-container">
+                    <button class="btn-lang-toggle" id="lang-toggle" data-i18n-aria-label="lang_toggle_aria" data-i18n-title="lang_toggle_title" aria-label="切換語言" title="切換語言 / Select Language">
+                        <i data-lucide="languages"></i>
+                    </button>
+                    <ul class="lang-dropdown-menu" id="lang-menu">
+                        <li data-lang="zh-TW" class="lang-option active" data-i18n="lang_zh">繁體中文</li>
+                        <li data-lang="ja" class="lang-option" data-i18n="lang_ja">日文</li>
+                        <li data-lang="en" class="lang-option" data-i18n="lang_en">英文</li>
+                        <li data-lang="auto" class="lang-option" data-i18n="lang_auto">跟隨本機</li>
+                    </ul>
+                </div>
+                <button class="btn-theme-toggle" id="theme-toggle" data-i18n-aria-label="theme_toggle_aria" aria-label="切換深淺色模式">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+                <button class="btn-menu-mobile" id="mobile-menu-toggle" data-i18n-aria-label="menu_toggle_aria" aria-label="打開選單">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section with Terminal Emulator -->
+        <section class="hero-section" id="hero">
+            <div class="container hero-container">
+                <div class="hero-content">
+                    <div class="badge">
+                        <span class="badge-dot"></span>
+                        <span class="badge-text" data-i18n="hero_badge">Uptime: 100% | Available for collaboration</span>
+                    </div>
+                    <h1 class="hero-title" data-i18n="hero_title">
+                        我是 <span class="gradient-text">劉峻瑋 (Jun Wei)</span><br>
+                        一個熱愛挑戰的極客
+                    </h1>
+                    <p class="hero-subtitle" data-i18n="hero_subtitle">
+                        專注於 <strong class="highlight">網路工程</strong> 與 <strong class="highlight">AIoT 邊緣運算</strong>，熱衷於底層虛擬化、網路基礎設施建置，以及軟硬體整合的數位製造實作者。
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#projects" class="btn btn-primary">
+                            <span data-i18n="hero_btn_projects">瀏覽作品</span>
+                            <i data-lucide="arrow-right"></i>
+                        </a>
+                        <a href="#contact" class="btn btn-secondary">
+                            <span data-i18n="hero_btn_contact">與我聯絡</span>
+                            <i data-lucide="mail"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Geek Interactive Terminal -->
+                <div class="terminal-wrapper">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <div class="terminal-title">guest@junwei-host: ~</div>
+                        <div class="terminal-icon"><i data-lucide="terminal" size="14"></i></div>
+                    </div>
+                    <div class="terminal-body" id="terminal-body">
+                        <div class="terminal-line">
+                            <span class="term-prompt">guest@junwei-host:~$</span> <span class="term-command">neofetch</span>
+                        </div>
+                        <div class="terminal-output neofetch-output" data-i18n="term_neofetch">
+                            <div class="neofetch-logo">
+      /\_/\
+    ( o.o )
+     > ^ <
+  [ junwei.sh ]
+                            </div>
+                            <div class="neofetch-info">
+                                <span class="nf-label">OS:</span> Proxmox VE / Ubuntu LTS<br>
+                                <span class="nf-label">Host:</span> Edge AIoT Lab & Homelab Node<br>
+                                <span class="nf-label">Kernel:</span> 6.8.0-proxmox-pve<br>
+                                <span class="nf-label">Uptime:</span> 18y 9m (EE Student Life)<br>
+                                <span class="nf-label">Shell:</span> bash / zsh<br>
+                                <span class="nf-label">Core Tech:</span> Proxmox, Docker, ROS 2, OpenWrt<br>
+                                <span class="nf-label">Interests:</span> 3D Printing, Drone Control, Virtualization
+                            </div>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="term-prompt">guest@junwei-host:~$</span> <span class="term-command">cat info.txt</span>
+                        </div>
+                        <div class="terminal-output" data-i18n="terminal_info_quote">
+                            "底層架構是我的畫布，硬體電路是我的畫筆，網路通訊是我的語言。"
+                        </div>
+                        <div class="terminal-line">
+                            <span class="term-prompt">guest@junwei-host:~$</span> <span class="term-command" id="terminal-cursor-line">help</span>
+                        </div>
+                        <div class="terminal-output" id="terminal-help-msg" data-i18n="terminal_help_msg">
+                            可用指令: <span class="cmd-highlight">skills</span>, <span class="cmd-highlight">projects</span>, <span class="cmd-highlight">clear</span>, <span class="cmd-highlight">contact</span>, <span class="cmd-highlight">gui</span>
+                        </div>
+                        <div class="terminal-history" id="terminal-history"></div>
+                        <div class="terminal-input-line">
+                            <span class="term-prompt">guest@junwei-host:~$</span>
+                            <input type="text" id="terminal-input" autocomplete="off" placeholder="在此輸入指令..." data-i18n-placeholder="terminal_placeholder" autofocus>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Me Section -->
+        <section class="about-section" id="about">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title" data-i18n="about_title">關於我</h2>
+                    <p class="section-tagline" data-i18n="about_tagline">底層探索與數位製造的實踐者</p>
+                </div>
+                
+                <div class="about-wrapper">
+                    <!-- Profile Photo Card -->
+                    <div class="about-profile-photo-card glassmorphism reveal reveal-left">
+                        <div class="about-profile-img-container">
+                            <img src="assets/profile.jpg" alt="劉峻瑋 Jun Wei Liu" class="about-profile-img" data-i18n-alt="profile_img_alt">
+                        </div>
+                        <div class="about-profile-info">
+                            <h3 class="profile-name" data-i18n="profile_name">劉峻瑋</h3>
+                            <p class="profile-title" data-i18n="profile_title">Jun Wei Liu</p>
+                            <span class="profile-role" data-i18n="about_role">Network & AIoT Developer</span>
+                            <div class="profile-socials">
+                                <a href="https://github.com/ma4980" target="_blank" rel="noopener" aria-label="GitHub"><img src="assets/github.png" alt="GitHub" class="social-icon-img"></a>
+                                <a href="https://www.instagram.com/liu0308/" target="_blank" rel="noopener" class="ig-hover-qr-container" aria-label="Instagram"><img src="assets/IG.png" alt="Instagram" class="social-icon-img"><span class="ig-hover-qr"><img src="assets/IMG_20260614_201934_141.png" alt="Instagram QR Code"><span class="qr-tooltip-text" data-i18n="qr_tooltip">掃描追蹤 IG</span></span></a>
+                                <a href="mailto:liu0308@liu0308.us.kg" class="btn-email-action" aria-label="Email" title="發送 Email / 複製位址" data-i18n-title="about_email_title"><i data-lucide="mail"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Cards Grid -->
+                    <div class="about-grid">
+                        <div class="about-card glassmorphism reveal">
+                            <div class="about-icon"><i data-lucide="user"></i></div>
+                            <h3 data-i18n="about_card_bg_title">個人背景</h3>
+                            <p class="about-text" data-i18n="about_card_bg_text">
+                                我目前是電子工程系的學生，專注於網路工程 (Network Engineering) 與 AIoT 邊緣運算。我喜歡拆解複雜的系統架構，探究硬體、韌體、網路到上層軟體的溝通機制。對我而言，將數位程式碼與實體硬體世界連結，是無與倫比的樂趣。
+                            </p>
+                        </div>
+
+                        <div class="about-card glassmorphism reveal delay-100">
+                            <div class="about-icon"><i data-lucide="graduation-cap"></i></div>
+                            <h3 data-i18n="about_card_edu_title">教育與經歷</h3>
+                            <div class="about-timeline-compact">
+                                <div class="timeline-compact-item">
+                                    <span class="timeline-compact-badge badge-upcoming" data-i18n="timeline_upcoming">即將</span>
+                                    <div class="timeline-compact-info">
+                                        <strong data-i18n="timeline_edu_ms">雲林縣虎尾科技大學 電子工程系 碩士班</strong>
+                                        <p data-i18n="timeline_edu_ms_desc">深造嵌入式系統與 AIoT 領域</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-compact-item">
+                                    <span class="timeline-compact-badge badge-current" data-i18n="timeline_current">目前</span>
+                                    <div class="timeline-compact-info">
+                                        <strong data-i18n="timeline_edu_bs">雲林縣虎尾科技大學 電子工程系</strong>
+                                        <p data-i18n="timeline_edu_bs_desc">主修電子工程，專注於邊緣運算、軟硬體整合、影像辨識及無人機控制系統開發。</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-compact-item">
+                                    <span class="timeline-compact-badge badge-past" data-i18n="timeline_past">經歷</span>
+                                    <div class="timeline-compact-info">
+                                        <strong data-i18n="timeline_exp_gov">雲林縣政府</strong>
+                                        <p data-i18n="timeline_exp_gov_desc">於雲林縣政府服務，累積實務管理運作經驗。</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-compact-item">
+                                    <span class="timeline-compact-badge badge-past" data-i18n="timeline_past">經歷</span>
+                                    <div class="timeline-compact-info">
+                                        <strong data-i18n="timeline_edu_5yr">雲林縣虎尾科技大學 電子工程科</strong>
+                                        <p data-i18n="timeline_edu_5yr_desc">電子工程科五專部學業，奠定扎實的電子電路與硬體分析基礎。</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-compact-item">
+                                    <span class="timeline-compact-badge badge-past" data-i18n="timeline_past">經歷</span>
+                                    <div class="timeline-compact-info">
+                                        <strong data-i18n="timeline_edu_vs">雲林縣西螺農工 電子科</strong>
+                                        <p data-i18n="timeline_edu_vs_desc">高職電子科啟蒙，學習微控制器開發與基礎電子理論。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="about-card glassmorphism reveal delay-200">
+                            <div class="about-icon"><i data-lucide="cpu"></i></div>
+                            <h3 data-i18n="about_card_phil_title">開發哲學</h3>
+                            <p class="about-text" data-i18n="about_card_phil_text">
+                                「專業、穩健、極客精神」。面對複雜的基礎設施架構與除錯挑戰，我秉持系統化的思考方式，以穩健的方式部署環境，並以極客精神追求極限效能與自動化。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="skills-section" id="skills">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title" data-i18n="skills_title">專業技能</h2>
+                    <p class="section-tagline" data-i18n="skills_tagline">從實體網路硬體到邊緣運算虛擬化</p>
+                </div>
+
+                <div class="skills-tab-container reveal">
+                    <div class="skills-tabs">
+                        <button class="tab-btn active" data-tab="infra">
+                            <i data-lucide="server"></i> <span data-i18n="skills_tab_infra">網路與基礎設施</span>
+                        </button>
+                        <button class="tab-btn" data-tab="aiot">
+                            <i data-lucide="cpu"></i> <span data-i18n="skills_tab_aiot">軟體與 AIoT 邊緣運算</span>
+                        </button>
+                        <button class="tab-btn" data-tab="mfg">
+                            <i data-lucide="wrench"></i> <span data-i18n="skills_tab_mfg">數位製造與硬體</span>
+                        </button>
+                    </div>
+
+                    <div class="skills-content">
+                        <!-- Infrastructure skills tab -->
+                        <div class="tab-pane active" id="tab-infra">
+                            <div class="skills-grid">
+                                <div class="skill-item glassmorphism">
+                                    <div class="skill-info">
+                                        <span class="skill-name" data-i18n="skill_pve_name"><i data-lucide="layers"></i> Proxmox VE 虛擬化</span>
+                                        <span class="skill-level" data-i18n="level_master">精通</span>
+                                    </div>
+                                    <div class="skill-progress-bg">
+                                        <div class="skill-progress-bar" data-progress="90%"></div>
+                                    </div>
+                                    <p class="skill-desc" data-i18n="skill_pve_desc">部署多節點虛擬集群，實現 LXC 容器與 VM 的高可用性架構。</p>
+                                </div>
+                                <div class="skill-item glassmorphism">
+                                    <div class="skill-info">
+                                        <span class="skill-name" data-i18n="skill_docker_name"><i data-lucide="container"></i> Docker 容器化</span>
+                                        <span class="skill-level" data-i18n="level_master">精通</span>
+                                    </div>
+                                    <div class="skill-progress-bg">
+                                        <div class="skill-progress-bar" data-progress="85%"></div>
+                                    </div>
+                                    <p class="skill-desc" data-i18n="skill_docker_desc">設計 Docker 檔案與 Compose 配置，構建輕量、易遷移的微服務環境。</p>
+                                </div>
+                                <div class="skill-item glassmorphism">
+                                    <div class="skill-info">
+                                        <span class="skill-name" data-i18n="skill_openwrt_name"><i data-lucide="router"></i> OpenWrt 軟路由</span>
+                                        <span class="skill-level" data-i18n="level_master">精通</span>
+                                    </div>
+                                    <div class="skill-progress-bg">
+                                        <div class="skill-progress-bar" data-progress="90%"></div>
+                                    </div>
+                                    <p class="skill-desc" data-i18n="skill_openwrt_desc">編譯客製化韌體，規劃防火牆、VLAN、VPN 通道與智慧分流系統。</p>
+                                </div>
+                                <div class="skill-item glassmorphism">
+                                    <div class="skill-info">
+                                        <span class="skill-name" data-i18n="skill_net_name"><i data-lucide="network"></i> 網路拓撲與安全配置</span>
+                                        <span class="skill-level" data-i18n="level_master">精通</span>
+                                    </div>
+                                    <div class="skill-progress-bg">
+                                        <div class="skill-progress-bar" data-progress="80%"></div>
+                                    </div>
+                                    <p class="skill-desc" data-i18n="skill_net_desc">管理網路交換機與路由器，設置多子網隔離、動態路由及防禦策略。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AIoT skills tab -->
+                        <div class="tab-pane" id="tab-aiot">
+                            <div class="skills-grid">
+                                <div class="skill-item glassmorphism">
+                                    <div class="skill-info">
+                                        <span class="skill-name" data-i18n="skill_ros_name"><i data-lucide="navigation"></i> ROS 2 機器人操作系統</span>
+                                        <span class="skill-level" data-i18n="level_learning">進修中</span>
+                                    </div>
+                                    <div class="skill-progress-bg">
+                                        <div class="skill-progress-bar" data-progress="65%"></div>
+                                    </div>
+                                    <p class="skill-desc" data-i18n="skill_ros_desc">利用 ROS 2 框架開發無人機導航、感測器數據分析與自主避障邏輯。</p>
+                                </div>
+                                <div class="skill-item glassmorphism">
+                                    <div class="skill-info">
+                                        <span class="skill-name" data-i18n="skill_embed_name"><i data-lucide="code"></i> Embedded C++ / Python</span>
+                                        <span class="skill-level" data-i18n="level_proficient">熟練</span>
+                                    </div>
+                                    <div class="skill-progress-bg">
+                                        <div class="skill-progress-bar" data-progress="80%"></div>
+                                    </div>
+                                    <p class="skill-desc" data-i18n="skill_embed_desc">編寫微控制器 (ESP32, STM32) 與單板電腦 (樹莓派, Jetson Nano) 控制程式。</p>
+                                </div>
+                                <div class="skill-item glassmorphism">
+                                    <div class="skill-info">
+                                        <span class="skill-name" data-i18n="skill_ai_name"><i data-lucide="eye"></i> AI 邊緣推論</span>
+                                        <span class="skill-level" data-i18n="level_learning">進修中</span>
+                                    </div>
+                                    <div class="skill-progress-bg">
+                                        <div class="skill-progress-bar" data-progress="65%"></div>
+                                    </div>
+                                    <p class="skill-desc" data-i18n="skill_ai_desc">在邊緣運算裝置上部署量化輕量模型 (YOLOv8) 進行即時物件偵測與追蹤。</p>
+                                </div>
+                                <div class="skill-item glassmorphism">
+                                    <div class="skill-info">
+                                        <span class="skill-name" data-i18n="skill_linux_name"><i data-lucide="git-branch"></i> Git / Linux 系統管理</span>
+                                        <span class="skill-level" data-i18n="level_proficient">熟練</span>
+                                    </div>
+                                    <div class="skill-progress-bg">
+                                        <div class="skill-progress-bar" data-progress="80%"></div>
+                                    </div>
+                                    <p class="skill-desc" data-i18n="skill_linux_desc">使用版本控制與自動化腳本 (Bash, Ansible) 管理大規模主機運作。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Manufacturing skills tab -->
+                        <div class="tab-pane" id="tab-mfg">
+                            <div class="skills-grid">
+                                <div class="skill-item glassmorphism">
+                                    <div class="skill-info">
+                                        <span class="skill-name" data-i18n="skill_3d_name"><i data-lucide="printer"></i> 3D 列印機組裝與改造</span>
+                                        <span class="skill-level" data-i18n="level_expert">專家</span>
+                                    </div>
+                                    <div class="skill-progress-bg">
+                                        <div class="skill-progress-bar" data-progress="95%"></div>
+                                    </div>
+                                    <p class="skill-desc" data-i18n="skill_3d_desc">熟練改裝 Creality 等機型，自組 Klipper 韌體核心，優化列印品質。</p>
+                                </div>
+                                <div class="skill-item glassmorphism">
+                                    <div class="skill-info">
+                                        <span class="skill-name" data-i18n="skill_cad_name"><i data-lucide="box"></i> 3D 建模與結構設計</span>
+                                        <span class="skill-level" data-i18n="level_proficient">熟練</span>
+                                    </div>
+                                    <div class="skill-progress-bg">
+                                        <div class="skill-progress-bar" data-progress="70%"></div>
+                                    </div>
+                                    <p class="skill-desc" data-i18n="skill_cad_desc">使用 Fusion 360 進行機構設計，產出符合公差標準的工業級功能性零件。</p>
+                                </div>
+                                <div class="skill-item glassmorphism">
+                                    <div class="skill-info">
+                                        <span class="skill-name" data-i18n="skill_hw_name"><i data-lucide="hammer"></i> 硬體維修與電路量測</span>
+                                        <span class="skill-level" data-i18n="level_proficient">熟練</span>
+                                    </div>
+                                    <div class="skill-progress-bg">
+                                        <div class="skill-progress-bar" data-progress="80%"></div>
+                                    </div>
+                                    <p class="skill-desc" data-i18n="skill_hw_desc">使用示波器與萬用表進行電路分析，能動手進行貼片元件銲接與維修。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Section -->
+        <section class="portfolio-section" id="projects">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title" data-i18n="projects_title">專案作品</h2>
+                    <p class="section-tagline" data-i18n="projects_tagline">從實作中累積，以成果來證明</p>
+                </div>
+
+                <div class="portfolio-filters reveal">
+                    <button class="filter-btn active" data-filter="all" data-i18n="filter_all">全部</button>
+                    <button class="filter-btn" data-filter="academic" data-i18n="filter_academic">學術與研討會</button>
+                    <button class="filter-btn" data-filter="aiot" data-i18n="filter_aiot">AIoT 邊緣運算</button>
+                    <button class="filter-btn" data-filter="infra" data-i18n="filter_infra">基礎設施</button>
+                    <button class="filter-btn" data-filter="mfg" data-i18n="filter_mfg">數位製造</button>
+                    <button class="filter-btn" data-filter="memories" data-i18n="filter_memories">過往與生活</button>
+                </div>
+
+                <div class="portfolio-grid" id="portfolio-grid">
+                    <article class="project-card glassmorphism reveal" data-category="academic" data-gallery="academic">
+                        <div class="project-img-wrapper">
+                            <img src="assets/project-academic.jpg" alt="ICCT-Pacific 最佳學生海報獎" class="project-img" data-i18n-alt="proj_acad_alt">
+                            <div class="project-category-badge" data-i18n="proj_acad_badge">學術成果</div>
+                        </div>
+                        <div class="project-info">
+                            <span class="project-tech-tags">
+                                <span class="tech-tag">Paper Presentation</span>
+                                <span class="tech-tag">ICCT-Pacific</span>
+                            </span>
+                            <h3 class="project-title" data-i18n="proj_acad_title">ICCT-Pacific 國際學術會議</h3>
+                            <p class="project-desc" data-i18n="proj_acad_desc">
+                                於 ICCT-Pacific 國際學術研討會上發表學術論文，並憑藉扎實的系統架構與精美的海報設計展示，獲頒「最佳學生海報獎 (Best Student Poster Award)」。
+                            </p>
+                            <a href="#" class="btn-project-link">
+                                <span data-i18n="proj_acad_link">詳細論文資訊</span> <i data-lucide="external-link"></i>
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="project-card glassmorphism reveal delay-100" data-category="aiot" data-gallery="drone">
+                        <div class="project-img-wrapper">
+                            <img src="assets/project-drone.png" alt="ROS 2 無人機 AI 導航與飛行" class="project-img" data-i18n-alt="proj_drone_alt">
+                            <div class="project-category-badge" data-i18n="proj_drone_badge">邊緣運算</div>
+                        </div>
+                        <div class="project-info">
+                            <span class="project-tech-tags">
+                                <span class="tech-tag">ROS 2</span>
+                                <span class="tech-tag">OpenCV</span>
+                                <span class="tech-tag">Jetson Nano</span>
+                            </span>
+                            <h3 class="project-title" data-i18n="proj_drone_title">ROS 2 無人機 AI 賦能自主飛行</h3>
+                            <p class="project-desc" data-i18n="proj_drone_desc">
+                                整合 ROS 2 與邊緣 AI 電腦，利用視覺避障演算法實作無人機在室內無 GPS 環境下的自主航行，設計並主持了無人機 AI 培訓課程的實作紀錄。
+                            </p>
+                            <a href="#" class="btn-project-link">
+                                <span data-i18n="proj_drone_link">專案文件</span> <i data-lucide="github"></i>
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="project-card glassmorphism reveal delay-200" data-category="infra" data-gallery="infra">
+                        <div class="project-img-wrapper">
+                            <img src="assets/project-homelab.png" alt="伺服器與 NAS 基礎設施配置" class="project-img" data-i18n-alt="proj_infra_alt">
+                            <div class="project-category-badge" data-i18n="proj_infra_badge">基礎設施</div>
+                        </div>
+                        <div class="project-info">
+                            <span class="project-tech-tags">
+                                <span class="tech-tag">Proxmox PVE</span>
+                                <span class="tech-tag">OpenWrt</span>
+                                <span class="tech-tag">Docker</span>
+                            </span>
+                            <h3 class="project-title" data-i18n="proj_infra_title">個人極客 Homelab 機櫃佈置</h3>
+                            <p class="project-desc" data-i18n="proj_infra_desc">
+                                從零建構個人機櫃，採用 Proxmox VE 進行多虛擬機器管理。上層透過 OpenWrt 作為軟路由核心提供 VLAN 隔離、負載均衡與 Docker 微服務部署。
+                            </p>
+                            <a href="#" class="btn-project-link">
+                                <span data-i18n="proj_infra_link">機櫃拓撲與配置</span> <i data-lucide="external-link"></i>
+                            </a>
+                        </div>
+                    </article>
+
+                    <article class="project-card glassmorphism reveal" data-category="mfg" data-gallery="mfg">
+                        <div class="project-img-wrapper">
+                            <img src="assets/project-3dprint.png" alt="3D 列印機改裝與組裝" class="project-img" data-i18n-alt="proj_mfg_alt">
+                            <div class="project-category-badge" data-i18n="proj_mfg_badge">數位製造</div>
+                        </div>
+                        <div class="project-info">
+                            <span class="project-tech-tags">
+                                <span class="tech-tag">Klipper</span>
+                                <span class="tech-tag">3D Printing</span>
+                                <span class="tech-tag">Fusion 360</span>
+                            </span>
+                            <h3 class="project-title" data-i18n="proj_mfg_title">Creality 3D 列印機極客改裝</h3>
+                            <p class="project-desc" data-i18n="proj_mfg_desc">
+                                將 Creality 3D 列印機升級為主動雙軸，重寫 Klipper 控制韌體，並用 Fusion 360 設計散熱風道與列印零件，顯著提升了列印精度與速度。
+                            </p>
+                            <a href="#" class="btn-project-link">
+                                <span data-i18n="proj_mfg_link">設計零件 STL</span> <i data-lucide="box"></i>
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Project 5: Teaching Assistant -->
+                    <article class="project-card glassmorphism reveal delay-100" data-category="aiot" data-gallery="assistant">
+                        <div class="project-img-wrapper">
+                            <img src="assets/project-assistant.jpg" alt="嵌入式系統與 AIoT 課程助教" class="project-img" data-i18n-alt="proj_ta_alt">
+                            <div class="project-category-badge" data-i18n="proj_ta_badge">教學服務</div>
+                        </div>
+                        <div class="project-info">
+                            <span class="project-tech-tags">
+                                <span class="tech-tag">Teaching Assistant</span>
+                                <span class="tech-tag">Lab Instruction</span>
+                                <span class="tech-tag">Microprocessor</span>
+                            </span>
+                            <h3 class="project-title" data-i18n="proj_ta_title">嵌入式系統與 AIoT 課程助理</h3>
+                            <p class="project-desc" data-i18n="proj_ta_desc">
+                                擔任電子工程系專業課程教學助理，負責實驗課環境建置指導、電子電路除錯教學、微處理器程式撰寫引導，並協助維護實驗室設備與教材準備。
+                            </p>
+                            <a href="#" class="btn-project-link">
+                                <span data-i18n="proj_ta_link">教學花絮照片</span> <i data-lucide="external-link"></i>
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Project 6: Graduation Memories -->
+                    <article class="project-card glassmorphism reveal delay-200" data-category="memories" data-gallery="graduation">
+                        <div class="project-img-wrapper">
+                            <img src="assets/grad-nfue-senior1.jpg" alt="我的過往：學士服合影" class="project-img" data-i18n-alt="proj_grad_alt">
+                            <div class="project-category-badge" data-i18n="proj_grad_badge">過往紀錄</div>
+                        </div>
+                        <div class="project-info">
+                            <span class="project-tech-tags">
+                                <span class="tech-tag" data-i18n="tag_vs">西螺農工電子科</span>
+                                <span class="tech-tag" data-i18n="tag_nfu">虎科大電子工程</span>
+                                <span class="tech-tag" data-i18n="tag_grad">畢業紀念</span>
+                            </span>
+                            <h3 class="project-title" data-i18n="proj_grad_title">我的過往：求學與畢業紀念</h3>
+                            <p class="project-desc" data-i18n="proj_grad_desc">
+                                記錄我在雲林西螺農工電子科與國立虎尾科技大學電子工程系的學習歲月，收錄了與老師、實驗室學長及同儕們珍貴的學士服合影。
+                            </p>
+                            <a href="#" class="btn-project-link">
+                                <span data-i18n="proj_grad_link">瀏覽學士服相簿</span> <i data-lucide="external-link"></i>
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Project 7: Friends & Travels -->
+                    <article class="project-card glassmorphism reveal" data-category="memories" data-gallery="friends">
+                        <div class="project-img-wrapper">
+                            <img src="assets/friend-okayama.jpg" alt="我的朋友們：旅行紀念" class="project-img" data-i18n-alt="proj_travel_alt">
+                            <div class="project-category-badge" data-i18n="proj_travel_badge">生活足跡</div>
+                        </div>
+                        <div class="project-info">
+                            <span class="project-tech-tags">
+                                <span class="tech-tag" data-i18n="tag_okayama">岡山城</span>
+                                <span class="tech-tag" data-i18n="tag_yamaguchi">山口大學</span>
+                                <span class="tech-tag" data-i18n="tag_travel">旅行足跡</span>
+                            </span>
+                            <h3 class="project-title" data-i18n="proj_travel_title">我的朋友們：旅行合影</h3>
+                            <p class="project-desc" data-i18n="proj_travel_desc">
+                                分享與朋友們共同探索世界的精彩旅程，收錄了在岡山城、日本山口大學及嚴島神社的海上帝居等旅行紀念合照。
+                            </p>
+                            <a href="#" class="btn-project-link">
+                                <span data-i18n="proj_travel_link">瀏覽旅行相簿</span> <i data-lucide="external-link"></i>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Friends / Collaborators Section -->
+        <section class="friends-section" id="friends">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title" data-i18n="friends_title">技術夥伴 & 友鏈</h2>
+                    <p class="section-tagline" data-i18n="friends_tagline">共同探索技術、分享旅程的戰友</p>
+                </div>
+                <div class="friends-grid">
+                    <div class="friend-card glassmorphism reveal">
+                        <div class="friend-img-wrapper">
+                            <img src="assets/IMG_20260325_121422785_HDR.jpg" alt="合作夥伴極摯友 鐘明穎 Ming-Ying Chung" class="friend-img" data-i18n-alt="friend_img_alt">
+                        </div>
+                        <div class="friend-info">
+                            <h3 class="friend-name" data-i18n="friend_name">合作夥伴極摯友 鐘明穎 (Ming-Ying Chung)</h3>
+                            <p class="friend-bio" data-i18n="friend_bio">
+                                專注於 IoT 開發、影像辨識與無線通訊。西螺農工電子科時期的同窗戰友，熱衷於用工程實作連結影像與真實世界。
+                            </p>
+                            <div class="friend-links">
+                                <a href="https://fongying.com/" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
+                                    <i data-lucide="globe"></i> <span data-i18n="friend_btn">訪問個人網站</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact-section" id="contact">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title" data-i18n="contact_title">聯絡我</h2>
+                    <p class="section-tagline" data-i18n="contact_tagline">交流想法，或是一起進行有趣的專案</p>
+                </div>
+
+                <div class="contact-grid">
+                    <!-- Contact Info -->
+                    <div class="contact-info-panel glassmorphism reveal reveal-left">
+                        <h3 data-i18n="contact_info_title">聯絡資訊</h3>
+                        <p class="contact-subtext" data-i18n="contact_info_sub">歡迎透過以下管道與我取得聯繫，我會盡快回覆您！</p>
+                        
+                        <div class="contact-details">
+                            <div class="contact-item">
+                                <div class="contact-icon"><i data-lucide="mail"></i></div>
+                                <div class="contact-value">
+                                    <span class="contact-label" data-i18n="contact_label_email">Email</span>
+                                    <a href="mailto:liu0308@liu0308.us.kg" class="contact-link btn-email-action">liu0308@liu0308.us.kg</a>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon"><i data-lucide="map-pin"></i></div>
+                                <div class="contact-value">
+                                    <span class="contact-label" data-i18n="contact_label_location">所在地</span>
+                                    <span class="contact-text" data-i18n="contact_text_location">台灣 (Taiwan)</span>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon"><img src="assets/github.png" alt="GitHub" class="contact-icon-img"></div>
+                                <div class="contact-value">
+                                    <span class="contact-label" data-i18n="contact_label_github">GitHub</span>
+                                    <a href="https://github.com/ma4980" target="_blank" rel="noopener" class="contact-link">github.com/ma4980</a>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon"><img src="assets/IG.png" alt="Instagram" class="contact-icon-img"></div>
+                                <div class="contact-value">
+                                    <span class="contact-label" data-i18n="contact_label_instagram">Instagram</span>
+                                    <a href="https://www.instagram.com/liu0308/" target="_blank" rel="noopener" class="contact-link ig-hover-qr-container">@liu0308<span class="ig-hover-qr contact-qr-position"><img src="assets/IMG_20260614_201934_141.png" alt="Instagram QR Code"><span class="qr-tooltip-text" data-i18n="qr_tooltip">掃描追蹤 IG</span></span></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lab-status-panel">
+                            <div class="lab-status-header">
+                                <span class="status-indicator active"></span>
+                                <span class="status-title" data-i18n="contact_status_title">Lab Node Status: Online</span>
+                            </div>
+                            <div class="lab-stats">
+                                <span data-i18n="contact_status_cpu">PVE CPU Usage: 14%</span>
+                                <span data-i18n="contact_status_latency">Network Latency: 4ms</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Form -->
+                    <div class="contact-form-panel glassmorphism reveal reveal-right">
+                        <form id="contact-form" novalidate>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="form-name" data-i18n="form_label_name">您的姓名</label>
+                                    <input type="text" id="form-name" required placeholder="例如：林小明" data-i18n-placeholder="form_placeholder_name">
+                                    <span class="error-msg" id="name-error" data-i18n="form_error_name">請填寫姓名</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="form-email" data-i18n="form_label_email">電子信箱</label>
+                                    <input type="email" id="form-email" required placeholder="例如：example@email.com" data-i18n-placeholder="form_placeholder_email">
+                                    <span class="error-msg" id="email-error" data-i18n="form_error_email">請填寫有效的電子信箱</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="form-subject" data-i18n="form_label_subject">信件主題</label>
+                                <input type="text" id="form-subject" required placeholder="例如：關於合作案詢問" data-i18n-placeholder="form_placeholder_subject">
+                                <span class="error-msg" id="subject-error" data-i18n="form_error_subject">請填寫主題</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="form-message" data-i18n="form_label_message">您的訊息</label>
+                                <textarea id="form-message" rows="6" required placeholder="請在此輸入您的詳細訊息..." data-i18n-placeholder="form_placeholder_message"></textarea>
+                                <span class="error-msg" id="message-error" data-i18n="form_error_message">請輸入訊息內容</span>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-submit" id="btn-submit">
+                                <span class="btn-text" data-i18n="form_btn_submit">送出訊息</span>
+                                <i data-lucide="send" class="btn-icon"></i>
+                                <span class="spinner hide"></span>
+                            </button>
+                        </form>
+                        <div class="form-success-alert hide" id="form-success-alert">
+                            <div class="alert-icon"><i data-lucide="check-circle"></i></div>
+                            <h3 data-i18n="form_success_title">訊息送出成功！</h3>
+                            <p data-i18n="form_success_desc">感謝您的聯絡，我已收到您的訊息，將會盡快與您聯繫。</p>
+                            <button class="btn btn-secondary btn-sm" id="btn-reset-form" data-i18n="form_btn_reset">再次發送訊息</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-info">
+                <p data-i18n="footer_rights">&copy; 2026 Jun Wei Liu. All rights reserved.</p>
+                <p class="footer-geek-stats">
+                    <span class="stat-tag">uptime: 99.98%</span>
+                    <span class="stat-tag">latency: 12ms</span>
+                    <span class="stat-tag">stack: HTML/CSS/JS</span>
+                    <a href="https://www.liu0308.us.kg/" target="_blank" rel="noopener" class="footer-nav-link"><i data-lucide="compass" size="14"></i> <span data-i18n="footer_portal">程式導航頁</span></a>
+                </p>
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/ma4980" target="_blank" rel="noopener" aria-label="GitHub"><img src="assets/github.png" alt="GitHub" class="footer-icon-img"></a>
+                <a href="https://www.instagram.com/liu0308/" target="_blank" rel="noopener" class="ig-hover-qr-container" aria-label="Instagram"><img src="assets/IG.png" alt="Instagram" class="footer-icon-img"><span class="ig-hover-qr footer-qr-position"><img src="assets/IMG_20260614_201934_141.png" alt="Instagram QR Code"><span class="qr-tooltip-text" data-i18n="qr_tooltip">掃描追蹤 IG</span></span></a>
+                <a href="mailto:liu0308@liu0308.us.kg" class="btn-email-action" aria-label="Email"><i data-lucide="mail"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox hide">
+        <button class="lightbox-close" id="lightbox-close" aria-label="關閉" data-i18n-aria-label="lightbox_close"><i data-lucide="x"></i></button>
+        <button class="lightbox-nav prev" id="lightbox-prev" aria-label="上一張" data-i18n-aria-label="lightbox_prev"><i data-lucide="chevron-left"></i></button>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="大圖" data-i18n-alt="lightbox_img_alt">
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+        </div>
+        <button class="lightbox-nav next" id="lightbox-next" aria-label="下一張" data-i18n-aria-label="lightbox_next"><i data-lucide="chevron-right"></i></button>
+    </div>
+
+    <!-- Main JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
