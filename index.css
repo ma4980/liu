@@ -396,6 +396,37 @@ body {
     transform: scale(1.05);
 }
 
+.btn-perf-toggle {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.btn-perf-toggle:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    transform: scale(1.05);
+}
+
+.btn-perf-toggle.eco-mode {
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.4);
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.btn-perf-toggle.eco-mode:hover {
+    color: #34d399;
+    border-color: #10b981;
+}
+
 .sun-icon {
     display: none;
 }
@@ -2168,4 +2199,40 @@ body {
 .delay-300 { transition-delay: 300ms; }
 .delay-400 { transition-delay: 400ms; }
 .delay-500 { transition-delay: 500ms; }
+
+/* Performance (Eco) Mode Overrides */
+body.eco-mode {
+    --glass-blur: 0px;
+    --glass-bg: rgba(15, 23, 42, 0.95);
+}
+
+[data-theme="light"] body.eco-mode {
+    --glass-bg: rgba(255, 255, 255, 0.98);
+}
+
+body.eco-mode .bg-mesh {
+    animation: none !important;
+    display: none !important;
+}
+
+body.eco-mode #bg-particles {
+    display: none !important;
+}
+
+body.eco-mode .navbar {
+    background: var(--bg-secondary) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.eco-mode .glassmorphism {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+body.eco-mode .navbar.scrolled {
+    background: var(--bg-secondary) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
 

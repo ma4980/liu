@@ -25,6 +25,44 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('theme', newTheme);
     });
 
+    // 2b. Performance Toggle (Eco Mode / High Performance)
+    const perfToggleBtn = document.getElementById('perf-toggle');
+    const savedPerf = localStorage.getItem('perf-mode');
+    
+    if (savedPerf === 'eco') {
+        document.body.classList.add('eco-mode');
+        if (perfToggleBtn) {
+            perfToggleBtn.classList.add('eco-mode');
+            const icon = perfToggleBtn.querySelector('i');
+            if (icon) icon.setAttribute('data-lucide', 'zap-off');
+        }
+    }
+    
+    if (perfToggleBtn) {
+        perfToggleBtn.addEventListener('click', () => {
+            const isEco = document.body.classList.contains('eco-mode');
+            const icon = perfToggleBtn.querySelector('i');
+            
+            if (isEco) {
+                document.body.classList.remove('eco-mode');
+                perfToggleBtn.classList.remove('eco-mode');
+                localStorage.setItem('perf-mode', 'normal');
+                if (icon) icon.setAttribute('data-lucide', 'zap');
+            } else {
+                document.body.classList.add('eco-mode');
+                perfToggleBtn.classList.add('eco-mode');
+                localStorage.setItem('perf-mode', 'eco');
+                if (icon) icon.setAttribute('data-lucide', 'zap-off');
+            }
+            
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            
+            window.dispatchEvent(new CustomEvent('perfModeChanged'));
+        });
+    }
+
     // 3. Language switcher & Translation tables
     const translations = {
         'zh-TW': {
@@ -294,8 +332,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'lightbox_next': '下一張',
             'lang_toggle_aria': '切換語言',
             'theme_toggle_aria': '切換深淺色模式',
+            'perf_toggle_aria': '切換省電模式',
             'menu_toggle_aria': '打開選單',
             'lang_toggle_title': '切換語言 / Select Language',
+            'perf_toggle_title': '切換省電模式',
             'lightbox_img_alt': '大圖',
             'profile_img_alt': '劉峻瑋 Jun Wei Liu',
             'friend_img_alt': '合作夥伴極摯友 鐘明穎 Ming-Ying Chung',
@@ -579,8 +619,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'lightbox_next': 'Next',
             'lang_toggle_aria': 'Select Language',
             'theme_toggle_aria': 'Toggle Dark/Light Mode',
+            'perf_toggle_aria': 'Toggle Performance Mode',
             'menu_toggle_aria': 'Open Menu',
             'lang_toggle_title': 'Select Language',
+            'perf_toggle_title': 'Toggle Performance Mode',
             'lightbox_img_alt': 'Large Image',
             'profile_img_alt': 'Jun Wei Liu',
             'friend_img_alt': 'Partner Ming-Ying Chung',
@@ -864,8 +906,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'lightbox_next': '次へ',
             'lang_toggle_aria': '言語切替',
             'theme_toggle_aria': 'テーマ切替',
+            'perf_toggle_aria': '省電力モード切替',
             'menu_toggle_aria': 'メニューを開く',
             'lang_toggle_title': '言語切り替え',
+            'perf_toggle_title': '省電力モード切替',
             'lightbox_img_alt': '拡大画像',
             'profile_img_alt': '劉峻瑋 Jun Wei Liu',
             'friend_img_alt': 'パートナー鐘明穎氏',
@@ -1580,10 +1624,9 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.style.width = `${width}px`;
             canvas.style.height = `${height}px`;
             
-            // Adjust particles count based on screen size
+            // Adjust particles count based on screen size (Optimized: 60 max on desktop, 15 on mobile)
             const area = width * height;
-            // Desktop: ~85 particles, Mobile: ~25 particles
-            const targetCount = Math.min(Math.floor(area / 18000), window.innerWidth < 768 ? 25 : 85);
+            const targetCount = Math.min(Math.floor(area / 25000), window.innerWidth < 768 ? 15 : 60);
             
             adjustParticlesCount(targetCount, width, height);
         };
@@ -1606,9 +1649,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mouse.active && mouse.x !== null && mouse.y !== null) {
                     const dx = mouse.x - this.x;
                     const dy = mouse.y - this.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const distSq = dx * dx + dy * dy;
                     
-                    if (dist < 180) {
+                    if (distSq < 32400) { // 180 * 180
+                        const dist = Math.sqrt(distSq);
                         // Gentle attraction force
                         const force = (180 - dist) / 180; // stronger force closer to cursor
                         this.vx += (dx / dist) * force * 0.02;
@@ -1621,9 +1665,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.vy *= 0.98;
 
                 // Enforce max speed
-                const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                const speedSq = this.vx * this.vx + this.vy * this.vy;
                 const maxSpeed = window.innerWidth < 768 ? 0.6 : 1.0;
-                if (speed > maxSpeed) {
+                const maxSpeedSq = maxSpeed * maxSpeed;
+                if (speedSq > maxSpeedSq) {
+                    const speed = Math.sqrt(speedSq);
                     this.vx = (this.vx / speed) * maxSpeed;
                     this.vy = (this.vy / speed) * maxSpeed;
                 }
@@ -1667,7 +1713,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const drawConnections = () => {
-            const maxDist = window.innerWidth < 768 ? 100 : 130;
+            // Reduced connection distance (100 max on desktop, 70 on mobile) to save drawing calculations
+            const maxDist = window.innerWidth < 768 ? 70 : 100;
+            const maxDistSq = maxDist * maxDist;
             const w = window.innerWidth;
             const h = window.innerHeight;
 
@@ -1678,9 +1726,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mouse.active && mouse.x !== null && mouse.y !== null) {
                     const dx = mouse.x - p1.x;
                     const dy = mouse.y - p1.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const distSq = dx * dx + dy * dy;
                     
-                    if (dist < 150) {
+                    if (distSq < 22500) { // 150 * 150
+                        const dist = Math.sqrt(distSq);
                         const alpha = (1 - dist / 150) * 0.25;
                         const col = p1.colorType === 'cyan' ? colors.cyan : colors.purple;
                         ctx.beginPath();
@@ -1697,23 +1746,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     const p2 = particles[j];
                     const dx = p1.x - p2.x;
                     const dy = p1.y - p2.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const distSq = dx * dx + dy * dy;
 
-                    if (dist < maxDist) {
+                    // Micro-optimization: check square distance first to avoid Math.sqrt for far-away nodes
+                    if (distSq < maxDistSq) {
+                        const dist = Math.sqrt(distSq);
                         const alpha = (1 - dist / maxDist) * 0.15;
                         
-                        // Select color based on node colors (gradient connection)
-                        const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+                        // Performance optimization: Draw with solid stroke color (start node color)
+                        // rather than createLinearGradient which is extremely slow on older devices.
                         const c1 = p1.colorType === 'cyan' ? colors.cyan : colors.purple;
-                        const c2 = p2.colorType === 'cyan' ? colors.cyan : colors.purple;
-                        
-                        grad.addColorStop(0, `rgba(${c1.r}, ${c1.g}, ${c1.b}, ${alpha})`);
-                        grad.addColorStop(1, `rgba(${c2.r}, ${c2.g}, ${c2.b}, ${alpha})`);
                         
                         ctx.beginPath();
                         ctx.moveTo(p1.x, p1.y);
                         ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = grad;
+                        ctx.strokeStyle = `rgba(${c1.r}, ${c1.g}, ${c1.b}, ${alpha})`;
                         ctx.lineWidth = 0.6;
                         ctx.stroke();
                     }
@@ -1722,6 +1769,13 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const animate = () => {
+            // Performance mode check: If eco-mode class is active, stop animation loop to free CPU usage
+            if (document.body.classList.contains('eco-mode')) {
+                ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+                animationFrameId = null;
+                return;
+            }
+
             const w = window.innerWidth;
             const h = window.innerHeight;
             
@@ -1763,6 +1817,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Event listeners
         window.addEventListener('resize', resizeCanvas);
+        
+        // Listen for performance mode change custom event to resume particle animation loop
+        window.addEventListener('perfModeChanged', () => {
+            if (!document.body.classList.contains('eco-mode')) {
+                if (!animationFrameId) {
+                    animate();
+                }
+            }
+        });
         
         const updateMousePosition = (e) => {
             mouse.x = e.clientX;
