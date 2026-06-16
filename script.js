@@ -1023,6 +1023,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (navMenu.classList.contains('active')) {
+            if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                navMenu.classList.remove('active');
+                const icon = mobileMenuToggle.querySelector('i');
+                icon.setAttribute('data-lucide', 'menu');
+                lucide.createIcons();
+            }
+        }
+    });
+
     // 5. Navbar scroll class addition
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
