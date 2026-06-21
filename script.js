@@ -1,14 +1,20 @@
 // JavaScript Logic for Jun Wei Liu's Geek Portfolio
 
 document.addEventListener('DOMContentLoaded', () => {
+    // DOM Elements Selector Cache (declared first to avoid Temporal Dead Zone / undefined issues)
+    const langContainers = document.querySelectorAll('.lang-dropdown-container');
+    const langOptions = document.querySelectorAll('.lang-option');
+    const themeToggleBtns = document.querySelectorAll('.btn-theme-toggle');
+    const htmlElement = document.documentElement;
+    const perfToggleBtns = document.querySelectorAll('.btn-perf-toggle');
+    const gameContainers = document.querySelectorAll('.game-dropdown-container');
+
     // 1. Initialize Lucide Icons
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
 
     // 2. Theme Toggle (Dark / Light Mode)
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const htmlElement = document.documentElement;
     
     // Check local storage or system preference
     const savedTheme = localStorage.getItem('theme');
@@ -17,51 +23,55 @@ document.addEventListener('DOMContentLoaded', () => {
     const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
     htmlElement.setAttribute('data-theme', initialTheme);
     
-    themeToggleBtn.addEventListener('click', () => {
-        const currentTheme = htmlElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        
-        htmlElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
+    themeToggleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
     });
 
     // 2b. Performance Toggle (Eco Mode / High Performance)
-    const perfToggleBtn = document.getElementById('perf-toggle');
     const savedPerf = localStorage.getItem('perf-mode');
     
-    if (savedPerf === 'eco') {
-        document.body.classList.add('eco-mode');
-        if (perfToggleBtn) {
-            perfToggleBtn.classList.add('eco-mode');
-            const icon = perfToggleBtn.querySelector('i');
-            if (icon) icon.setAttribute('data-lucide', 'zap-off');
+    const setEcoMode = (enable) => {
+        if (enable) {
+            document.body.classList.add('eco-mode');
+            localStorage.setItem('perf-mode', 'eco');
+            perfToggleBtns.forEach(btn => {
+                btn.classList.add('eco-mode');
+                const icon = btn.querySelector('i');
+                if (icon) icon.setAttribute('data-lucide', 'zap-off');
+            });
+        } else {
+            document.body.classList.remove('eco-mode');
+            localStorage.setItem('perf-mode', 'normal');
+            perfToggleBtns.forEach(btn => {
+                btn.classList.remove('eco-mode');
+                const icon = btn.querySelector('i');
+                if (icon) icon.setAttribute('data-lucide', 'zap');
+            });
         }
+        
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+        
+        window.dispatchEvent(new CustomEvent('perfModeChanged'));
+    };
+    
+    if (savedPerf === 'eco') {
+        setEcoMode(true);
     }
     
-    if (perfToggleBtn) {
-        perfToggleBtn.addEventListener('click', () => {
+    perfToggleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
             const isEco = document.body.classList.contains('eco-mode');
-            const icon = perfToggleBtn.querySelector('i');
-            
-            if (isEco) {
-                document.body.classList.remove('eco-mode');
-                perfToggleBtn.classList.remove('eco-mode');
-                localStorage.setItem('perf-mode', 'normal');
-                if (icon) icon.setAttribute('data-lucide', 'zap');
-            } else {
-                document.body.classList.add('eco-mode');
-                perfToggleBtn.classList.add('eco-mode');
-                localStorage.setItem('perf-mode', 'eco');
-                if (icon) icon.setAttribute('data-lucide', 'zap-off');
-            }
-            
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
-            
-            window.dispatchEvent(new CustomEvent('perfModeChanged'));
+            setEcoMode(!isEco);
         });
-    }
+    });
 
     // 3. Language switcher & Translation tables
     const translations = {
@@ -218,6 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'filter_infra': '基礎設施',
             'filter_mfg': '數位製造',
             'filter_memories': '過往與生活',
+            'filter_game': '電玩與互動',
             'proj_acad_badge': '學術成果',
             'proj_acad_title': 'ICCT-Pacific 國際學術會議',
             'proj_acad_desc': '於 ICCT-Pacific 國際學術研討會上發表學術論文，並憑藉扎實的系統架構與精美的海報設計展示，獲頒「最佳學生海報獎 (Best Student Poster Award)」。',
@@ -246,6 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'proj_travel_title': '我的朋友們：旅行合影',
             'proj_travel_desc': '分享與朋友們共同探索世界的精彩旅程，收錄了在岡山城、日本山口大學及嚴島神社的海上帝居等旅行紀念合照。',
             'proj_travel_link': '瀏覽旅行相簿',
+            'proj_fortune_badge': '網頁遊戲',
+            'proj_fortune_title': '天機玄妙 | 4合1 命理占卜系統',
+            'proj_fortune_desc': '融合八字、姓名、生肖與星座的玄學占卜系統。採用極簡奢華的神秘星空背景，搭配生動的加載動畫，提供使用者精確的個人命理推演報告。',
+            'proj_fortune_link': '啟動天機占卜',
 
             // Friends Section
             'friends_title': '技術夥伴 & 友鏈',
@@ -335,6 +350,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'perf_toggle_aria': '切換省電模式',
             'menu_toggle_aria': '打開選單',
             'lang_toggle_title': '切換語言 / Select Language',
+            'game_toggle_aria': '我的遊戲與互動',
+            'game_toggle_title': '我的遊戲與互動 / Games & Interactives',
+            'game_fortune': '天機占卜',
+            'game_neon_tide': '霓虹街機 (11合1)',
             'perf_toggle_title': '切換省電模式',
             'lightbox_img_alt': '大圖',
             'profile_img_alt': '劉峻瑋 Jun Wei Liu',
@@ -505,6 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'filter_infra': 'Infrastructure',
             'filter_mfg': 'Digital Mfg',
             'filter_memories': 'Memories & Life',
+            'filter_game': 'Games & Interactive',
             'proj_acad_badge': 'Academic',
             'proj_acad_title': 'ICCT-Pacific International Conference',
             'proj_acad_desc': 'Presented a paper at the ICCT-Pacific international conference and won the "Best Student Poster Award" for robust system design and presentation.',
@@ -533,6 +553,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'proj_travel_title': 'Travels with Friends',
             'proj_travel_desc': 'Shared travels exploring the world with friends, including photos from Okayama Castle, Yamaguchi University, and Itsukushima Shrine in Japan.',
             'proj_travel_link': 'Travel Album',
+            'proj_fortune_badge': 'Web Game',
+            'proj_fortune_title': 'Mystic Orb | 4-in-1 Divination System',
+            'proj_fortune_desc': 'An interactive metaphysics divination system integrating Bazi, Name strokes, Chinese Zodiac, and Western Astrology. Features a starry cosmos theme and rich animations.',
+            'proj_fortune_link': 'Launch Fortune Telling',
 
             // Friends Section
             'friends_title': 'Technical Partners & Links',
@@ -622,6 +646,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'perf_toggle_aria': 'Toggle Performance Mode',
             'menu_toggle_aria': 'Open Menu',
             'lang_toggle_title': 'Select Language',
+            'game_toggle_aria': 'Games & Interactives',
+            'game_toggle_title': 'Games & Interactives',
+            'game_fortune': 'Mystic Fortune',
+            'game_neon_tide': 'Neon Tide Arcade',
             'perf_toggle_title': 'Toggle Performance Mode',
             'lightbox_img_alt': 'Large Image',
             'profile_img_alt': 'Jun Wei Liu',
@@ -792,6 +820,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'filter_infra': 'インフラ構築',
             'filter_mfg': 'デジタル製造',
             'filter_memories': '思い出 & 日常',
+            'filter_game': 'ゲーム・インタラクション',
             'proj_acad_badge': '学術成果',
             'proj_acad_title': 'ICCT-Pacific 国際会議',
             'proj_acad_desc': 'ICCT-Pacific国際学術会議にて論文を発表し、強固なシステム設計と精緻なポスター展示により「最優秀学生ポスター賞 (Best Student Poster Award)」を受賞。',
@@ -820,6 +849,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'proj_travel_title': '友人との旅行',
             'proj_travel_desc': '岡山城、山口大学、広島の厳島神社など、仲間と共に日本各地を探訪した大切な旅行の思い出写真を共有。',
             'proj_travel_link': '旅行アルバム',
+            'proj_fortune_badge': 'ブラウザゲーム',
+            'proj_fortune_title': '天機玄妙 | 4in1 運勢占いシステム',
+            'proj_fortune_desc': '四柱推命、姓名判断、干支、西洋占星術を融合したインタラクティブな東洋占いシステム。神秘的な星空のテーマと美しいローディングアニメーションが特徴です。',
+            'proj_fortune_link': '占いを開始する',
 
             // Friends Section
             'friends_title': '技術パートナー & 友情リンク',
@@ -909,6 +942,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'perf_toggle_aria': '省電力モード切替',
             'menu_toggle_aria': 'メニューを開く',
             'lang_toggle_title': '言語切り替え',
+            'game_toggle_aria': 'ゲームとインタラクティブ',
+            'game_toggle_title': 'ゲームとインタラクティブ',
+            'game_fortune': '天機占い',
+            'game_neon_tide': 'ネオンアーケード',
             'perf_toggle_title': '省電力モード切替',
             'lightbox_img_alt': '拡大画像',
             'profile_img_alt': '劉峻瑋 Jun Wei Liu',
@@ -1014,26 +1051,87 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Dropdown toggle events
-    const langToggleBtn = document.getElementById('lang-toggle');
-    const langMenu = document.getElementById('lang-menu');
-    const langOptions = document.querySelectorAll('.lang-option');
+    langContainers.forEach(container => {
+        const btn = container.querySelector('.btn-lang-toggle');
+        const menu = container.querySelector('.lang-dropdown-menu');
+        
+        if (btn && menu) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Close other lang menus first
+                langContainers.forEach(otherContainer => {
+                    if (otherContainer !== container) {
+                        const otherMenu = otherContainer.querySelector('.lang-dropdown-menu');
+                        if (otherMenu) otherMenu.classList.remove('show');
+                    }
+                });
+                // Close game menus first
+                gameContainers.forEach(otherContainer => {
+                    const otherMenu = otherContainer.querySelector('.game-dropdown-menu');
+                    if (otherMenu) otherMenu.classList.remove('show');
+                });
+                menu.classList.toggle('show');
+            });
+        }
+    });
 
-    langToggleBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        langMenu.classList.toggle('show');
+    gameContainers.forEach(container => {
+        const btn = container.querySelector('.btn-game-toggle');
+        const menu = container.querySelector('.game-dropdown-menu');
+        
+        if (btn && menu) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Close lang menus first
+                langContainers.forEach(otherContainer => {
+                    const otherMenu = otherContainer.querySelector('.lang-dropdown-menu');
+                    if (otherMenu) otherMenu.classList.remove('show');
+                });
+                // Close other game menus first
+                gameContainers.forEach(otherContainer => {
+                    if (otherContainer !== container) {
+                        const otherMenu = otherContainer.querySelector('.game-dropdown-menu');
+                        if (otherMenu) otherMenu.classList.remove('show');
+                    }
+                });
+                menu.classList.toggle('show');
+            });
+        }
     });
 
     document.addEventListener('click', (e) => {
-        if (!langToggleBtn.contains(e.target) && !langMenu.contains(e.target)) {
-            langMenu.classList.remove('show');
-        }
+        langContainers.forEach(container => {
+            const btn = container.querySelector('.btn-lang-toggle');
+            const menu = container.querySelector('.lang-dropdown-menu');
+            if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+        gameContainers.forEach(container => {
+            const btn = container.querySelector('.btn-game-toggle');
+            const menu = container.querySelector('.game-dropdown-menu');
+            if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
+    });
+
+    const gameLinks = document.querySelectorAll('.game-dropdown-menu a');
+    gameLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            document.querySelectorAll('.game-dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        });
     });
 
     langOptions.forEach(opt => {
         opt.addEventListener('click', () => {
             const selectedLang = opt.getAttribute('data-lang');
             updateLanguage(selectedLang);
-            langMenu.classList.remove('show');
+            document.querySelectorAll('.lang-dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
         });
     });
 

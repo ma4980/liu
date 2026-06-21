@@ -48,6 +48,35 @@
                     <li><a href="#friends" class="nav-link" id="nav-link-friends" data-i18n="nav_friends">技術夥伴</a></li>
                     <li><a href="#contact" class="nav-link" id="nav-link-contact" data-i18n="nav_contact">聯絡我</a></li>
                 </ul>
+                <div class="nav-menu-actions">
+                    <div class="lang-dropdown-container">
+                        <button class="btn-lang-toggle" data-i18n-aria-label="lang_toggle_aria" data-i18n-title="lang_toggle_title" aria-label="切換語言" title="切換語言 / Select Language">
+                            <i data-lucide="languages"></i>
+                        </button>
+                        <ul class="lang-dropdown-menu">
+                            <li data-lang="zh-TW" class="lang-option active" data-i18n="lang_zh">繁體中文</li>
+                            <li data-lang="ja" class="lang-option" data-i18n="lang_ja">日文</li>
+                            <li data-lang="en" class="lang-option" data-i18n="lang_en">英文</li>
+                            <li data-lang="auto" class="lang-option" data-i18n="lang_auto">跟隨本機</li>
+                        </ul>
+                    </div>
+                    <div class="game-dropdown-container">
+                        <button class="btn-game-toggle" data-i18n-aria-label="game_toggle_aria" data-i18n-title="game_toggle_title" aria-label="我的遊戲與互動" title="我的遊戲與互動 / Games & Interactives">
+                            <i data-lucide="gamepad-2"></i>
+                        </button>
+                        <ul class="game-dropdown-menu">
+                            <li><a href="算命/1.html" target="_blank"><i data-lucide="sparkles"></i><span data-i18n="game_fortune">天機占卜</span></a></li>
+                            <li><a href="neon-tide.html" target="_blank"><i data-lucide="joystick"></i><span data-i18n="game_neon_tide">霓虹街機 (11合1)</span></a></li>
+                        </ul>
+                    </div>
+                    <button class="btn-perf-toggle" data-i18n-aria-label="perf_toggle_aria" data-i18n-title="perf_toggle_title" aria-label="切換省電模式" title="切換省電模式">
+                        <i data-lucide="zap"></i>
+                    </button>
+                    <button class="btn-theme-toggle" data-i18n-aria-label="theme_toggle_aria" aria-label="切換深淺色模式">
+                        <i data-lucide="sun" class="sun-icon"></i>
+                        <i data-lucide="moon" class="moon-icon"></i>
+                    </button>
+                </div>
             </nav>
 
             <div class="nav-actions">
@@ -60,6 +89,15 @@
                         <li data-lang="ja" class="lang-option" data-i18n="lang_ja">日文</li>
                         <li data-lang="en" class="lang-option" data-i18n="lang_en">英文</li>
                         <li data-lang="auto" class="lang-option" data-i18n="lang_auto">跟隨本機</li>
+                    </ul>
+                </div>
+                <div class="game-dropdown-container">
+                    <button class="btn-game-toggle" data-i18n-aria-label="game_toggle_aria" data-i18n-title="game_toggle_title" aria-label="我的遊戲與互動" title="我的遊戲與互動 / Games & Interactives">
+                        <i data-lucide="gamepad-2"></i>
+                    </button>
+                    <ul class="game-dropdown-menu">
+                        <li><a href="算命/1.html" target="_blank"><i data-lucide="sparkles"></i><span data-i18n="game_fortune">天機占卜</span></a></li>
+                        <li><a href="neon-tide.html" target="_blank"><i data-lucide="joystick"></i><span data-i18n="game_neon_tide">霓虹街機 (11合1)</span></a></li>
                     </ul>
                 </div>
                 <button class="btn-perf-toggle" id="perf-toggle" data-i18n-aria-label="perf_toggle_aria" data-i18n-title="perf_toggle_title" aria-label="切換省電模式" title="切換省電模式">

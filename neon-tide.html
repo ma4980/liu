@@ -1,0 +1,3605 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>霓虹潮汐</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f6fbff;
+      --muted: #9cb7bf;
+      --panel: rgba(8, 17, 24, 0.72);
+      --panel-strong: rgba(10, 22, 30, 0.9);
+      --line: rgba(183, 241, 255, 0.22);
+      --aqua: #4ef0d1;
+      --coral: #ff6f91;
+      --gold: #ffd166;
+      --leaf: #94e06b;
+      --deep: #061018;
+      --danger: #ff4d6d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--deep);
+      color: var(--ink);
+      font-family:
+        "Segoe UI",
+        "Microsoft JhengHei",
+        system-ui,
+        sans-serif;
+      letter-spacing: 0;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .game-shell {
+      position: fixed;
+      inset: 0;
+      min-width: 320px;
+      background:
+        linear-gradient(180deg, rgba(255, 111, 145, 0.06), transparent 30%),
+        linear-gradient(135deg, #07151e 0%, #09251f 48%, #15101d 100%);
+      isolation: isolate;
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    .hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 4;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(86px, 1fr)) auto;
+      gap: 8px;
+      align-items: start;
+      padding: clamp(10px, 2vw, 18px);
+      pointer-events: none;
+    }
+
+    .status-pill,
+    .tool-button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(14px);
+    }
+
+    .status-pill {
+      display: grid;
+      gap: 2px;
+      align-content: center;
+      min-width: 0;
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+
+    .status-pill small {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .status-pill strong {
+      overflow: hidden;
+      color: var(--ink);
+      font-size: clamp(17px, 2.3vw, 24px);
+      line-height: 1.05;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tool-row {
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .tool-button {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border-radius: 8px;
+      color: var(--ink);
+      cursor: pointer;
+      transition:
+        transform 140ms ease,
+        border-color 140ms ease,
+        background 140ms ease,
+        opacity 140ms ease;
+    }
+
+    .tool-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(78, 240, 209, 0.52);
+      background: rgba(13, 33, 38, 0.86);
+    }
+
+    .tool-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.38;
+      transform: none;
+    }
+
+    .burst-button.ready {
+      border-color: rgba(255, 209, 102, 0.8);
+      color: #15100a;
+      background: linear-gradient(135deg, var(--gold), #fff2ad);
+    }
+
+    .shield-track {
+      position: absolute;
+      left: clamp(10px, 2vw, 18px);
+      right: clamp(10px, 2vw, 18px);
+      bottom: clamp(12px, 2vw, 20px);
+      z-index: 4;
+      height: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(183, 241, 255, 0.18);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+    }
+
+    .shield-track span {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--aqua), var(--leaf), var(--gold));
+      transform-origin: left;
+      transition: transform 140ms ease;
+    }
+
+    .modal {
+      position: absolute;
+      z-index: 6;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: clamp(16px, 4vw, 32px);
+      background: rgba(3, 8, 12, 0.38);
+    }
+
+    .modal[hidden] {
+      display: none;
+    }
+
+    .dialog {
+      width: min(500px, 100%);
+      border: 1px solid rgba(183, 241, 255, 0.26);
+      border-radius: 8px;
+      padding: clamp(20px, 5vw, 34px);
+      background: var(--panel-strong);
+      box-shadow: 0 24px 90px rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(18px);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(38px, 8vw, 72px);
+      line-height: 0.92;
+      letter-spacing: 0;
+    }
+
+    .dialog p {
+      margin: 14px 0 0;
+      color: #d5e7ec;
+      font-size: clamp(15px, 2vw, 18px);
+      line-height: 1.6;
+    }
+
+    .help-panel {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .help-panel[hidden] {
+      display: none;
+    }
+
+    .help-item {
+      border: 1px solid rgba(183, 241, 255, 0.18);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #d5e7ec;
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .dialog-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .primary-button,
+    .secondary-button {
+      min-height: 46px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      padding: 0 18px;
+      cursor: pointer;
+      font-weight: 800;
+      transition:
+        transform 140ms ease,
+        border-color 140ms ease,
+        background 140ms ease;
+    }
+
+    .primary-button {
+      color: #061018;
+      background: linear-gradient(135deg, var(--aqua), #b5fff1);
+    }
+
+    .secondary-button {
+      color: var(--ink);
+      border-color: var(--line);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .primary-button:hover,
+    .secondary-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .difficulty-panel {
+      margin-top: 18px;
+    }
+
+    .difficulty-panel[hidden] {
+      display: none;
+    }
+
+    .panel-label {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .segmented-control {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      padding: 4px;
+      border: 1px solid rgba(183, 241, 255, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .difficulty-button {
+      min-width: 0;
+      min-height: 40px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: var(--ink);
+      background: transparent;
+      cursor: pointer;
+      font-weight: 800;
+      transition:
+        border-color 140ms ease,
+        background 140ms ease,
+        color 140ms ease;
+    }
+
+    .difficulty-button:hover {
+      border-color: rgba(78, 240, 209, 0.36);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .difficulty-button.active {
+      color: #061018;
+      border-color: rgba(78, 240, 209, 0.8);
+      background: linear-gradient(135deg, var(--aqua), #d7fff7);
+    }
+
+    .game-picker {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+      max-height: min(42vh, 390px);
+      overflow: auto;
+      padding-right: 4px;
+      overscroll-behavior: contain;
+      scrollbar-color: rgba(78, 240, 209, 0.55) rgba(255, 255, 255, 0.08);
+      scrollbar-width: thin;
+    }
+
+    .game-picker[hidden] {
+      display: none;
+    }
+
+    .game-option {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 54px;
+      width: 100%;
+      border: 1px solid rgba(183, 241, 255, 0.2);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.06);
+      text-align: left;
+      cursor: pointer;
+      transition:
+        border-color 140ms ease,
+        background 140ms ease,
+        transform 140ms ease;
+    }
+
+    .game-option:hover {
+      transform: translateY(-1px);
+      border-color: rgba(78, 240, 209, 0.38);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .game-option:disabled {
+      cursor: not-allowed;
+      opacity: 0.56;
+      transform: none;
+    }
+
+    .game-option.active {
+      border-color: rgba(78, 240, 209, 0.72);
+      background: rgba(78, 240, 209, 0.12);
+    }
+
+    .game-name {
+      display: block;
+      overflow: hidden;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.15;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .game-option:disabled .game-name {
+      color: #d7e7eb;
+    }
+
+    .game-meta {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .stats-grid[hidden] {
+      display: none;
+    }
+
+    .stat-box {
+      min-width: 0;
+      border: 1px solid rgba(183, 241, 255, 0.18);
+      border-radius: 8px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .stat-box small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .stat-box strong {
+      display: block;
+      overflow: hidden;
+      margin-top: 4px;
+      font-size: 18px;
+      line-height: 1.1;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 760px) {
+      .hud {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+      }
+
+      .hud .status-pill:nth-child(3),
+      .hud .status-pill:nth-child(4) {
+        display: none;
+      }
+
+      .tool-row {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+        flex-direction: column;
+      }
+
+      .dialog-actions {
+        flex-direction: column;
+      }
+
+      .primary-button,
+      .secondary-button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .hud {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .tool-row {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        flex-direction: row;
+        justify-content: flex-end;
+      }
+
+      .tool-button {
+        width: 40px;
+        height: 40px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="game-shell" aria-label="霓虹潮汐遊戲">
+    <canvas id="gameCanvas"></canvas>
+
+    <section class="hud" aria-label="遊戲狀態">
+      <div class="status-pill">
+        <small>分數</small>
+        <strong id="scoreText">0</strong>
+      </div>
+      <div class="status-pill">
+        <small>時間</small>
+        <strong id="timeText">75.0</strong>
+      </div>
+      <div class="status-pill">
+        <small>連擊</small>
+        <strong id="comboText">x1</strong>
+      </div>
+      <div class="status-pill">
+        <small>紀錄</small>
+        <strong id="bestText">0</strong>
+      </div>
+      <div class="tool-row">
+        <button class="tool-button burst-button" id="burstButton" type="button" aria-label="釋放脈衝" title="釋放脈衝" disabled>*</button>
+        <button class="tool-button" id="soundButton" type="button" aria-label="音效" title="音效">♪</button>
+        <button class="tool-button" id="pauseButton" type="button" aria-label="暫停" title="暫停">II</button>
+      </div>
+    </section>
+
+    <div class="shield-track" aria-hidden="true">
+      <span id="shieldBar"></span>
+    </div>
+
+    <section class="modal" id="modal">
+      <div class="dialog" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalBody">
+        <p class="eyebrow" id="modalKicker">Web Arcade</p>
+        <h1 id="modalTitle">霓虹潮汐</h1>
+        <p id="modalBody">收集光核、避開裂波，在城市海面撐過 75 秒。</p>
+        <div class="help-panel" id="helpPanel" aria-label="遊玩說明" hidden></div>
+        <div class="difficulty-panel" id="difficultyPanel" aria-label="難易度">
+          <p class="panel-label" id="difficultyLabel">難易度</p>
+          <div class="segmented-control" role="group" aria-label="選擇難易度">
+            <button class="difficulty-button" type="button" data-difficulty="easy">悠遊</button>
+            <button class="difficulty-button" type="button" data-difficulty="normal">標準</button>
+            <button class="difficulty-button" type="button" data-difficulty="hard">浪尖</button>
+          </div>
+        </div>
+        <div class="game-picker" id="gamePicker" aria-label="選擇遊戲" hidden>
+          <button class="game-option active" type="button" data-game="neon-tide">
+            <span>
+              <span class="game-name">霓虹潮汐</span>
+            </span>
+            <span class="game-meta">目前遊戲</span>
+          </button>
+          <button class="game-option" type="button" data-game="signal-dash">
+            <span>
+              <span class="game-name">訊號衝刺</span>
+            </span>
+            <span class="game-meta">可遊玩</span>
+          </button>
+          <button class="game-option" type="button" data-game="mag-rail-run">
+            <span>
+              <span class="game-name">磁軌逃亡</span>
+            </span>
+            <span class="game-meta">可遊玩</span>
+          </button>
+          <button class="game-option" type="button" data-game="light-route">
+            <span>
+              <span class="game-name">光路修補師</span>
+            </span>
+            <span class="game-meta">可遊玩</span>
+          </button>
+          <button class="game-option" type="button" data-game="moon-courier">
+            <span>
+              <span class="game-name">月面快遞</span>
+            </span>
+            <span class="game-meta">可遊玩</span>
+          </button>
+          <button class="game-option" type="button" data-game="starport-sorter">
+            <span>
+              <span class="game-name">星港分揀員</span>
+            </span>
+            <span class="game-meta">可遊玩</span>
+          </button>
+          <button class="game-option" type="button" data-game="reactor-tune">
+            <span>
+              <span class="game-name">反應爐調頻</span>
+            </span>
+            <span class="game-meta">可遊玩</span>
+          </button>
+          <button class="game-option" type="button" data-game="fog-radar">
+            <span>
+              <span class="game-name">迷霧雷達</span>
+            </span>
+            <span class="game-meta">可遊玩</span>
+          </button>
+          <button class="game-option" type="button" data-game="rift-angler">
+            <span>
+              <span class="game-name">裂隙釣手</span>
+            </span>
+            <span class="game-meta">可遊玩</span>
+          </button>
+          <button class="game-option" type="button" data-game="core-garden">
+            <span>
+              <span class="game-name">核心花園</span>
+            </span>
+            <span class="game-meta">可遊玩</span>
+          </button>
+          <button class="game-option" type="button" data-game="parts-hunter">
+            <span>
+              <span class="game-name">零件獵人</span>
+            </span>
+            <span class="game-meta">可遊玩</span>
+          </button>
+        </div>
+        <div class="stats-grid" id="resultStats" hidden>
+          <div class="stat-box">
+            <small>本局分數</small>
+            <strong id="resultScore">0</strong>
+          </div>
+          <div class="stat-box">
+            <small>最高連擊</small>
+            <strong id="resultCombo">x1</strong>
+          </div>
+          <div class="stat-box">
+            <small>最佳紀錄</small>
+            <strong id="resultBest">0</strong>
+          </div>
+          <div class="stat-box">
+            <small>難易度</small>
+            <strong id="resultDifficulty">標準</strong>
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button class="primary-button" id="startButton" type="button">開始航行</button>
+          <button class="secondary-button" id="helpButton" type="button">遊玩說明</button>
+          <button class="secondary-button" id="helpBackButton" type="button" hidden>返回</button>
+          <button class="secondary-button" id="gameSelectButton" type="button">選擇其他遊戲</button>
+          <button class="secondary-button" id="mainMenuButton" type="button" hidden>返回主選單</button>
+          <button class="secondary-button" id="resumeButton" type="button" hidden>繼續</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
+      const scoreText = document.getElementById("scoreText");
+      const timeText = document.getElementById("timeText");
+      const comboText = document.getElementById("comboText");
+      const bestText = document.getElementById("bestText");
+      const shieldBar = document.getElementById("shieldBar");
+      const burstButton = document.getElementById("burstButton");
+      const soundButton = document.getElementById("soundButton");
+      const pauseButton = document.getElementById("pauseButton");
+      const modal = document.getElementById("modal");
+      const modalKicker = document.getElementById("modalKicker");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalBody = document.getElementById("modalBody");
+      const helpPanel = document.getElementById("helpPanel");
+      const difficultyPanel = document.getElementById("difficultyPanel");
+      const difficultyLabel = document.getElementById("difficultyLabel");
+      const gamePicker = document.getElementById("gamePicker");
+      const resultStats = document.getElementById("resultStats");
+      const resultScore = document.getElementById("resultScore");
+      const resultCombo = document.getElementById("resultCombo");
+      const resultBest = document.getElementById("resultBest");
+      const resultDifficulty = document.getElementById("resultDifficulty");
+      const startButton = document.getElementById("startButton");
+      const helpButton = document.getElementById("helpButton");
+      const helpBackButton = document.getElementById("helpBackButton");
+      const gameSelectButton = document.getElementById("gameSelectButton");
+      const mainMenuButton = document.getElementById("mainMenuButton");
+      const resumeButton = document.getElementById("resumeButton");
+      const difficultyButtons = Array.from(document.querySelectorAll("[data-difficulty]"));
+      const gameButtons = Array.from(document.querySelectorAll("[data-game]"));
+
+      const LEGACY_STORAGE_KEY = "neon-tide-best-score";
+      const BEST_STORAGE_PREFIX = "web-arcade-best-score-";
+      const DIFFICULTY_STORAGE_KEY = "neon-tide-difficulty";
+      const ACTIVE_GAME_STORAGE_KEY = "web-arcade-active-game";
+      const SIMPLE_GAME_IDS = new Set([
+        "moon-courier",
+        "starport-sorter",
+        "reactor-tune",
+        "fog-radar",
+        "rift-angler",
+        "core-garden",
+        "parts-hunter",
+      ]);
+      const GAMES = {
+        "neon-tide": {
+          label: "霓虹潮汐",
+          kicker: "Web Arcade",
+          startLabel: "開始航行",
+          replayLabel: "再玩一次",
+          resultAction: "再玩一次",
+          menuBody: (seconds) => `收集光核、避開裂波，在城市海面撐過 ${seconds} 秒。`,
+          winTitle: "抵達港灣",
+          overTitle: "訊號中斷",
+          winBody: "完整穿越霓虹潮面，資料核心安全送達。",
+          overBody: "護盾耗盡，這趟航行停在半路。",
+        },
+        "signal-dash": {
+          label: "訊號衝刺",
+          kicker: "Lane Arcade",
+          startLabel: "開始衝刺",
+          replayLabel: "再衝一次",
+          resultAction: "再衝一次",
+          menuBody: (seconds) => `在三條訊號軌道間切換，收集資料封包並撐過 ${seconds} 秒。`,
+          winTitle: "連線完成",
+          overTitle: "訊號斷裂",
+          winBody: "資料流穩定抵達終端，整段路徑保持同步。",
+          overBody: "雜訊擊穿護盾，訊號在傳輸途中斷線。",
+        },
+        "mag-rail-run": {
+          label: "磁軌逃亡",
+          kicker: "Speed Arcade",
+          startLabel: "開始逃亡",
+          replayLabel: "再跑一次",
+          resultAction: "再跑一次",
+          menuBody: (seconds) => `沿著磁浮軌道高速逃亡，跳過路障、下滑穿門並撐過 ${seconds} 秒。`,
+          winTitle: "抵達轉運站",
+          overTitle: "軌道失衡",
+          winBody: "你甩開追蹤訊號，完整抵達下一座磁軌轉運站。",
+          overBody: "護盾被連續撞擊打穿，磁浮板失去穩定。",
+        },
+        "light-route": {
+          label: "光路修補師",
+          kicker: "Puzzle Arcade",
+          startLabel: "開始修補",
+          replayLabel: "再解一次",
+          resultAction: "再解一次",
+          menuBody: (seconds) => `旋轉鏡片，把入口光束導向出口；限時 ${seconds} 秒。`,
+          winTitle: "光路接通",
+          overTitle: "光束熄滅",
+          winBody: "鏡片角度校準完成，光束穩定抵達出口。",
+          overBody: "時間用盡，光路仍未修復完成。",
+        },
+        "moon-courier": {
+          label: "月面快遞",
+          kicker: "Gravity Arcade",
+          startLabel: "開始配送",
+          replayLabel: "再送一次",
+          resultAction: "再送一次",
+          menuBody: (seconds) => `控制推進器，把快遞艙安全降落到平台；限時 ${seconds} 秒。`,
+          winTitle: "平穩著陸",
+          overTitle: "快遞墜毀",
+          winBody: "貨艙完整抵達月面平台，配送完成。",
+          overBody: "著陸速度過快或護盾耗盡，快遞任務失敗。",
+        },
+        "starport-sorter": {
+          label: "星港分揀員",
+          kicker: "Sort Arcade",
+          startLabel: "開始分揀",
+          replayLabel: "再分一次",
+          resultAction: "再分一次",
+          menuBody: (seconds) => `把貨箱送到對應出口，連續分對可以提高分數；限時 ${seconds} 秒。`,
+          winTitle: "分揀完成",
+          overTitle: "貨流失控",
+          winBody: "星港貨物流向穩定，分揀班次順利結束。",
+          overBody: "錯誤分流太多，貨運系統暫停。",
+        },
+        "reactor-tune": {
+          label: "反應爐調頻",
+          kicker: "Tune Arcade",
+          startLabel: "開始調頻",
+          replayLabel: "再調一次",
+          resultAction: "再調一次",
+          menuBody: (seconds) => `旋轉接收器，接住正確頻率的能量波；限時 ${seconds} 秒。`,
+          winTitle: "反應穩定",
+          overTitle: "反應過熱",
+          winBody: "反應爐頻率鎖定完成，輸出恢復穩定。",
+          overBody: "錯失太多能量波，反應爐進入保護停機。",
+        },
+        "fog-radar": {
+          label: "迷霧雷達",
+          kicker: "Radar Arcade",
+          startLabel: "開始掃描",
+          replayLabel: "再探一次",
+          resultAction: "再探一次",
+          menuBody: (seconds) => `在迷霧中尋找信標，避開雜訊並用脈衝掃描開路；限時 ${seconds} 秒。`,
+          winTitle: "迷霧定位",
+          overTitle: "雷達失聯",
+          winBody: "所有信標座標已回收，迷霧航線重新開啟。",
+          overBody: "雜訊壓垮護盾，雷達訊號失去定位。",
+        },
+        "rift-angler": {
+          label: "裂隙釣手",
+          kicker: "Tension Arcade",
+          startLabel: "開始垂釣",
+          replayLabel: "再釣一次",
+          resultAction: "再釣一次",
+          menuBody: (seconds) => `按住收線、放開降張力，在裂隙中釣起能量核心；限時 ${seconds} 秒。`,
+          winTitle: "核心上鉤",
+          overTitle: "釣線斷裂",
+          winBody: "張力控制漂亮，裂隙核心被完整拉回。",
+          overBody: "張力失控，釣線在裂隙中斷裂。",
+        },
+        "core-garden": {
+          label: "核心花園",
+          kicker: "Garden Arcade",
+          startLabel: "開始培育",
+          replayLabel: "再種一次",
+          resultAction: "再種一次",
+          menuBody: (seconds) => `種下能量節點，連成防線抵擋侵蝕波；撐過 ${seconds} 秒。`,
+          winTitle: "花園成形",
+          overTitle: "核心枯竭",
+          winBody: "能量節點穩定連線，核心花園成功成形。",
+          overBody: "侵蝕波突破防線，核心能量耗盡。",
+        },
+        "parts-hunter": {
+          label: "零件獵人",
+          kicker: "Survival Arcade",
+          startLabel: "開始獵取",
+          replayLabel: "再獵一次",
+          resultAction: "再獵一次",
+          menuBody: (seconds) => `收集零件升級武裝，避開追蹤機並撐過 ${seconds} 秒。`,
+          winTitle: "組裝完成",
+          overTitle: "裝甲破裂",
+          winBody: "零件收集完成，臨時武裝成功組裝。",
+          overBody: "追蹤機突破防線，裝甲停止運作。",
+        },
+      };
+      const HELP_TEXT = {
+        "game-select": [
+          "選擇一款遊戲後會進入該遊戲的開始畫面。",
+          "每款遊戲都共用難易度、倒數、分數、護盾與暫停功能。",
+          "遊戲中右上角可以暫停；暫停後可繼續、重玩或返回主選單。",
+        ],
+        "neon-tide": [
+          "目標：收集光核、避開裂波，撐到倒數結束。",
+          "操作：滑鼠或觸控拖曳移動；鍵盤可用 WASD 或方向鍵移動。",
+          "光核會增加分數、連擊、護盾與脈衝能量；撞到裂波會扣護盾並重置連擊。",
+          "脈衝滿格後按空白鍵或右上角 *，可以清除附近裂波。",
+        ],
+        "signal-dash": [
+          "目標：在三條訊號軌道間切換，收集資料封包並避開雜訊。",
+          "操作：方向鍵上/下或 W/S 切換軌道；觸控點選目標軌道。",
+          "資料封包會提高分數與能量；紅色雜訊會扣護盾。",
+          "脈衝滿格後可清除前方雜訊。",
+        ],
+        "mag-rail-run": [
+          "目標：沿磁軌高速前進，跳過路障、下滑穿過低門。",
+          "操作：方向鍵上或 W 跳躍；方向鍵下或 S 下滑；觸控上半部跳、下半部滑。",
+          "金色磁能會增加分數與能量；撞到障礙會扣護盾。",
+          "脈衝滿格後可以清除前方障礙。",
+        ],
+        "light-route": [
+          "目標：旋轉鏡片，讓光束從左側入口抵達右側出口。",
+          "操作：點擊鏡片即可旋轉；空格與方向鍵不影響鏡片。",
+          "越快完成、步數越少，分數越高。",
+          "倒數結束前沒有接通光路就會失敗。",
+        ],
+        "moon-courier": [
+          "目標：把快遞艙安全降落在月面平台。",
+          "操作：按住空白鍵、方向鍵上或 W 啟動推進；方向鍵左/右或 A/D 調整水平速度；觸控按住畫面也能推進。",
+          "著陸時要靠近平台，速度也不能太快。",
+          "燃料有限，落地越穩、剩餘時間與燃料越多，分數越高。",
+        ],
+        "starport-sorter": [
+          "目標：把不同顏色的貨箱分到正確出口。",
+          "操作：按 1/2/3 選出口；觸控或滑鼠點下方三個出口區域也可以選。",
+          "貨箱抵達分流線時，出口顏色正確就得分，錯誤會扣護盾。",
+          "連續分對會提高連擊倍率。",
+        ],
+        "reactor-tune": [
+          "目標：旋轉接收器，接住正確能量波並避開不穩定能量。",
+          "操作：方向鍵左/右或 A/D 旋轉；滑鼠或觸控可直接指向接收角度。",
+          "綠色能量需要接住；粉紅不穩定能量要避開。",
+          "漏接太多或接到不穩定能量會扣護盾。",
+        ],
+        "fog-radar": [
+          "目標：在迷霧中找出所有金色信標，避開紅色雜訊。",
+          "操作：滑鼠或觸控指定移動方向；鍵盤可用 WASD 或方向鍵移動。",
+          "靠近雷達範圍的物件會比較清楚，離太遠只會隱約顯示。",
+          "收集完所有信標即可完成任務。",
+        ],
+        "rift-angler": [
+          "目標：控制張力，把裂隙核心拉回來。",
+          "操作：按住空白鍵、方向鍵上、W 或觸控按住來收線；放開會降低張力。",
+          "張力保持在綠色區間時進度會上升，太高或太低都會扣護盾。",
+          "進度滿格即可完成垂釣。",
+        ],
+        "core-garden": [
+          "目標：種下能量節點，保護中央核心不被侵蝕波突破。",
+          "操作：點擊場地空位種節點；節點會攔截靠近的侵蝕體。",
+          "節點靠近彼此會形成防線；中央核心被撞會扣護盾。",
+          "撐到倒數結束即可完成培育。",
+        ],
+        "parts-hunter": [
+          "目標：收集金色零件升級武裝，避開或擊退追蹤機。",
+          "操作：滑鼠或觸控指定移動位置；鍵盤可用 WASD 或方向鍵移動。",
+          "收集零件會提高武裝等級與攻擊範圍。",
+          "追蹤機靠太近會扣護盾；進入攻擊範圍一段時間會被擊退。",
+        ],
+      };
+      const DIFFICULTIES = {
+        easy: {
+          label: "悠遊",
+          runTime: 70,
+          shield: 120,
+          damage: 20,
+          gemInterval: 0.88,
+          gemSpeed: 0.9,
+          hazardInterval: 1.34,
+          hazardSpeed: 0.84,
+          scoreMultiplier: 0.85,
+          shieldGain: 4.4,
+          energyGain: 1.12,
+          extraHazardAt: 44,
+          extraHazardChance: 0.38,
+          comboCap: 10,
+        },
+        normal: {
+          label: "標準",
+          runTime: 75,
+          shield: 100,
+          damage: 28,
+          gemInterval: 1,
+          gemSpeed: 1,
+          hazardInterval: 1,
+          hazardSpeed: 1,
+          scoreMultiplier: 1,
+          shieldGain: 2.8,
+          energyGain: 0.9,
+          extraHazardAt: 32,
+          extraHazardChance: 0.55,
+          comboCap: 12,
+        },
+        hard: {
+          label: "浪尖",
+          runTime: 80,
+          shield: 85,
+          damage: 34,
+          gemInterval: 1.05,
+          gemSpeed: 1.08,
+          hazardInterval: 0.72,
+          hazardSpeed: 1.24,
+          scoreMultiplier: 1.35,
+          shieldGain: 1.8,
+          energyGain: 0.78,
+          extraHazardAt: 18,
+          extraHazardChance: 0.72,
+          comboCap: 14,
+        },
+      };
+
+      function getDifficulty() {
+        return DIFFICULTIES[state.difficulty];
+      }
+
+      function getActiveGame() {
+        return GAMES[state.activeGame];
+      }
+
+      function getBestStorageKey(game, difficulty) {
+        return `${BEST_STORAGE_PREFIX}${game}-${difficulty}`;
+      }
+
+      function readStoredGame() {
+        try {
+          const stored = localStorage.getItem(ACTIVE_GAME_STORAGE_KEY);
+          return GAMES[stored] ? stored : "neon-tide";
+        } catch (error) {
+          return "neon-tide";
+        }
+      }
+
+      function writeStoredGame(value) {
+        try {
+          localStorage.setItem(ACTIVE_GAME_STORAGE_KEY, value);
+        } catch (error) {
+          // Game selection still works when a browser blocks file-based storage.
+        }
+      }
+
+      function readStoredDifficulty() {
+        try {
+          const stored = localStorage.getItem(DIFFICULTY_STORAGE_KEY);
+          return DIFFICULTIES[stored] ? stored : "normal";
+        } catch (error) {
+          return "normal";
+        }
+      }
+
+      function writeStoredDifficulty(value) {
+        try {
+          localStorage.setItem(DIFFICULTY_STORAGE_KEY, value);
+        } catch (error) {
+          // Difficulty still works when a browser blocks file-based storage.
+        }
+      }
+
+      function readBestScore(game, difficulty) {
+        try {
+          const stored = localStorage.getItem(getBestStorageKey(game, difficulty));
+          if (stored !== null) {
+            return Number(stored) || 0;
+          }
+          if (game === "neon-tide" && difficulty === "normal") {
+            return Number(localStorage.getItem(LEGACY_STORAGE_KEY) || 0);
+          }
+          return 0;
+        } catch (error) {
+          return 0;
+        }
+      }
+
+      function writeBestScore(game, difficulty, value) {
+        try {
+          localStorage.setItem(getBestStorageKey(game, difficulty), String(value));
+          if (game === "neon-tide" && difficulty === "normal") {
+            localStorage.setItem(LEGACY_STORAGE_KEY, String(value));
+          }
+        } catch (error) {
+          // The game still works when a browser blocks file-based storage.
+        }
+      }
+
+      const state = {
+        mode: "menu",
+        w: 0,
+        h: 0,
+        dpr: 1,
+        lastTime: 0,
+        elapsed: 0,
+        activeGame: readStoredGame(),
+        difficulty: readStoredDifficulty(),
+        timeLeft: 75,
+        score: 0,
+        best: 0,
+        combo: 1,
+        maxCombo: 1,
+        shield: 100,
+        energy: 0,
+        spawnGem: 0,
+        spawnHazard: 0,
+        screenShake: 0,
+        burst: 0,
+        pointerActive: false,
+        audioOn: true,
+        audio: null,
+        choosingGame: true,
+        initialGamePicker: true,
+        showingHelp: false,
+      };
+      state.best = readBestScore(state.activeGame, state.difficulty);
+      state.timeLeft = getDifficulty().runTime;
+      state.shield = getDifficulty().shield;
+
+      const player = {
+        x: 0,
+        y: 0,
+        tx: 0,
+        ty: 0,
+        r: 16,
+        invulnerable: 0,
+        trail: [],
+      };
+
+      const signalDash = {
+        lane: 1,
+        targetLane: 1,
+        playerX: 0,
+        playerY: 0,
+        spawn: 0,
+        flow: 0,
+        objects: [],
+      };
+
+      const magRun = {
+        x: 0,
+        y: 0,
+        vy: 0,
+        groundY: 0,
+        ducking: false,
+        spawn: 0,
+        distance: 0,
+        objects: [],
+      };
+
+      const lightRoute = {
+        size: 5,
+        grid: [],
+        solution: [],
+        beam: [],
+        boardX: 0,
+        boardY: 0,
+        cell: 64,
+        startRow: 2,
+        targetRow: 2,
+        moves: 0,
+        solved: false,
+      };
+
+      const simpleGame = {
+        objects: [],
+        nodes: [],
+        shots: [],
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        targetX: 0,
+        targetY: 0,
+        angle: 0,
+        spawn: 0,
+        timer: 0,
+        gauge: 0,
+        progress: 0,
+        selected: 0,
+        level: 1,
+        pulling: false,
+        thrusting: false,
+      };
+
+      const gems = [];
+      const hazards = [];
+      const particles = [];
+      const ripples = [];
+      const keys = new Set();
+      const rand = (min, max) => min + Math.random() * (max - min);
+      const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        state.dpr = Math.min(window.devicePixelRatio || 1, 2);
+        state.w = Math.max(320, rect.width);
+        state.h = Math.max(320, rect.height);
+        canvas.width = Math.floor(state.w * state.dpr);
+        canvas.height = Math.floor(state.h * state.dpr);
+        ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+        if (state.mode === "menu") {
+          player.x = state.w * 0.5;
+          player.y = state.h * 0.58;
+          player.tx = player.x;
+          player.ty = player.y;
+        }
+      }
+
+      function formatScore(value) {
+        return Math.round(value).toLocaleString("zh-TW");
+      }
+
+      function updateDifficultyControls() {
+        difficultyButtons.forEach((button) => {
+          const active = button.dataset.difficulty === state.difficulty;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-pressed", String(active));
+        });
+      }
+
+      function updateGameControls() {
+        gameButtons.forEach((button) => {
+          const active = button.dataset.game === state.activeGame;
+          const meta = button.querySelector(".game-meta");
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-pressed", String(active));
+          if (meta) {
+            meta.textContent = active ? "目前遊戲" : button.disabled ? "準備中" : "可遊玩";
+          }
+        });
+      }
+
+      function setDifficulty(value) {
+        if (!DIFFICULTIES[value] || state.mode === "playing" || state.mode === "paused") {
+          return;
+        }
+        state.difficulty = value;
+        state.best = readBestScore(state.activeGame, state.difficulty);
+        state.timeLeft = getDifficulty().runTime;
+        state.shield = getDifficulty().shield;
+        writeStoredDifficulty(state.difficulty);
+        updateDifficultyControls();
+        updateHud();
+        if (state.mode === "menu") {
+          setModal("menu");
+        }
+      }
+
+      function setActiveGame(value) {
+        if (!GAMES[value] || state.mode === "playing" || state.mode === "paused") {
+          return;
+        }
+        state.activeGame = value;
+        state.best = readBestScore(state.activeGame, state.difficulty);
+        state.timeLeft = getDifficulty().runTime;
+        state.shield = getDifficulty().shield;
+        state.combo = 1;
+        state.maxCombo = 1;
+        state.score = 0;
+        state.energy = 0;
+        state.choosingGame = false;
+        state.initialGamePicker = false;
+        state.showingHelp = false;
+        writeStoredGame(state.activeGame);
+        updateGameControls();
+        updateHud();
+        setModal("menu");
+      }
+
+      function showGamePicker() {
+        if (state.mode !== "menu") {
+          return;
+        }
+        state.choosingGame = true;
+        state.initialGamePicker = false;
+        state.showingHelp = false;
+        setModal("menu");
+      }
+
+      function hideGamePicker() {
+        state.choosingGame = false;
+        state.initialGamePicker = false;
+        state.showingHelp = false;
+        setModal("menu");
+      }
+
+      function getHelpItems() {
+        return HELP_TEXT[state.choosingGame ? "game-select" : state.activeGame] || HELP_TEXT["game-select"];
+      }
+
+      function showHelp() {
+        state.showingHelp = true;
+        setModal(state.mode === "paused" ? "pause" : "menu");
+      }
+
+      function hideHelp() {
+        state.showingHelp = false;
+        setModal(state.mode === "paused" ? "pause" : "menu");
+      }
+
+      function setModal(type) {
+        const isMenu = type === "menu";
+        const isPause = type === "pause";
+        const isWin = type === "win";
+        const isOver = type === "over";
+        const config = getDifficulty();
+        const game = getActiveGame();
+        modal.hidden = false;
+        helpPanel.hidden = !state.showingHelp;
+        helpPanel.innerHTML = state.showingHelp
+          ? getHelpItems().map((item) => `<div class="help-item">${item}</div>`).join("")
+          : "";
+        difficultyPanel.hidden = state.showingHelp || isPause || state.choosingGame;
+        gamePicker.hidden = state.showingHelp || !state.choosingGame;
+        difficultyLabel.textContent = isMenu ? "難易度" : "下一局難易度";
+        resultStats.hidden = state.showingHelp || isMenu || isPause;
+        resumeButton.hidden = state.showingHelp || !isPause;
+        mainMenuButton.hidden = state.showingHelp || !(isPause || isOver);
+        gameSelectButton.hidden = state.showingHelp || !isMenu || state.choosingGame;
+        helpButton.hidden = state.showingHelp;
+        helpBackButton.hidden = !state.showingHelp;
+        startButton.hidden = state.showingHelp;
+        startButton.textContent = state.choosingGame
+          ? "回到遊戲主畫面"
+          : isMenu ? game.startLabel : game.resultAction;
+        gameSelectButton.textContent = "選擇其他遊戲";
+        modalKicker.textContent = state.showingHelp
+          ? "How To Play"
+          : state.choosingGame
+          ? "Game Select"
+          : isPause ? "Paused" : isWin ? "Clear" : type === "over" ? "Run Ended" : game.kicker;
+        modalTitle.textContent = state.showingHelp
+          ? "遊玩說明"
+          : state.choosingGame
+          ? "選擇遊戲"
+          : isPause ? "遊戲暫停" : isWin ? game.winTitle : type === "over" ? game.overTitle : game.label;
+        modalBody.textContent = state.showingHelp
+          ? state.choosingGame ? "選單與共用操作" : game.label
+          : isPause
+          ? "目前航線已保留。"
+          : state.choosingGame
+            ? "選擇一款遊戲開始"
+            : isWin
+            ? game.winBody
+            : type === "over"
+              ? game.overBody
+              : game.menuBody(config.runTime);
+        updateDifficultyControls();
+        updateGameControls();
+      }
+
+      function updateHud() {
+        scoreText.textContent = formatScore(state.score);
+        timeText.textContent = Math.max(0, state.timeLeft).toFixed(1);
+        comboText.textContent = state.activeGame === "light-route" ? String(lightRoute.moves) : "x" + Math.floor(state.combo);
+        bestText.textContent = formatScore(state.best);
+        shieldBar.style.transform = `scaleX(${clamp(state.shield / getDifficulty().shield, 0, 1)})`;
+        burstButton.disabled = state.mode !== "playing" || state.energy < 100;
+        burstButton.classList.toggle("ready", state.mode === "playing" && state.energy >= 100);
+        soundButton.textContent = state.audioOn ? "♪" : "×";
+        pauseButton.textContent = state.mode === "playing" ? "II" : "▶";
+        pauseButton.disabled = state.mode !== "playing" && state.mode !== "paused";
+      }
+
+      function resetRun() {
+        if (state.activeGame === "signal-dash") {
+          resetSignalRun();
+          return;
+        }
+        if (state.activeGame === "mag-rail-run") {
+          resetMagRun();
+          return;
+        }
+        if (state.activeGame === "light-route") {
+          resetLightRoute();
+          return;
+        }
+        if (isSimpleGame()) {
+          resetSimpleGame();
+          return;
+        }
+        const config = getDifficulty();
+        state.choosingGame = false;
+        state.mode = "playing";
+        state.elapsed = 0;
+        state.timeLeft = config.runTime;
+        state.score = 0;
+        state.combo = 1;
+        state.maxCombo = 1;
+        state.shield = config.shield;
+        state.energy = 0;
+        state.spawnGem = 0.4 * config.gemInterval;
+        state.spawnHazard = 1.1 * config.hazardInterval;
+        state.screenShake = 0;
+        state.burst = 0;
+        gems.length = 0;
+        hazards.length = 0;
+        particles.length = 0;
+        ripples.length = 0;
+        player.x = state.w * 0.5;
+        player.y = state.h * 0.62;
+        player.tx = player.x;
+        player.ty = player.y;
+        player.invulnerable = 1.2;
+        player.trail.length = 0;
+        modal.hidden = true;
+        resultStats.hidden = true;
+        resumeButton.hidden = true;
+        startButton.textContent = getActiveGame().replayLabel;
+        playTone(420, 0.08, "sine", 0.04);
+        updateHud();
+      }
+
+      function finishRun(type) {
+        state.mode = type;
+        state.best = Math.max(state.best, Math.round(state.score));
+        writeBestScore(state.activeGame, state.difficulty, state.best);
+        resultScore.textContent = formatScore(state.score);
+        resultCombo.textContent = state.activeGame === "light-route" ? String(lightRoute.moves) : "x" + Math.floor(state.maxCombo);
+        resultBest.textContent = formatScore(state.best);
+        resultDifficulty.textContent = getDifficulty().label;
+        setModal(type);
+        updateHud();
+        playTone(type === "win" ? 660 : 180, 0.22, type === "win" ? "triangle" : "sawtooth", 0.05);
+      }
+
+      function pauseGame() {
+        if (state.mode !== "playing") {
+          return;
+        }
+        state.mode = "paused";
+        setModal("pause");
+        updateHud();
+      }
+
+      function returnToMainMenu() {
+        state.mode = "menu";
+        state.choosingGame = true;
+        state.initialGamePicker = true;
+        state.showingHelp = false;
+        state.pointerActive = false;
+        state.burst = 0;
+        state.screenShake = 0;
+        keys.clear();
+        simpleGame.thrusting = false;
+        simpleGame.pulling = false;
+        setModal("menu");
+        updateHud();
+      }
+
+      function resumeGame() {
+        if (state.mode !== "paused") {
+          return;
+        }
+        state.mode = "playing";
+        modal.hidden = true;
+        state.lastTime = performance.now();
+        updateHud();
+      }
+
+      function ensureAudio() {
+        if (!state.audio && state.audioOn) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            state.audio = new AudioContext();
+          }
+        }
+        if (state.audio && state.audio.state === "suspended") {
+          state.audio.resume();
+        }
+      }
+
+      function playTone(freq, duration, type = "sine", gain = 0.035) {
+        if (!state.audioOn) {
+          return;
+        }
+        ensureAudio();
+        if (!state.audio) {
+          return;
+        }
+        const now = state.audio.currentTime;
+        const osc = state.audio.createOscillator();
+        const amp = state.audio.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        amp.gain.setValueAtTime(0, now);
+        amp.gain.linearRampToValueAtTime(gain, now + 0.01);
+        amp.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        osc.connect(amp);
+        amp.connect(state.audio.destination);
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+      }
+
+      function getSignalLaneY(lane) {
+        const top = state.h * 0.31;
+        const gap = Math.min(150, state.h * 0.18);
+        return top + lane * gap;
+      }
+
+      function setSignalLane(lane) {
+        signalDash.targetLane = clamp(lane, 0, 2);
+      }
+
+      function resetSignalRun() {
+        const config = getDifficulty();
+        state.choosingGame = false;
+        state.mode = "playing";
+        state.elapsed = 0;
+        state.timeLeft = config.runTime;
+        state.score = 0;
+        state.combo = 1;
+        state.maxCombo = 1;
+        state.shield = config.shield;
+        state.energy = 0;
+        state.spawnGem = 0;
+        state.spawnHazard = 0;
+        state.screenShake = 0;
+        state.burst = 0;
+        signalDash.lane = 1;
+        signalDash.targetLane = 1;
+        signalDash.playerX = state.w * 0.22;
+        signalDash.playerY = getSignalLaneY(1);
+        signalDash.spawn = 0.35;
+        signalDash.flow = 0;
+        signalDash.objects.length = 0;
+        particles.length = 0;
+        ripples.length = 0;
+        modal.hidden = true;
+        resultStats.hidden = true;
+        resumeButton.hidden = true;
+        startButton.textContent = getActiveGame().replayLabel;
+        playTone(520, 0.08, "triangle", 0.04);
+        updateHud();
+      }
+
+      function spawnSignalWave() {
+        const config = getDifficulty();
+        const hazardLane = Math.floor(rand(0, 3));
+        const speed = (260 + state.elapsed * 4.2) * config.hazardSpeed;
+        signalDash.objects.push({
+          type: "hazard",
+          lane: hazardLane,
+          x: state.w + 58,
+          w: rand(34, 48),
+          h: 34,
+          speed,
+          pulse: rand(0, Math.PI * 2),
+          scored: false,
+        });
+
+        const openLanes = [0, 1, 2].filter((lane) => lane !== hazardLane);
+        const packetLane = openLanes[Math.floor(rand(0, openLanes.length))];
+        if (Math.random() > 0.22) {
+          signalDash.objects.push({
+            type: Math.random() > 0.78 ? "boost" : "packet",
+            lane: packetLane,
+            x: state.w + rand(120, 210),
+            w: 22,
+            h: 22,
+            speed: speed * rand(0.88, 1.08),
+            pulse: rand(0, Math.PI * 2),
+            scored: false,
+          });
+        }
+      }
+
+      function updateSignalDash(dt) {
+        const config = getDifficulty();
+        state.elapsed += dt;
+        state.timeLeft -= dt;
+        state.screenShake = Math.max(0, state.screenShake - dt * 24);
+        state.burst = Math.max(0, state.burst - dt);
+        signalDash.flow += dt * (180 + state.elapsed * 4);
+        signalDash.playerX = state.w * 0.22;
+        signalDash.lane += (signalDash.targetLane - signalDash.lane) * clamp(dt * 14, 0, 1);
+        signalDash.playerY = getSignalLaneY(signalDash.lane);
+
+        signalDash.spawn -= dt;
+        if (signalDash.spawn <= 0) {
+          spawnSignalWave();
+          signalDash.spawn = Math.max(0.42, (0.92 - state.elapsed * 0.006) * config.hazardInterval);
+        }
+
+        for (let i = signalDash.objects.length - 1; i >= 0; i -= 1) {
+          const object = signalDash.objects[i];
+          object.x -= object.speed * dt;
+          object.pulse += dt * 6;
+          const objectY = getSignalLaneY(object.lane);
+          const sameLane = Math.abs(signalDash.playerY - objectY) < 38;
+          const hitX = Math.abs(signalDash.playerX - object.x) < object.w * 0.5 + 22;
+
+          if (sameLane && hitX) {
+            if (object.type === "hazard") {
+              state.shield -= config.damage;
+              state.combo = 1;
+              state.screenShake = 10;
+              createRipple(signalDash.playerX, signalDash.playerY, "#ff4d6d", 76);
+              addParticles(signalDash.playerX, signalDash.playerY, "#ff4d6d", 18, 1.3);
+              playTone(150, 0.14, "sawtooth", 0.052);
+              signalDash.objects.splice(i, 1);
+              if (state.shield <= 0) {
+                finishRun("over");
+                return;
+              }
+            } else {
+              const base = object.type === "boost" ? 34 : 18;
+              state.score += base * state.combo * config.scoreMultiplier;
+              state.combo = Math.min(config.comboCap, state.combo + 1);
+              state.maxCombo = Math.max(state.maxCombo, state.combo);
+              state.energy = clamp(state.energy + base * config.energyGain, 0, 100);
+              state.shield = clamp(state.shield + config.shieldGain, 0, config.shield);
+              createRipple(object.x, objectY, object.type === "boost" ? "#ffd166" : "#4ef0d1", 54);
+              addParticles(object.x, objectY, object.type === "boost" ? "#ffd166" : "#4ef0d1", 12, 1);
+              playTone(object.type === "boost" ? 760 : 560, 0.055, "sine", 0.03);
+              signalDash.objects.splice(i, 1);
+            }
+          } else if (object.x < -80) {
+            if (object.type === "hazard" && !object.scored) {
+              state.score += 3 * config.scoreMultiplier;
+            }
+            signalDash.objects.splice(i, 1);
+          }
+        }
+
+        state.best = Math.max(state.best, Math.round(state.score));
+        if (state.timeLeft <= 0) {
+          finishRun(state.activeGame === "moon-courier" || state.activeGame === "rift-angler" ? "over" : "win");
+        }
+      }
+
+      function activateSignalBurst() {
+        if (state.mode !== "playing" || state.energy < 100) {
+          return;
+        }
+        const config = getDifficulty();
+        state.energy = 0;
+        state.burst = 0.45;
+        state.screenShake = Math.max(state.screenShake, 7);
+        createRipple(signalDash.playerX, signalDash.playerY, "#ffd166", 210);
+        for (let i = signalDash.objects.length - 1; i >= 0; i -= 1) {
+          const object = signalDash.objects[i];
+          if (object.type === "hazard" && object.x > signalDash.playerX - 50 && object.x < state.w + 80) {
+            addParticles(object.x, getSignalLaneY(object.lane), "#ffd166", 12, 1.2);
+            signalDash.objects.splice(i, 1);
+            state.score += 8 * state.combo * config.scoreMultiplier;
+          }
+        }
+        playTone(620, 0.1, "triangle", 0.055);
+        updateHud();
+      }
+
+      function drawSignalDash(time) {
+        if (signalDash.playerX <= 0 || state.mode === "menu") {
+          signalDash.playerX = state.w * 0.22;
+          signalDash.playerY = getSignalLaneY(signalDash.lane);
+        }
+        drawBackground(time);
+        const laneStart = Math.max(24, state.w * 0.08);
+        const laneEnd = state.w - 24;
+        ctx.save();
+        for (let lane = 0; lane < 3; lane += 1) {
+          const y = getSignalLaneY(lane);
+          ctx.lineWidth = lane === Math.round(signalDash.lane) ? 4 : 2;
+          ctx.strokeStyle = lane === Math.round(signalDash.lane)
+            ? "rgba(78, 240, 209, 0.7)"
+            : "rgba(183, 241, 255, 0.2)";
+          ctx.beginPath();
+          ctx.moveTo(laneStart, y);
+          ctx.lineTo(laneEnd, y);
+          ctx.stroke();
+
+          ctx.globalAlpha = 0.18;
+          ctx.strokeStyle = "#ffd166";
+          ctx.setLineDash([10, 20]);
+          ctx.lineDashOffset = -signalDash.flow * 0.08;
+          ctx.beginPath();
+          ctx.moveTo(laneStart, y + 16);
+          ctx.lineTo(laneEnd, y + 16);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.globalAlpha = 1;
+        }
+        ctx.restore();
+
+        for (const object of signalDash.objects) {
+          const y = getSignalLaneY(object.lane);
+          ctx.save();
+          ctx.translate(object.x, y);
+          if (object.type === "hazard") {
+            const pulse = 1 + Math.sin(object.pulse) * 0.1;
+            ctx.scale(pulse, pulse);
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = "#ff4d6d";
+            ctx.fillStyle = "rgba(255, 77, 109, 0.24)";
+            ctx.strokeStyle = "#ff6f91";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.rect(-object.w * 0.5, -object.h * 0.5, object.w, object.h);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#ff4d6d";
+            ctx.fillRect(-object.w * 0.24, -2, object.w * 0.48, 4);
+          } else {
+            const color = object.type === "boost" ? "#ffd166" : "#4ef0d1";
+            ctx.rotate(Math.PI / 4 + object.pulse * 0.15);
+            ctx.shadowBlur = 18;
+            ctx.shadowColor = color;
+            ctx.fillStyle = color;
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+            ctx.lineWidth = 1.4;
+            ctx.fillRect(-object.w * 0.5, -object.w * 0.5, object.w, object.w);
+            ctx.strokeRect(-object.w * 0.5, -object.w * 0.5, object.w, object.w);
+          }
+          ctx.restore();
+        }
+
+        drawEffects();
+
+        ctx.save();
+        ctx.translate(signalDash.playerX, signalDash.playerY);
+        ctx.shadowBlur = state.burst > 0 ? 28 : 18;
+        ctx.shadowColor = state.burst > 0 ? "#ffd166" : "#4ef0d1";
+        ctx.fillStyle = "#eafffb";
+        ctx.strokeStyle = "#4ef0d1";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(24, 0);
+        ctx.lineTo(-16, -18);
+        ctx.lineTo(-7, 0);
+        ctx.lineTo(-16, 18);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "#061018";
+        ctx.beginPath();
+        ctx.arc(4, 0, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        if (state.burst > 0) {
+          const progress = 1 - state.burst / 0.45;
+          ctx.save();
+          ctx.globalAlpha = (1 - progress) * 0.24;
+          ctx.fillStyle = "#ffd166";
+          ctx.beginPath();
+          ctx.arc(signalDash.playerX, signalDash.playerY, 210 * progress, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      function resetMagRun() {
+        const config = getDifficulty();
+        state.choosingGame = false;
+        state.mode = "playing";
+        state.elapsed = 0;
+        state.timeLeft = config.runTime;
+        state.score = 0;
+        state.combo = 1;
+        state.maxCombo = 1;
+        state.shield = config.shield;
+        state.energy = 0;
+        state.screenShake = 0;
+        state.burst = 0;
+        magRun.x = state.w * 0.22;
+        magRun.groundY = state.h * 0.68;
+        magRun.y = magRun.groundY;
+        magRun.vy = 0;
+        magRun.ducking = false;
+        magRun.spawn = 0.45;
+        magRun.distance = 0;
+        magRun.objects.length = 0;
+        particles.length = 0;
+        ripples.length = 0;
+        modal.hidden = true;
+        resultStats.hidden = true;
+        resumeButton.hidden = true;
+        startButton.textContent = getActiveGame().replayLabel;
+        playTone(480, 0.08, "triangle", 0.04);
+        updateHud();
+      }
+
+      function magJump() {
+        if (state.mode !== "playing") {
+          return;
+        }
+        if (Math.abs(magRun.y - magRun.groundY) < 2) {
+          magRun.vy = -680;
+          magRun.ducking = false;
+          playTone(430, 0.045, "triangle", 0.025);
+        }
+      }
+
+      function setMagDucking(value) {
+        if (state.mode !== "playing") {
+          return;
+        }
+        magRun.ducking = value && Math.abs(magRun.y - magRun.groundY) < 4;
+      }
+
+      function spawnMagObject() {
+        const config = getDifficulty();
+        const speed = (330 + state.elapsed * 5.4) * config.hazardSpeed;
+        const type = Math.random() > 0.48 ? "barrier" : "gate";
+        magRun.objects.push({
+          type,
+          x: state.w + 56,
+          y: type === "barrier" ? magRun.groundY - 44 : magRun.groundY - 100,
+          w: type === "barrier" ? 34 : 58,
+          h: type === "barrier" ? 44 : 30,
+          speed,
+          scored: false,
+          pulse: rand(0, Math.PI * 2),
+        });
+        if (Math.random() > 0.35) {
+          magRun.objects.push({
+            type: "charge",
+            x: state.w + rand(130, 230),
+            y: magRun.groundY - (type === "barrier" ? rand(96, 135) : rand(48, 72)),
+            w: 22,
+            h: 22,
+            speed: speed * 0.98,
+            scored: false,
+            pulse: rand(0, Math.PI * 2),
+          });
+        }
+      }
+
+      function getMagPlayerRect() {
+        const height = magRun.ducking ? 28 : 54;
+        const width = magRun.ducking ? 58 : 42;
+        return {
+          x: magRun.x - width * 0.5,
+          y: magRun.y - height,
+          w: width,
+          h: height,
+        };
+      }
+
+      function rectsOverlap(a, b) {
+        return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+      }
+
+      function updateMagRun(dt) {
+        const config = getDifficulty();
+        state.elapsed += dt;
+        state.timeLeft -= dt;
+        state.screenShake = Math.max(0, state.screenShake - dt * 24);
+        state.burst = Math.max(0, state.burst - dt);
+        magRun.groundY = state.h * 0.68;
+        magRun.x = state.w * 0.22;
+        magRun.distance += dt * (340 + state.elapsed * 5);
+
+        magRun.vy += 1760 * dt;
+        magRun.y += magRun.vy * dt;
+        if (magRun.y >= magRun.groundY) {
+          magRun.y = magRun.groundY;
+          magRun.vy = 0;
+        } else {
+          magRun.ducking = false;
+        }
+
+        magRun.spawn -= dt;
+        if (magRun.spawn <= 0) {
+          spawnMagObject();
+          magRun.spawn = Math.max(0.46, (0.96 - state.elapsed * 0.005) * config.hazardInterval);
+        }
+
+        const playerRect = getMagPlayerRect();
+        for (let i = magRun.objects.length - 1; i >= 0; i -= 1) {
+          const object = magRun.objects[i];
+          object.x -= object.speed * dt;
+          object.pulse += dt * 6;
+          if (object.type === "charge") {
+            const distance = Math.hypot(object.x - magRun.x, object.y - (magRun.y - 30));
+            if (distance < 34) {
+              state.score += 22 * state.combo * config.scoreMultiplier;
+              state.combo = Math.min(config.comboCap, state.combo + 1);
+              state.maxCombo = Math.max(state.maxCombo, state.combo);
+              state.energy = clamp(state.energy + 19 * config.energyGain, 0, 100);
+              state.shield = clamp(state.shield + config.shieldGain, 0, config.shield);
+              createRipple(object.x, object.y, "#ffd166", 54);
+              addParticles(object.x, object.y, "#ffd166", 12, 1);
+              playTone(720, 0.05, "sine", 0.03);
+              magRun.objects.splice(i, 1);
+            } else if (object.x < -80) {
+              magRun.objects.splice(i, 1);
+            }
+            continue;
+          }
+
+          const objectRect = { x: object.x - object.w * 0.5, y: object.y, w: object.w, h: object.h };
+          if (rectsOverlap(playerRect, objectRect)) {
+            state.shield -= config.damage;
+            state.combo = 1;
+            state.screenShake = 10;
+            createRipple(magRun.x, magRun.y - 30, "#ff4d6d", 78);
+            addParticles(magRun.x, magRun.y - 30, "#ff4d6d", 18, 1.25);
+            playTone(135, 0.15, "sawtooth", 0.055);
+            magRun.objects.splice(i, 1);
+            if (state.shield <= 0) {
+              finishRun("over");
+              return;
+            }
+          } else if (object.x + object.w < magRun.x && !object.scored) {
+            object.scored = true;
+            state.score += 7 * state.combo * config.scoreMultiplier;
+          } else if (object.x < -100) {
+            magRun.objects.splice(i, 1);
+          }
+        }
+
+        state.best = Math.max(state.best, Math.round(state.score));
+        if (state.timeLeft <= 0) {
+          finishRun("win");
+        }
+      }
+
+      function activateMagBurst() {
+        if (state.mode !== "playing" || state.energy < 100) {
+          return;
+        }
+        const config = getDifficulty();
+        state.energy = 0;
+        state.burst = 0.45;
+        state.screenShake = Math.max(state.screenShake, 7);
+        createRipple(magRun.x, magRun.y - 28, "#ffd166", 230);
+        for (let i = magRun.objects.length - 1; i >= 0; i -= 1) {
+          const object = magRun.objects[i];
+          if (object.type !== "charge" && object.x > magRun.x - 40 && object.x < state.w + 80) {
+            addParticles(object.x, object.y + object.h * 0.5, "#ffd166", 12, 1.2);
+            magRun.objects.splice(i, 1);
+            state.score += 8 * state.combo * config.scoreMultiplier;
+          }
+        }
+        playTone(610, 0.1, "triangle", 0.055);
+        updateHud();
+      }
+
+      function drawMagRun(time) {
+        if (magRun.x <= 0 || state.mode === "menu") {
+          magRun.x = state.w * 0.22;
+          magRun.groundY = state.h * 0.68;
+          magRun.y = magRun.groundY;
+        }
+        drawBackground(time);
+        const ground = magRun.groundY;
+        ctx.save();
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "rgba(78, 240, 209, 0.7)";
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = "#4ef0d1";
+        ctx.beginPath();
+        ctx.moveTo(20, ground);
+        ctx.lineTo(state.w - 20, ground);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "rgba(255, 209, 102, 0.28)";
+        ctx.setLineDash([12, 18]);
+        ctx.lineDashOffset = -magRun.distance * 0.08;
+        ctx.beginPath();
+        ctx.moveTo(20, ground + 22);
+        ctx.lineTo(state.w - 20, ground + 22);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        for (let i = 0; i < 18; i += 1) {
+          const x = ((i * 110 - magRun.distance * 0.36) % (state.w + 160)) - 80;
+          ctx.globalAlpha = 0.24;
+          ctx.fillStyle = "#b7f1ff";
+          ctx.fillRect(x, ground + 33, 42, 3);
+        }
+        ctx.globalAlpha = 1;
+        ctx.restore();
+
+        for (const object of magRun.objects) {
+          ctx.save();
+          if (object.type === "charge") {
+            ctx.translate(object.x, object.y);
+            ctx.rotate(Math.PI / 4 + object.pulse * 0.2);
+            ctx.shadowBlur = 18;
+            ctx.shadowColor = "#ffd166";
+            ctx.fillStyle = "#ffd166";
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.76)";
+            ctx.lineWidth = 1.3;
+            ctx.fillRect(-object.w * 0.5, -object.w * 0.5, object.w, object.w);
+            ctx.strokeRect(-object.w * 0.5, -object.w * 0.5, object.w, object.w);
+          } else if (object.type === "barrier") {
+            ctx.shadowBlur = 16;
+            ctx.shadowColor = "#ff4d6d";
+            ctx.fillStyle = "rgba(255, 77, 109, 0.24)";
+            ctx.strokeStyle = "#ff6f91";
+            ctx.lineWidth = 2;
+            ctx.fillRect(object.x - object.w * 0.5, object.y, object.w, object.h);
+            ctx.strokeRect(object.x - object.w * 0.5, object.y, object.w, object.h);
+          } else {
+            ctx.shadowBlur = 16;
+            ctx.shadowColor = "#ff4d6d";
+            ctx.fillStyle = "rgba(255, 77, 109, 0.18)";
+            ctx.strokeStyle = "#ff6f91";
+            ctx.lineWidth = 2;
+            ctx.fillRect(object.x - object.w * 0.5, object.y, object.w, object.h);
+            ctx.strokeRect(object.x - object.w * 0.5, object.y, object.w, object.h);
+            ctx.fillStyle = "#ff4d6d";
+            ctx.fillRect(object.x - object.w * 0.24, object.y + object.h * 0.45, object.w * 0.48, 4);
+          }
+          ctx.restore();
+        }
+
+        drawEffects();
+
+        const playerRect = getMagPlayerRect();
+        ctx.save();
+        ctx.shadowBlur = state.burst > 0 ? 28 : 18;
+        ctx.shadowColor = state.burst > 0 ? "#ffd166" : "#4ef0d1";
+        ctx.fillStyle = "#eafffb";
+        ctx.strokeStyle = "#4ef0d1";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        if (magRun.ducking) {
+          ctx.roundRect(playerRect.x, playerRect.y + 4, playerRect.w, playerRect.h, 6);
+        } else {
+          ctx.moveTo(magRun.x + 20, magRun.y - 28);
+          ctx.lineTo(magRun.x - 10, magRun.y - 54);
+          ctx.lineTo(magRun.x - 18, magRun.y - 8);
+          ctx.lineTo(magRun.x + 18, magRun.y - 8);
+          ctx.closePath();
+        }
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "#ff6f91";
+        ctx.fillRect(magRun.x - 28, magRun.y - 4, 58, 7);
+        ctx.fillStyle = "#061018";
+        ctx.beginPath();
+        ctx.arc(magRun.x + 3, magRun.ducking ? magRun.y - 12 : magRun.y - 30, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        if (state.burst > 0) {
+          const progress = 1 - state.burst / 0.45;
+          ctx.save();
+          ctx.globalAlpha = (1 - progress) * 0.22;
+          ctx.fillStyle = "#ffd166";
+          ctx.beginPath();
+          ctx.arc(magRun.x, magRun.y - 28, 230 * progress, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      function cloneLightSolution() {
+        const size = lightRoute.size;
+        const grid = Array.from({ length: size }, () => Array(size).fill(0));
+        grid[2][1] = 2;
+        grid[3][1] = 2;
+        grid[3][3] = 1;
+        grid[2][3] = 1;
+        grid[0][0] = 1;
+        grid[1][2] = 2;
+        grid[4][2] = 1;
+        grid[1][4] = 2;
+        return grid;
+      }
+
+      function getLightBoardMetrics() {
+        const board = Math.min(state.w * 0.72, state.h * 0.5, 420);
+        const cell = Math.max(44, board / lightRoute.size);
+        const total = cell * lightRoute.size;
+        lightRoute.cell = cell;
+        lightRoute.boardX = (state.w - total) * 0.5;
+        lightRoute.boardY = Math.max(122, (state.h - total) * 0.52);
+      }
+
+      function turnLightDirection(direction, tile) {
+        if (tile === 1) {
+          return [3, 2, 1, 0][direction];
+        }
+        if (tile === 2) {
+          return [1, 0, 3, 2][direction];
+        }
+        return direction;
+      }
+
+      function traceLightRoute() {
+        getLightBoardMetrics();
+        const dx = [1, 0, -1, 0];
+        const dy = [0, 1, 0, -1];
+        let col = -1;
+        let row = lightRoute.startRow;
+        let direction = 0;
+        const points = [{
+          x: lightRoute.boardX - lightRoute.cell * 0.42,
+          y: lightRoute.boardY + (row + 0.5) * lightRoute.cell,
+        }];
+        let solved = false;
+        for (let step = 0; step < 40; step += 1) {
+          col += dx[direction];
+          row += dy[direction];
+          if (col < 0 || col >= lightRoute.size || row < 0 || row >= lightRoute.size) {
+            const last = points[points.length - 1];
+            points.push({
+              x: col >= lightRoute.size ? lightRoute.boardX + lightRoute.size * lightRoute.cell + lightRoute.cell * 0.42 : last.x + dx[direction] * lightRoute.cell * 0.92,
+              y: row === lightRoute.targetRow ? lightRoute.boardY + (lightRoute.targetRow + 0.5) * lightRoute.cell : last.y + dy[direction] * lightRoute.cell * 0.92,
+            });
+            solved = col >= lightRoute.size && row === lightRoute.targetRow && direction === 0;
+            break;
+          }
+          const center = {
+            x: lightRoute.boardX + (col + 0.5) * lightRoute.cell,
+            y: lightRoute.boardY + (row + 0.5) * lightRoute.cell,
+          };
+          points.push(center);
+          direction = turnLightDirection(direction, lightRoute.grid[row][col]);
+        }
+        lightRoute.beam = points;
+        lightRoute.solved = solved;
+        return solved;
+      }
+
+      function resetLightRoute() {
+        const config = getDifficulty();
+        state.choosingGame = false;
+        state.mode = "playing";
+        state.elapsed = 0;
+        state.timeLeft = config.runTime;
+        state.score = 0;
+        state.combo = 1;
+        state.maxCombo = 1;
+        state.shield = config.shield;
+        state.energy = 0;
+        state.screenShake = 0;
+        state.burst = 0;
+        lightRoute.solution = cloneLightSolution();
+        lightRoute.grid = lightRoute.solution.map((row) => row.slice());
+        [[2, 1], [3, 3], [1, 2]].forEach(([row, col]) => {
+          lightRoute.grid[row][col] = lightRoute.grid[row][col] === 1 ? 2 : 1;
+        });
+        lightRoute.moves = 0;
+        lightRoute.solved = false;
+        particles.length = 0;
+        ripples.length = 0;
+        traceLightRoute();
+        modal.hidden = true;
+        resultStats.hidden = true;
+        resumeButton.hidden = true;
+        startButton.textContent = getActiveGame().replayLabel;
+        playTone(520, 0.08, "sine", 0.04);
+        updateHud();
+      }
+
+      function rotateLightCell(clientX, clientY) {
+        if (state.mode !== "playing") {
+          return;
+        }
+        getLightBoardMetrics();
+        const col = Math.floor((clientX - lightRoute.boardX) / lightRoute.cell);
+        const row = Math.floor((clientY - lightRoute.boardY) / lightRoute.cell);
+        if (row < 0 || row >= lightRoute.size || col < 0 || col >= lightRoute.size) {
+          return;
+        }
+        if (lightRoute.grid[row][col] === 0) {
+          playTone(190, 0.035, "sine", 0.018);
+          return;
+        }
+        lightRoute.grid[row][col] = lightRoute.grid[row][col] === 1 ? 2 : 1;
+        lightRoute.moves += 1;
+        state.combo = Math.max(1, lightRoute.moves);
+        state.maxCombo = Math.max(state.maxCombo, state.combo);
+        createRipple(
+          lightRoute.boardX + (col + 0.5) * lightRoute.cell,
+          lightRoute.boardY + (row + 0.5) * lightRoute.cell,
+          "#4ef0d1",
+          42,
+        );
+        playTone(460 + lightRoute.moves * 12, 0.045, "triangle", 0.025);
+        if (traceLightRoute()) {
+          const config = getDifficulty();
+          state.score = Math.max(50, Math.round((state.timeLeft * 14 + 180 - lightRoute.moves * 12) * config.scoreMultiplier));
+          state.energy = 100;
+          addParticles(
+            lightRoute.boardX + lightRoute.size * lightRoute.cell,
+            lightRoute.boardY + (lightRoute.targetRow + 0.5) * lightRoute.cell,
+            "#ffd166",
+            28,
+            1.4,
+          );
+          finishRun("win");
+        }
+        updateHud();
+      }
+
+      function updateLightRoute(dt) {
+        state.elapsed += dt;
+        state.timeLeft -= dt;
+        state.screenShake = Math.max(0, state.screenShake - dt * 24);
+        for (let i = particles.length - 1; i >= 0; i -= 1) {
+          const particle = particles[i];
+          particle.x += particle.vx * dt;
+          particle.y += particle.vy * dt;
+          particle.vx *= 1 - dt * 2.4;
+          particle.vy *= 1 - dt * 2.4;
+          particle.life -= dt;
+          if (particle.life <= 0) {
+            particles.splice(i, 1);
+          }
+        }
+        for (let i = ripples.length - 1; i >= 0; i -= 1) {
+          const ripple = ripples[i];
+          ripple.radius += (ripple.maxRadius - ripple.radius) * clamp(dt * 7, 0, 1);
+          ripple.life -= dt;
+          if (ripple.life <= 0) {
+            ripples.splice(i, 1);
+          }
+        }
+        if (state.timeLeft <= 0) {
+          finishRun("over");
+        }
+      }
+
+      function drawLightRoute(time) {
+        if (!lightRoute.grid.length) {
+          lightRoute.solution = cloneLightSolution();
+          lightRoute.grid = lightRoute.solution.map((row) => row.slice());
+          traceLightRoute();
+        }
+        drawBackground(time);
+        getLightBoardMetrics();
+        const total = lightRoute.cell * lightRoute.size;
+        ctx.save();
+        ctx.fillStyle = "rgba(5, 15, 21, 0.42)";
+        ctx.strokeStyle = "rgba(183, 241, 255, 0.22)";
+        ctx.lineWidth = 1;
+        ctx.fillRect(lightRoute.boardX - 12, lightRoute.boardY - 12, total + 24, total + 24);
+        ctx.strokeRect(lightRoute.boardX - 12, lightRoute.boardY - 12, total + 24, total + 24);
+
+        for (let row = 0; row < lightRoute.size; row += 1) {
+          for (let col = 0; col < lightRoute.size; col += 1) {
+            const x = lightRoute.boardX + col * lightRoute.cell;
+            const y = lightRoute.boardY + row * lightRoute.cell;
+            ctx.fillStyle = "rgba(255, 255, 255, 0.045)";
+            ctx.strokeStyle = "rgba(183, 241, 255, 0.16)";
+            ctx.lineWidth = 1;
+            ctx.fillRect(x, y, lightRoute.cell, lightRoute.cell);
+            ctx.strokeRect(x, y, lightRoute.cell, lightRoute.cell);
+            const tile = lightRoute.grid[row][col];
+            if (tile) {
+              ctx.save();
+              ctx.translate(x + lightRoute.cell * 0.5, y + lightRoute.cell * 0.5);
+              ctx.rotate(tile === 1 ? -Math.PI / 4 : Math.PI / 4);
+              ctx.lineWidth = Math.max(5, lightRoute.cell * 0.1);
+              ctx.lineCap = "round";
+              ctx.shadowBlur = 12;
+              ctx.shadowColor = "#4ef0d1";
+              ctx.strokeStyle = "#b5fff1";
+              ctx.beginPath();
+              ctx.moveTo(-lightRoute.cell * 0.28, 0);
+              ctx.lineTo(lightRoute.cell * 0.28, 0);
+              ctx.stroke();
+              ctx.restore();
+            }
+          }
+        }
+
+        ctx.save();
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = "#ffd166";
+        ctx.strokeStyle = "#ffd166";
+        ctx.lineWidth = 4;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        lightRoute.beam.forEach((point, index) => {
+          if (index === 0) {
+            ctx.moveTo(point.x, point.y);
+          } else {
+            ctx.lineTo(point.x, point.y);
+          }
+        });
+        ctx.stroke();
+        ctx.restore();
+
+        const startY = lightRoute.boardY + (lightRoute.startRow + 0.5) * lightRoute.cell;
+        const targetY = lightRoute.boardY + (lightRoute.targetRow + 0.5) * lightRoute.cell;
+        ctx.fillStyle = "#4ef0d1";
+        ctx.beginPath();
+        ctx.moveTo(lightRoute.boardX - 24, startY);
+        ctx.lineTo(lightRoute.boardX - 6, startY - 11);
+        ctx.lineTo(lightRoute.boardX - 6, startY + 11);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = lightRoute.solved ? "#ffd166" : "#ff6f91";
+        ctx.beginPath();
+        ctx.arc(lightRoute.boardX + total + 18, targetY, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        drawEffects();
+      }
+
+      function isSimpleGame() {
+        return SIMPLE_GAME_IDS.has(state.activeGame);
+      }
+
+      function resetSimpleGame() {
+        const config = getDifficulty();
+        state.choosingGame = false;
+        state.mode = "playing";
+        state.elapsed = 0;
+        state.timeLeft = config.runTime;
+        state.score = 0;
+        state.combo = 1;
+        state.maxCombo = 1;
+        state.shield = config.shield;
+        state.energy = 0;
+        state.screenShake = 0;
+        state.burst = 0;
+        simpleGame.objects.length = 0;
+        simpleGame.nodes.length = 0;
+        simpleGame.shots.length = 0;
+        simpleGame.x = state.w * 0.5;
+        simpleGame.y = state.h * 0.5;
+        simpleGame.vx = 0;
+        simpleGame.vy = 0;
+        simpleGame.targetX = simpleGame.x;
+        simpleGame.targetY = simpleGame.y;
+        simpleGame.angle = -Math.PI / 2;
+        simpleGame.spawn = 0.8;
+        simpleGame.timer = 0;
+        simpleGame.gauge = 45;
+        simpleGame.progress = 0;
+        simpleGame.selected = 0;
+        simpleGame.level = 1;
+        simpleGame.pulling = false;
+        simpleGame.thrusting = false;
+        particles.length = 0;
+        ripples.length = 0;
+
+        if (state.activeGame === "moon-courier") {
+          simpleGame.x = state.w * 0.26;
+          simpleGame.y = state.h * 0.23;
+          simpleGame.vx = 60;
+          simpleGame.vy = 0;
+          simpleGame.targetX = state.w * 0.72;
+          simpleGame.targetY = state.h * 0.72;
+          simpleGame.gauge = 100;
+        } else if (state.activeGame === "starport-sorter") {
+          simpleGame.selected = 0;
+          simpleGame.spawn = 0.2;
+        } else if (state.activeGame === "reactor-tune") {
+          simpleGame.angle = -Math.PI / 2;
+          simpleGame.spawn = 0.5;
+          simpleGame.gauge = 0;
+        } else if (state.activeGame === "fog-radar") {
+          simpleGame.x = state.w * 0.2;
+          simpleGame.y = state.h * 0.72;
+          simpleGame.targetX = simpleGame.x;
+          simpleGame.targetY = simpleGame.y;
+          simpleGame.gauge = 1.4;
+          for (let i = 0; i < 7; i += 1) {
+            simpleGame.objects.push({
+              type: i < 4 ? "beacon" : "noise",
+              x: rand(state.w * 0.22, state.w * 0.86),
+              y: rand(state.h * 0.25, state.h * 0.78),
+              r: i < 4 ? 12 : 18,
+              pulse: rand(0, Math.PI * 2),
+            });
+          }
+        } else if (state.activeGame === "rift-angler") {
+          simpleGame.gauge = 44;
+          simpleGame.progress = 0;
+          simpleGame.x = state.w * 0.22;
+          simpleGame.y = state.h * 0.35;
+          simpleGame.targetX = state.w * 0.74;
+          simpleGame.targetY = state.h * 0.56;
+        } else if (state.activeGame === "core-garden") {
+          simpleGame.nodes.push({ x: state.w * 0.5, y: state.h * 0.52, r: 24, core: true, pulse: 0 });
+          simpleGame.spawn = 1.0;
+        } else if (state.activeGame === "parts-hunter") {
+          simpleGame.x = state.w * 0.5;
+          simpleGame.y = state.h * 0.56;
+          simpleGame.targetX = simpleGame.x;
+          simpleGame.targetY = simpleGame.y;
+          simpleGame.level = 1;
+          simpleGame.spawn = 0.5;
+        }
+
+        modal.hidden = true;
+        resultStats.hidden = true;
+        resumeButton.hidden = true;
+        startButton.textContent = getActiveGame().replayLabel;
+        playTone(520, 0.08, "triangle", 0.04);
+        updateHud();
+      }
+
+      function simpleDamage(amount, x, y) {
+        state.shield -= amount;
+        state.combo = 1;
+        state.screenShake = 9;
+        createRipple(x, y, "#ff4d6d", 74);
+        addParticles(x, y, "#ff4d6d", 14, 1.2);
+        playTone(150, 0.12, "sawtooth", 0.05);
+        if (state.shield <= 0) {
+          finishRun("over");
+          return true;
+        }
+        return false;
+      }
+
+      function simpleCollect(points, x, y, color = "#ffd166") {
+        const config = getDifficulty();
+        state.score += points * state.combo * config.scoreMultiplier;
+        state.combo = Math.min(config.comboCap, state.combo + 1);
+        state.maxCombo = Math.max(state.maxCombo, state.combo);
+        state.energy = clamp(state.energy + points * config.energyGain * 0.7, 0, 100);
+        state.shield = clamp(state.shield + config.shieldGain, 0, config.shield);
+        createRipple(x, y, color, 48);
+        addParticles(x, y, color, 10, 1);
+        playTone(color === "#ffd166" ? 720 : 560, 0.05, "sine", 0.028);
+      }
+
+      function updateSimpleGame(dt) {
+        const config = getDifficulty();
+        state.elapsed += dt;
+        state.timeLeft -= dt;
+        state.screenShake = Math.max(0, state.screenShake - dt * 24);
+        state.burst = Math.max(0, state.burst - dt);
+        simpleGame.timer += dt;
+
+        if (state.activeGame === "moon-courier") {
+          const thrust = simpleGame.thrusting || keys.has("ArrowUp") || keys.has("w") || keys.has("W");
+          const left = keys.has("ArrowLeft") || keys.has("a") || keys.has("A");
+          const right = keys.has("ArrowRight") || keys.has("d") || keys.has("D");
+          simpleGame.vy += 230 * dt;
+          if (thrust && simpleGame.gauge > 0) {
+            simpleGame.vy -= 520 * dt;
+            simpleGame.gauge = Math.max(0, simpleGame.gauge - 22 * dt);
+            addParticles(simpleGame.x, simpleGame.y + 18, "#ffd166", 1, 0.5);
+          }
+          if (left) simpleGame.vx -= 220 * dt;
+          if (right) simpleGame.vx += 220 * dt;
+          simpleGame.vx *= 1 - dt * 0.5;
+          simpleGame.x += simpleGame.vx * dt;
+          simpleGame.y += simpleGame.vy * dt;
+          simpleGame.x = clamp(simpleGame.x, 26, state.w - 26);
+          if (simpleGame.y > simpleGame.targetY) {
+            const speed = Math.hypot(simpleGame.vx, simpleGame.vy);
+            const onPad = Math.abs(simpleGame.x - simpleGame.targetX) < 54;
+            simpleGame.y = simpleGame.targetY;
+            if (onPad && speed < 150) {
+              state.score = Math.round((state.timeLeft * 18 + simpleGame.gauge * 4 + 260) * config.scoreMultiplier);
+              finishRun("win");
+              return;
+            }
+            simpleGame.vy = -Math.abs(simpleGame.vy) * 0.28;
+            simpleGame.vx *= 0.5;
+            if (simpleDamage(config.damage, simpleGame.x, simpleGame.y - 20)) return;
+          }
+        } else if (state.activeGame === "starport-sorter") {
+          simpleGame.spawn -= dt;
+          if (simpleGame.spawn <= 0) {
+            simpleGame.objects.push({
+              type: Math.floor(rand(0, 3)),
+              x: -40,
+              y: state.h * 0.42,
+              speed: (150 + state.elapsed * 2.5) * config.hazardSpeed,
+              pulse: 0,
+            });
+            simpleGame.spawn = Math.max(0.55, 1.05 * config.hazardInterval - state.elapsed * 0.004);
+          }
+          for (let i = simpleGame.objects.length - 1; i >= 0; i -= 1) {
+            const box = simpleGame.objects[i];
+            box.x += box.speed * dt;
+            box.pulse += dt * 5;
+            if (box.x > state.w * 0.68) {
+              if (simpleGame.selected === box.type) {
+                simpleCollect(20, box.x, box.y, ["#4ef0d1", "#ffd166", "#ff6f91"][box.type]);
+              } else if (simpleDamage(config.damage * 0.6, box.x, box.y)) {
+                return;
+              }
+              simpleGame.objects.splice(i, 1);
+            }
+          }
+        } else if (state.activeGame === "reactor-tune") {
+          if (keys.has("ArrowLeft") || keys.has("a") || keys.has("A")) simpleGame.angle -= dt * 3.2;
+          if (keys.has("ArrowRight") || keys.has("d") || keys.has("D")) simpleGame.angle += dt * 3.2;
+          simpleGame.spawn -= dt;
+          if (simpleGame.spawn <= 0) {
+            simpleGame.objects.push({
+              angle: rand(-Math.PI, Math.PI),
+              radius: Math.min(state.w, state.h) * 0.44,
+              speed: (95 + state.elapsed * 1.2) * config.hazardSpeed,
+              type: Math.random() > 0.18 ? "energy" : "unstable",
+            });
+            simpleGame.spawn = Math.max(0.42, 0.82 * config.hazardInterval);
+          }
+          for (let i = simpleGame.objects.length - 1; i >= 0; i -= 1) {
+            const orb = simpleGame.objects[i];
+            orb.radius -= orb.speed * dt;
+            if (orb.radius < 78) {
+              const diff = Math.abs(Math.atan2(Math.sin(orb.angle - simpleGame.angle), Math.cos(orb.angle - simpleGame.angle)));
+              if (diff < 0.36 && orb.type === "energy") {
+                simpleCollect(18, state.w * 0.5 + Math.cos(orb.angle) * 85, state.h * 0.52 + Math.sin(orb.angle) * 85, "#4ef0d1");
+              } else if (diff < 0.36 && orb.type === "unstable") {
+                if (simpleDamage(config.damage, state.w * 0.5, state.h * 0.52)) return;
+              } else if (orb.type === "energy" && simpleDamage(config.damage * 0.55, state.w * 0.5, state.h * 0.52)) {
+                return;
+              }
+              simpleGame.objects.splice(i, 1);
+            }
+          }
+        } else if (state.activeGame === "fog-radar") {
+          updatePointerChase(dt, 250);
+          simpleGame.gauge = Math.max(0.42, simpleGame.gauge - dt * 0.18);
+          for (let i = simpleGame.objects.length - 1; i >= 0; i -= 1) {
+            const obj = simpleGame.objects[i];
+            obj.pulse += dt * 4;
+            const distance = Math.hypot(obj.x - simpleGame.x, obj.y - simpleGame.y);
+            if (distance < obj.r + 16) {
+              if (obj.type === "beacon") {
+                simpleCollect(26, obj.x, obj.y, "#ffd166");
+                simpleGame.objects.splice(i, 1);
+              } else if (simpleDamage(config.damage, obj.x, obj.y)) {
+                return;
+              } else {
+                obj.x = rand(state.w * 0.24, state.w * 0.88);
+                obj.y = rand(state.h * 0.25, state.h * 0.8);
+              }
+            }
+          }
+          if (!simpleGame.objects.some((obj) => obj.type === "beacon")) {
+            state.score += Math.round(state.timeLeft * 10 * config.scoreMultiplier);
+            finishRun("win");
+            return;
+          }
+        } else if (state.activeGame === "rift-angler") {
+          const pulling = simpleGame.pulling || keys.has(" ") || keys.has("Spacebar") || keys.has("ArrowUp") || keys.has("w") || keys.has("W");
+          simpleGame.gauge += (pulling ? 38 : -24) * dt + Math.sin(state.elapsed * 4) * dt * 7;
+          if (simpleGame.gauge > 100 || simpleGame.gauge < 0) {
+            simpleGame.gauge = clamp(simpleGame.gauge, 12, 88);
+            simpleGame.progress = Math.max(0, simpleGame.progress - 18);
+            if (simpleDamage(config.damage, state.w * 0.5, state.h * 0.58)) return;
+          }
+          if (pulling && simpleGame.gauge > 32 && simpleGame.gauge < 76) {
+            simpleGame.progress += dt * (24 + state.combo * 0.8);
+            state.score += dt * 10 * config.scoreMultiplier;
+            state.combo = Math.min(config.comboCap, state.combo + (dt > 0 ? 0.015 : 0));
+          } else {
+            simpleGame.progress = Math.max(0, simpleGame.progress - dt * 5);
+          }
+          state.energy = clamp(simpleGame.progress, 0, 100);
+          if (simpleGame.progress >= 100) {
+            state.score += Math.round((state.timeLeft * 13 + 420) * config.scoreMultiplier);
+            finishRun("win");
+            return;
+          }
+        } else if (state.activeGame === "core-garden") {
+          simpleGame.spawn -= dt;
+          if (simpleGame.spawn <= 0) {
+            const side = Math.floor(rand(0, 4));
+            simpleGame.objects.push({
+              type: "spore",
+              x: side === 0 ? -30 : side === 1 ? state.w + 30 : rand(0, state.w),
+              y: side === 2 ? -30 : side === 3 ? state.h + 30 : rand(120, state.h - 30),
+              r: 14,
+              speed: (42 + state.elapsed * 0.9) * config.hazardSpeed,
+            });
+            simpleGame.spawn = Math.max(0.55, 1.1 * config.hazardInterval);
+          }
+          for (const node of simpleGame.nodes) node.pulse += dt * 4;
+          for (let i = simpleGame.objects.length - 1; i >= 0; i -= 1) {
+            const spore = simpleGame.objects[i];
+            const core = simpleGame.nodes[0];
+            const angle = Math.atan2(core.y - spore.y, core.x - spore.x);
+            spore.x += Math.cos(angle) * spore.speed * dt;
+            spore.y += Math.sin(angle) * spore.speed * dt;
+            let removed = false;
+            for (const node of simpleGame.nodes) {
+              if (!node.core && Math.hypot(node.x - spore.x, node.y - spore.y) < 58) {
+                simpleCollect(8, spore.x, spore.y, "#94e06b");
+                simpleGame.objects.splice(i, 1);
+                removed = true;
+                break;
+              }
+            }
+            if (!removed && Math.hypot(core.x - spore.x, core.y - spore.y) < 30) {
+              simpleGame.objects.splice(i, 1);
+              if (simpleDamage(config.damage * 0.55, core.x, core.y)) return;
+            }
+          }
+        } else if (state.activeGame === "parts-hunter") {
+          updatePointerChase(dt, 280);
+          simpleGame.spawn -= dt;
+          if (simpleGame.spawn <= 0) {
+            const makePart = Math.random() > 0.45;
+            const side = Math.floor(rand(0, 4));
+            simpleGame.objects.push({
+              type: makePart ? "part" : "drone",
+              x: side === 0 ? -30 : side === 1 ? state.w + 30 : rand(0, state.w),
+              y: side === 2 ? -30 : side === 3 ? state.h + 30 : rand(100, state.h - 30),
+              r: makePart ? 11 : 16,
+              speed: (makePart ? 35 : 70 + state.elapsed) * config.hazardSpeed,
+              pulse: 0,
+            });
+            simpleGame.spawn = Math.max(0.34, 0.75 * config.hazardInterval);
+          }
+          for (let i = simpleGame.objects.length - 1; i >= 0; i -= 1) {
+            const obj = simpleGame.objects[i];
+            obj.pulse += dt * 5;
+            if (obj.type === "drone") {
+              const angle = Math.atan2(simpleGame.y - obj.y, simpleGame.x - obj.x);
+              obj.x += Math.cos(angle) * obj.speed * dt;
+              obj.y += Math.sin(angle) * obj.speed * dt;
+              if (Math.hypot(obj.x - simpleGame.x, obj.y - simpleGame.y) < obj.r + 16) {
+                simpleGame.objects.splice(i, 1);
+                if (simpleDamage(config.damage, simpleGame.x, simpleGame.y)) return;
+              } else if (Math.hypot(obj.x - simpleGame.x, obj.y - simpleGame.y) < 72 + simpleGame.level * 10) {
+                simpleGame.timer += dt;
+                if (simpleGame.timer > Math.max(0.18, 0.45 - simpleGame.level * 0.03)) {
+                  simpleGame.timer = 0;
+                  simpleGame.objects.splice(i, 1);
+                  simpleCollect(10, obj.x, obj.y, "#4ef0d1");
+                }
+              }
+            } else if (Math.hypot(obj.x - simpleGame.x, obj.y - simpleGame.y) < obj.r + 18) {
+              simpleGame.level = Math.min(6, simpleGame.level + 1);
+              simpleCollect(24, obj.x, obj.y, "#ffd166");
+              simpleGame.objects.splice(i, 1);
+            }
+          }
+        }
+
+        state.best = Math.max(state.best, Math.round(state.score));
+        if (state.timeLeft <= 0) {
+          finishRun("win");
+        }
+      }
+
+      function updatePointerChase(dt, speed) {
+        let dx = 0;
+        let dy = 0;
+        if (keys.has("ArrowLeft") || keys.has("a") || keys.has("A")) dx -= 1;
+        if (keys.has("ArrowRight") || keys.has("d") || keys.has("D")) dx += 1;
+        if (keys.has("ArrowUp") || keys.has("w") || keys.has("W")) dy -= 1;
+        if (keys.has("ArrowDown") || keys.has("s") || keys.has("S")) dy += 1;
+        if (dx || dy) {
+          const len = Math.hypot(dx, dy) || 1;
+          simpleGame.targetX = simpleGame.x + (dx / len) * speed;
+          simpleGame.targetY = simpleGame.y + (dy / len) * speed;
+        }
+        simpleGame.x += (simpleGame.targetX - simpleGame.x) * clamp(dt * 6, 0, 1);
+        simpleGame.y += (simpleGame.targetY - simpleGame.y) * clamp(dt * 6, 0, 1);
+        simpleGame.x = clamp(simpleGame.x, 24, state.w - 24);
+        simpleGame.y = clamp(simpleGame.y, 90, state.h - 24);
+      }
+
+      function activateSimpleBurst() {
+        if (state.mode !== "playing" || state.energy < 100) {
+          return;
+        }
+        const config = getDifficulty();
+        state.energy = 0;
+        state.burst = 0.45;
+        state.screenShake = 7;
+        const cx = state.activeGame === "reactor-tune" ? state.w * 0.5 : simpleGame.x;
+        const cy = state.activeGame === "reactor-tune" ? state.h * 0.52 : simpleGame.y;
+        createRipple(cx, cy, "#ffd166", 230);
+        for (let i = simpleGame.objects.length - 1; i >= 0; i -= 1) {
+          const obj = simpleGame.objects[i];
+          if (obj.type !== "beacon" && obj.type !== "part" && Math.hypot((obj.x || cx) - cx, (obj.y || cy) - cy) < 260) {
+            simpleGame.objects.splice(i, 1);
+            state.score += 8 * state.combo * config.scoreMultiplier;
+          }
+        }
+        playTone(620, 0.1, "triangle", 0.055);
+        updateHud();
+      }
+
+      function handleSimplePointer(x, y, pressed) {
+        if (state.activeGame === "moon-courier") {
+          simpleGame.thrusting = pressed;
+          simpleGame.targetX = x;
+        } else if (state.activeGame === "starport-sorter") {
+          simpleGame.selected = clamp(Math.floor((x / state.w) * 3), 0, 2);
+        } else if (state.activeGame === "reactor-tune") {
+          simpleGame.angle = Math.atan2(y - state.h * 0.52, x - state.w * 0.5);
+        } else if (state.activeGame === "rift-angler") {
+          simpleGame.pulling = pressed;
+        } else if (state.activeGame === "core-garden" && pressed) {
+          const tooClose = simpleGame.nodes.some((node) => Math.hypot(node.x - x, node.y - y) < 42);
+          if (!tooClose && y > 110) {
+            simpleGame.nodes.push({ x, y, r: 16, core: false, pulse: 0 });
+            state.score += 6;
+            state.energy = clamp(state.energy + 6, 0, 100);
+            createRipple(x, y, "#94e06b", 50);
+          }
+        } else {
+          simpleGame.targetX = x;
+          simpleGame.targetY = y;
+        }
+      }
+
+      function drawSimpleGame(time) {
+        if (simpleGame.x <= 0) {
+          simpleGame.x = state.w * 0.5;
+          simpleGame.y = state.h * 0.55;
+          simpleGame.targetX = simpleGame.x;
+          simpleGame.targetY = simpleGame.y;
+          if (state.activeGame === "core-garden" && !simpleGame.nodes.length) {
+            simpleGame.nodes.push({ x: state.w * 0.5, y: state.h * 0.52, r: 24, core: true, pulse: 0 });
+          }
+        }
+        drawBackground(time);
+        if (state.activeGame === "moon-courier") {
+          drawMoonCourier();
+        } else if (state.activeGame === "starport-sorter") {
+          drawStarportSorter();
+        } else if (state.activeGame === "reactor-tune") {
+          drawReactorTune();
+        } else if (state.activeGame === "fog-radar") {
+          drawFogRadar();
+        } else if (state.activeGame === "rift-angler") {
+          drawRiftAngler();
+        } else if (state.activeGame === "core-garden") {
+          drawCoreGarden();
+        } else if (state.activeGame === "parts-hunter") {
+          drawPartsHunter();
+        }
+        drawEffects();
+      }
+
+      function drawMoonCourier() {
+        const padY = simpleGame.targetY;
+        ctx.save();
+        ctx.strokeStyle = "rgba(183, 241, 255, 0.22)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, padY);
+        ctx.lineTo(state.w, padY);
+        ctx.stroke();
+        ctx.fillStyle = "#94e06b";
+        ctx.fillRect(simpleGame.targetX - 58, padY - 7, 116, 10);
+        ctx.fillStyle = "rgba(255, 209, 102, 0.18)";
+        ctx.fillRect(simpleGame.targetX - 42, padY - 22, 84, 15);
+        ctx.translate(simpleGame.x, simpleGame.y);
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = "#4ef0d1";
+        ctx.fillStyle = "#eafffb";
+        ctx.strokeStyle = "#4ef0d1";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, -20);
+        ctx.lineTo(22, 18);
+        ctx.lineTo(-22, 18);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        if (simpleGame.thrusting) {
+          ctx.fillStyle = "#ffd166";
+          ctx.beginPath();
+          ctx.moveTo(-9, 20);
+          ctx.lineTo(0, 42);
+          ctx.lineTo(9, 20);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawStarportSorter() {
+        const colors = ["#4ef0d1", "#ffd166", "#ff6f91"];
+        ctx.save();
+        ctx.strokeStyle = "rgba(183, 241, 255, 0.22)";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(20, state.h * 0.42);
+        ctx.lineTo(state.w - 20, state.h * 0.42);
+        ctx.stroke();
+        for (const box of simpleGame.objects) {
+          ctx.fillStyle = colors[box.type];
+          ctx.shadowBlur = 14;
+          ctx.shadowColor = colors[box.type];
+          ctx.fillRect(box.x - 17, box.y - 17, 34, 34);
+        }
+        for (let i = 0; i < 3; i += 1) {
+          const x = state.w * (0.22 + i * 0.28);
+          ctx.fillStyle = simpleGame.selected === i ? colors[i] : "rgba(255,255,255,0.07)";
+          ctx.strokeStyle = colors[i];
+          ctx.lineWidth = 2;
+          ctx.fillRect(x - 54, state.h * 0.72, 108, 54);
+          ctx.strokeRect(x - 54, state.h * 0.72, 108, 54);
+        }
+        ctx.restore();
+      }
+
+      function drawReactorTune() {
+        const cx = state.w * 0.5;
+        const cy = state.h * 0.52;
+        ctx.save();
+        ctx.strokeStyle = "rgba(78, 240, 209, 0.36)";
+        ctx.lineWidth = 2;
+        for (let r = 90; r <= Math.min(state.w, state.h) * 0.42; r += 58) {
+          ctx.beginPath();
+          ctx.arc(cx, cy, r, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.strokeStyle = "#ffd166";
+        ctx.lineWidth = 7;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 92, simpleGame.angle - 0.32, simpleGame.angle + 0.32);
+        ctx.stroke();
+        ctx.fillStyle = "#4ef0d1";
+        for (const orb of simpleGame.objects) {
+          const x = cx + Math.cos(orb.angle) * orb.radius;
+          const y = cy + Math.sin(orb.angle) * orb.radius;
+          ctx.fillStyle = orb.type === "unstable" ? "#ff6f91" : "#4ef0d1";
+          ctx.shadowBlur = 14;
+          ctx.shadowColor = ctx.fillStyle;
+          ctx.beginPath();
+          ctx.arc(x, y, 12, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawFogRadar() {
+        ctx.save();
+        for (const obj of simpleGame.objects) {
+          const visible = Math.hypot(obj.x - simpleGame.x, obj.y - simpleGame.y) < 150 + simpleGame.gauge * 80;
+          ctx.globalAlpha = visible ? 1 : 0.12;
+          ctx.fillStyle = obj.type === "beacon" ? "#ffd166" : "#ff6f91";
+          ctx.beginPath();
+          ctx.arc(obj.x, obj.y, obj.r + Math.sin(obj.pulse) * 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = "rgba(0, 0, 0, 0.46)";
+        ctx.fillRect(0, 0, state.w, state.h);
+        const scan = ctx.createRadialGradient(simpleGame.x, simpleGame.y, 10, simpleGame.x, simpleGame.y, 190 + simpleGame.gauge * 70);
+        scan.addColorStop(0, "rgba(78, 240, 209, 0)");
+        scan.addColorStop(1, "rgba(78, 240, 209, 0.18)");
+        ctx.fillStyle = scan;
+        ctx.beginPath();
+        ctx.arc(simpleGame.x, simpleGame.y, 190 + simpleGame.gauge * 70, 0, Math.PI * 2);
+        ctx.fill();
+        drawSimplePlayer("#4ef0d1");
+        ctx.restore();
+      }
+
+      function drawRiftAngler() {
+        ctx.save();
+        const rodX = state.w * 0.18;
+        const rodY = state.h * 0.34;
+        const fishX = state.w * (0.58 + simpleGame.progress * 0.002);
+        const fishY = state.h * 0.58 + Math.sin(state.elapsed * 4) * 18;
+        ctx.strokeStyle = simpleGame.gauge > 76 || simpleGame.gauge < 32 ? "#ff6f91" : "#ffd166";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(rodX, rodY);
+        ctx.lineTo(fishX, fishY);
+        ctx.stroke();
+        ctx.fillStyle = "#4ef0d1";
+        ctx.fillRect(rodX - 8, rodY - 42, 14, 82);
+        ctx.fillStyle = "#ffd166";
+        ctx.beginPath();
+        ctx.ellipse(fishX, fishY, 34, 18, Math.sin(state.elapsed) * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,0.08)";
+        ctx.fillRect(state.w * 0.22, state.h * 0.78, state.w * 0.56, 18);
+        ctx.fillStyle = "#94e06b";
+        ctx.fillRect(state.w * 0.22 + state.w * 0.56 * 0.32, state.h * 0.78, state.w * 0.56 * 0.44, 18);
+        ctx.fillStyle = "#ff6f91";
+        ctx.fillRect(state.w * 0.22 + state.w * 0.56 * (simpleGame.gauge / 100) - 4, state.h * 0.765, 8, 48);
+        ctx.fillStyle = "#ffd166";
+        ctx.fillRect(state.w * 0.22, state.h * 0.84, state.w * 0.56 * clamp(simpleGame.progress / 100, 0, 1), 10);
+        ctx.restore();
+      }
+
+      function drawCoreGarden() {
+        ctx.save();
+        for (let i = 0; i < simpleGame.nodes.length; i += 1) {
+          for (let j = i + 1; j < simpleGame.nodes.length; j += 1) {
+            const a = simpleGame.nodes[i];
+            const b = simpleGame.nodes[j];
+            if (Math.hypot(a.x - b.x, a.y - b.y) < 170) {
+              ctx.strokeStyle = "rgba(148, 224, 107, 0.26)";
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+            }
+          }
+        }
+        for (const node of simpleGame.nodes) {
+          ctx.fillStyle = node.core ? "#ffd166" : "#94e06b";
+          ctx.shadowBlur = 16;
+          ctx.shadowColor = ctx.fillStyle;
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.core ? 24 : 15, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        for (const spore of simpleGame.objects) {
+          ctx.fillStyle = "#ff6f91";
+          ctx.shadowBlur = 14;
+          ctx.shadowColor = "#ff6f91";
+          ctx.beginPath();
+          ctx.arc(spore.x, spore.y, spore.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawPartsHunter() {
+        ctx.save();
+        for (const obj of simpleGame.objects) {
+          ctx.fillStyle = obj.type === "part" ? "#ffd166" : "#ff6f91";
+          ctx.shadowBlur = 14;
+          ctx.shadowColor = ctx.fillStyle;
+          ctx.beginPath();
+          ctx.arc(obj.x, obj.y, obj.r + Math.sin(obj.pulse) * 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.strokeStyle = "rgba(78, 240, 209, 0.36)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(simpleGame.x, simpleGame.y, 72 + simpleGame.level * 10, 0, Math.PI * 2);
+        ctx.stroke();
+        drawSimplePlayer("#4ef0d1");
+        ctx.restore();
+      }
+
+      function drawSimplePlayer(color) {
+        ctx.save();
+        ctx.translate(simpleGame.x, simpleGame.y);
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = color;
+        ctx.fillStyle = "#eafffb";
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(20, 0);
+        ctx.lineTo(-14, -13);
+        ctx.lineTo(-8, 0);
+        ctx.lineTo(-14, 13);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function spawnGem() {
+        const config = getDifficulty();
+        const size = rand(9, 15);
+        const side = Math.floor(rand(0, 4));
+        let x;
+        let y;
+        if (side === 0) {
+          x = rand(30, state.w - 30);
+          y = -30;
+        } else if (side === 1) {
+          x = state.w + 30;
+          y = rand(80, state.h - 50);
+        } else if (side === 2) {
+          x = rand(30, state.w - 30);
+          y = state.h + 30;
+        } else {
+          x = -30;
+          y = rand(80, state.h - 50);
+        }
+        const targetX = state.w * rand(0.25, 0.75);
+        const targetY = state.h * rand(0.28, 0.78);
+        const angle = Math.atan2(targetY - y, targetX - x);
+        const speed = (rand(38, 78) + state.elapsed * 0.25) * config.gemSpeed;
+        gems.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size,
+          spin: rand(-2.2, 2.2),
+          angle: rand(0, Math.PI * 2),
+          value: Math.random() > 0.82 ? 28 : 14,
+          hue: Math.random() > 0.42 ? "aqua" : "gold",
+        });
+      }
+
+      function spawnHazard() {
+        const config = getDifficulty();
+        const side = Math.floor(rand(0, 4));
+        let x;
+        let y;
+        if (side === 0) {
+          x = rand(0, state.w);
+          y = -50;
+        } else if (side === 1) {
+          x = state.w + 50;
+          y = rand(60, state.h - 30);
+        } else if (side === 2) {
+          x = rand(0, state.w);
+          y = state.h + 50;
+        } else {
+          x = -50;
+          y = rand(60, state.h - 30);
+        }
+        const leadX = player.x + rand(-120, 120);
+        const leadY = player.y + rand(-90, 90);
+        const angle = Math.atan2(leadY - y, leadX - x);
+        const speed = (rand(70, 120) + state.elapsed * 0.55) * config.hazardSpeed;
+        hazards.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          r: rand(14, 23),
+          spin: rand(-3.6, 3.6),
+          angle: rand(0, Math.PI * 2),
+          pulse: rand(0, Math.PI * 2),
+        });
+      }
+
+      function addParticles(x, y, color, count, power = 1) {
+        for (let i = 0; i < count; i += 1) {
+          const angle = rand(0, Math.PI * 2);
+          const speed = rand(40, 190) * power;
+          particles.push({
+            x,
+            y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: rand(0.35, 0.9),
+            maxLife: 0,
+            size: rand(2, 5),
+            color,
+          });
+          particles[particles.length - 1].maxLife = particles[particles.length - 1].life;
+        }
+      }
+
+      function createRipple(x, y, color, size = 50) {
+        ripples.push({
+          x,
+          y,
+          color,
+          radius: 4,
+          maxRadius: size,
+          life: 0.5,
+          maxLife: 0.5,
+        });
+      }
+
+      function activateBurst() {
+        if (state.activeGame === "signal-dash") {
+          activateSignalBurst();
+          return;
+        }
+        if (state.activeGame === "mag-rail-run") {
+          activateMagBurst();
+          return;
+        }
+        if (isSimpleGame()) {
+          activateSimpleBurst();
+          return;
+        }
+        if (state.mode !== "playing" || state.energy < 100) {
+          return;
+        }
+        const config = getDifficulty();
+        state.energy = 0;
+        state.burst = 0.45;
+        state.screenShake = Math.max(state.screenShake, 7);
+        createRipple(player.x, player.y, "#ffd166", 260);
+        for (let i = hazards.length - 1; i >= 0; i -= 1) {
+          const hazard = hazards[i];
+          const distance = Math.hypot(hazard.x - player.x, hazard.y - player.y);
+          if (distance < 260) {
+            addParticles(hazard.x, hazard.y, "#ffd166", 14, 1.3);
+            hazards.splice(i, 1);
+            state.score += 9 * state.combo * config.scoreMultiplier;
+          }
+        }
+        playTone(520, 0.1, "triangle", 0.055);
+        playTone(850, 0.16, "sine", 0.035);
+        updateHud();
+      }
+
+      function updatePlayer(dt) {
+        let dx = 0;
+        let dy = 0;
+        if (keys.has("ArrowLeft") || keys.has("a") || keys.has("A")) dx -= 1;
+        if (keys.has("ArrowRight") || keys.has("d") || keys.has("D")) dx += 1;
+        if (keys.has("ArrowUp") || keys.has("w") || keys.has("W")) dy -= 1;
+        if (keys.has("ArrowDown") || keys.has("s") || keys.has("S")) dy += 1;
+        if (dx || dy) {
+          const len = Math.hypot(dx, dy) || 1;
+          player.tx += (dx / len) * 420 * dt;
+          player.ty += (dy / len) * 420 * dt;
+          state.pointerActive = false;
+        }
+        player.tx = clamp(player.tx, 22, state.w - 22);
+        player.ty = clamp(player.ty, 70, state.h - 22);
+        const smoothing = state.pointerActive ? 12 : 8;
+        player.x += (player.tx - player.x) * clamp(smoothing * dt, 0, 1);
+        player.y += (player.ty - player.y) * clamp(smoothing * dt, 0, 1);
+        player.invulnerable = Math.max(0, player.invulnerable - dt);
+        player.trail.unshift({ x: player.x, y: player.y, life: 1 });
+        if (player.trail.length > 18) {
+          player.trail.pop();
+        }
+        for (const point of player.trail) {
+          point.life -= dt * 2.6;
+        }
+      }
+
+      function updateEntities(dt) {
+        const config = getDifficulty();
+        state.elapsed += dt;
+        state.timeLeft -= dt;
+        state.spawnGem -= dt;
+        state.spawnHazard -= dt;
+        state.screenShake = Math.max(0, state.screenShake - dt * 24);
+        state.burst = Math.max(0, state.burst - dt);
+
+        const gemRate = Math.max(0.32, 0.82 - state.elapsed * 0.006) * config.gemInterval;
+        const hazardRate = Math.max(0.42, 1.2 - state.elapsed * 0.009) * config.hazardInterval;
+        if (state.spawnGem <= 0) {
+          spawnGem();
+          state.spawnGem = gemRate;
+        }
+        if (state.spawnHazard <= 0) {
+          spawnHazard();
+          if (state.elapsed > config.extraHazardAt && Math.random() > 1 - config.extraHazardChance) {
+            spawnHazard();
+          }
+          state.spawnHazard = hazardRate;
+        }
+
+        for (let i = gems.length - 1; i >= 0; i -= 1) {
+          const gem = gems[i];
+          gem.x += gem.vx * dt;
+          gem.y += gem.vy * dt;
+          gem.angle += gem.spin * dt;
+          const distance = Math.hypot(gem.x - player.x, gem.y - player.y);
+          if (distance < gem.size + player.r + 3) {
+            const bonus = gem.value * state.combo * config.scoreMultiplier;
+            state.score += bonus;
+            state.combo = Math.min(config.comboCap, state.combo + 1);
+            state.maxCombo = Math.max(state.maxCombo, state.combo);
+            state.energy = clamp(state.energy + gem.value * config.energyGain, 0, 100);
+            state.shield = clamp(state.shield + config.shieldGain, 0, config.shield);
+            addParticles(gem.x, gem.y, gem.hue === "gold" ? "#ffd166" : "#4ef0d1", 12, 1);
+            createRipple(gem.x, gem.y, gem.hue === "gold" ? "#ffd166" : "#4ef0d1", 52);
+            playTone(gem.hue === "gold" ? 740 : 560, 0.055, "sine", 0.028);
+            gems.splice(i, 1);
+          } else if (gem.x < -90 || gem.x > state.w + 90 || gem.y < -90 || gem.y > state.h + 90) {
+            gems.splice(i, 1);
+          }
+        }
+
+        for (let i = hazards.length - 1; i >= 0; i -= 1) {
+          const hazard = hazards[i];
+          hazard.x += hazard.vx * dt;
+          hazard.y += hazard.vy * dt;
+          hazard.angle += hazard.spin * dt;
+          hazard.pulse += dt * 5;
+          const distance = Math.hypot(hazard.x - player.x, hazard.y - player.y);
+          if (distance < hazard.r + player.r && player.invulnerable <= 0) {
+            player.invulnerable = 1.05;
+            state.shield -= config.damage;
+            state.combo = 1;
+            state.screenShake = 11;
+            addParticles(hazard.x, hazard.y, "#ff4d6d", 22, 1.5);
+            createRipple(hazard.x, hazard.y, "#ff4d6d", 86);
+            hazards.splice(i, 1);
+            playTone(140, 0.16, "sawtooth", 0.055);
+            if (state.shield <= 0) {
+              finishRun("over");
+              return;
+            }
+          } else if (hazard.x < -120 || hazard.x > state.w + 120 || hazard.y < -120 || hazard.y > state.h + 120) {
+            hazards.splice(i, 1);
+          }
+        }
+
+        for (let i = particles.length - 1; i >= 0; i -= 1) {
+          const particle = particles[i];
+          particle.x += particle.vx * dt;
+          particle.y += particle.vy * dt;
+          particle.vx *= 1 - dt * 2.4;
+          particle.vy *= 1 - dt * 2.4;
+          particle.life -= dt;
+          if (particle.life <= 0) {
+            particles.splice(i, 1);
+          }
+        }
+
+        for (let i = ripples.length - 1; i >= 0; i -= 1) {
+          const ripple = ripples[i];
+          ripple.radius += (ripple.maxRadius - ripple.radius) * clamp(dt * 7, 0, 1);
+          ripple.life -= dt;
+          if (ripple.life <= 0) {
+            ripples.splice(i, 1);
+          }
+        }
+
+        state.best = Math.max(state.best, Math.round(state.score));
+        if (state.timeLeft <= 0) {
+          finishRun("win");
+        }
+      }
+
+      function drawBackground(time) {
+        const gradient = ctx.createLinearGradient(0, 0, state.w, state.h);
+        gradient.addColorStop(0, "#061018");
+        gradient.addColorStop(0.42, "#073226");
+        gradient.addColorStop(1, "#1a1022");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, state.w, state.h);
+
+        ctx.save();
+        ctx.globalAlpha = 0.38;
+        for (let row = 0; row < 9; row += 1) {
+          const y = (state.h * 0.12) + row * (state.h * 0.11);
+          ctx.beginPath();
+          for (let x = -40; x <= state.w + 40; x += 24) {
+            const wave = Math.sin(x * 0.014 + time * 0.0018 + row) * (9 + row * 0.8);
+            if (x === -40) {
+              ctx.moveTo(x, y + wave);
+            } else {
+              ctx.lineTo(x, y + wave);
+            }
+          }
+          ctx.lineWidth = row % 2 ? 1 : 1.6;
+          ctx.strokeStyle = row % 3 === 0 ? "rgba(78, 240, 209, 0.24)" : "rgba(255, 209, 102, 0.13)";
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        ctx.save();
+        ctx.globalAlpha = 0.44;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+        ctx.lineWidth = 1;
+        const grid = 56;
+        const offset = (time * 0.016) % grid;
+        for (let x = -grid + offset; x < state.w + grid; x += grid) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x - state.h * 0.22, state.h);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function drawGem(gem) {
+        ctx.save();
+        ctx.translate(gem.x, gem.y);
+        ctx.rotate(gem.angle);
+        const color = gem.hue === "gold" ? "#ffd166" : "#4ef0d1";
+        ctx.shadowBlur = 18;
+        ctx.shadowColor = color;
+        ctx.fillStyle = color;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.78)";
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(0, -gem.size);
+        ctx.lineTo(gem.size * 0.72, 0);
+        ctx.lineTo(0, gem.size);
+        ctx.lineTo(-gem.size * 0.72, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
+        ctx.fillRect(-1.2, -gem.size * 0.65, 2.4, gem.size * 1.3);
+        ctx.restore();
+      }
+
+      function drawHazard(hazard) {
+        const pulse = 1 + Math.sin(hazard.pulse) * 0.08;
+        ctx.save();
+        ctx.translate(hazard.x, hazard.y);
+        ctx.rotate(hazard.angle);
+        ctx.scale(pulse, pulse);
+        ctx.shadowBlur = 22;
+        ctx.shadowColor = "#ff4d6d";
+        ctx.strokeStyle = "#ff6f91";
+        ctx.fillStyle = "rgba(255, 77, 109, 0.18)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < 8; i += 1) {
+          const a = i * Math.PI / 4;
+          const radius = i % 2 ? hazard.r * 0.48 : hazard.r;
+          const x = Math.cos(a) * radius;
+          const y = Math.sin(a) * radius;
+          if (i === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, hazard.r * 0.34, 0, Math.PI * 2);
+        ctx.fillStyle = "#ff4d6d";
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function drawPlayer(time) {
+        for (let i = player.trail.length - 1; i >= 0; i -= 1) {
+          const point = player.trail[i];
+          if (point.life <= 0) {
+            continue;
+          }
+          ctx.globalAlpha = point.life * 0.26;
+          ctx.fillStyle = "#4ef0d1";
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, player.r * point.life, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        const angle = Math.atan2(player.ty - player.y, player.tx - player.x);
+        const lowAlpha = player.invulnerable > 0 && Math.sin(time * 0.025) <= -0.15;
+
+        ctx.save();
+        ctx.translate(player.x, player.y);
+        ctx.rotate(angle);
+        ctx.globalAlpha = lowAlpha ? 0.48 : 1;
+        ctx.shadowBlur = state.burst > 0 ? 30 : 18;
+        ctx.shadowColor = state.burst > 0 ? "#ffd166" : "#4ef0d1";
+        ctx.fillStyle = "#eafffb";
+        ctx.strokeStyle = "#4ef0d1";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(20, 0);
+        ctx.lineTo(-14, -13);
+        ctx.lineTo(-8, 0);
+        ctx.lineTo(-14, 13);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#ff6f91";
+        ctx.beginPath();
+        ctx.moveTo(-9, -7);
+        ctx.lineTo(-24, 0);
+        ctx.lineTo(-9, 7);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#061018";
+        ctx.beginPath();
+        ctx.arc(5, 0, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        if (state.pointerActive && state.mode === "playing") {
+          ctx.save();
+          ctx.globalAlpha = 0.4;
+          ctx.strokeStyle = "#b5fff1";
+          ctx.lineWidth = 1.4;
+          ctx.setLineDash([5, 8]);
+          ctx.beginPath();
+          ctx.arc(player.tx, player.ty, 18 + Math.sin(time * 0.006) * 3, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      function drawEffects() {
+        for (const ripple of ripples) {
+          const alpha = clamp(ripple.life / ripple.maxLife, 0, 1);
+          ctx.save();
+          ctx.globalAlpha = alpha * 0.62;
+          ctx.strokeStyle = ripple.color;
+          ctx.lineWidth = 3 * alpha + 0.5;
+          ctx.beginPath();
+          ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        for (const particle of particles) {
+          const alpha = clamp(particle.life / particle.maxLife, 0, 1);
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = particle.color;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = particle.color;
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.size * alpha, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        if (state.burst > 0) {
+          const progress = 1 - state.burst / 0.45;
+          ctx.save();
+          ctx.globalAlpha = (1 - progress) * 0.26;
+          ctx.fillStyle = "#ffd166";
+          ctx.beginPath();
+          ctx.arc(player.x, player.y, 240 * progress, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      function render(time = 0) {
+        if (state.activeGame === "signal-dash") {
+          ctx.save();
+          const shake = state.screenShake;
+          if (shake > 0) {
+            ctx.translate(rand(-shake, shake), rand(-shake, shake));
+          }
+          drawSignalDash(time);
+          ctx.restore();
+          return;
+        }
+        if (state.activeGame === "mag-rail-run") {
+          ctx.save();
+          const shake = state.screenShake;
+          if (shake > 0) {
+            ctx.translate(rand(-shake, shake), rand(-shake, shake));
+          }
+          drawMagRun(time);
+          ctx.restore();
+          return;
+        }
+        if (state.activeGame === "light-route") {
+          ctx.save();
+          const shake = state.screenShake;
+          if (shake > 0) {
+            ctx.translate(rand(-shake, shake), rand(-shake, shake));
+          }
+          drawLightRoute(time);
+          ctx.restore();
+          return;
+        }
+        if (isSimpleGame()) {
+          ctx.save();
+          const shake = state.screenShake;
+          if (shake > 0) {
+            ctx.translate(rand(-shake, shake), rand(-shake, shake));
+          }
+          drawSimpleGame(time);
+          ctx.restore();
+          return;
+        }
+        ctx.save();
+        const shake = state.screenShake;
+        if (shake > 0) {
+          ctx.translate(rand(-shake, shake), rand(-shake, shake));
+        }
+        drawBackground(time);
+        for (const gem of gems) {
+          drawGem(gem);
+        }
+        for (const hazard of hazards) {
+          drawHazard(hazard);
+        }
+        drawEffects();
+        drawPlayer(time);
+        ctx.restore();
+
+        if (state.mode !== "playing") {
+          ctx.save();
+          ctx.globalAlpha = 0.28;
+          drawPlayer(time);
+          ctx.restore();
+        }
+      }
+
+      function tick(time) {
+        const dt = Math.min(0.033, (time - state.lastTime) / 1000 || 0);
+        state.lastTime = time;
+        if (state.mode === "playing") {
+          if (state.activeGame === "signal-dash") {
+            updateSignalDash(dt);
+          } else if (state.activeGame === "mag-rail-run") {
+            updateMagRun(dt);
+          } else if (state.activeGame === "light-route") {
+            updateLightRoute(dt);
+          } else if (isSimpleGame()) {
+            updateSimpleGame(dt);
+          } else {
+            updatePlayer(dt);
+            updateEntities(dt);
+          }
+          updateHud();
+        }
+        render(time);
+        requestAnimationFrame(tick);
+      }
+
+      function setPointer(event) {
+        const rect = canvas.getBoundingClientRect();
+        if (state.activeGame === "signal-dash") {
+          const y = event.clientY - rect.top;
+          let nearest = 0;
+          let nearestDistance = Infinity;
+          for (let lane = 0; lane < 3; lane += 1) {
+            const distance = Math.abs(y - getSignalLaneY(lane));
+            if (distance < nearestDistance) {
+              nearest = lane;
+              nearestDistance = distance;
+            }
+          }
+          setSignalLane(nearest);
+          state.pointerActive = true;
+          return;
+        }
+        if (state.activeGame === "mag-rail-run") {
+          const y = event.clientY - rect.top;
+          if (y < state.h * 0.5) {
+            magJump();
+          } else {
+            setMagDucking(true);
+          }
+          state.pointerActive = true;
+          return;
+        }
+        if (state.activeGame === "light-route") {
+          if (event.buttons || event.type === "pointerdown") {
+            rotateLightCell(event.clientX - rect.left, event.clientY - rect.top);
+          }
+          state.pointerActive = true;
+          return;
+        }
+        if (isSimpleGame()) {
+          handleSimplePointer(event.clientX - rect.left, event.clientY - rect.top, Boolean(event.buttons) || event.type === "pointerdown");
+          state.pointerActive = true;
+          return;
+        }
+        player.tx = clamp(event.clientX - rect.left, 18, state.w - 18);
+        player.ty = clamp(event.clientY - rect.top, 70, state.h - 18);
+        state.pointerActive = true;
+      }
+
+      canvas.addEventListener("pointerdown", (event) => {
+        canvas.setPointerCapture(event.pointerId);
+        setPointer(event);
+        ensureAudio();
+      });
+      canvas.addEventListener("pointermove", (event) => {
+        if (state.activeGame !== "neon-tide" && !isSimpleGame() && !event.buttons) {
+          return;
+        }
+        if (event.buttons || event.pointerType === "mouse") {
+          setPointer(event);
+        }
+      });
+      canvas.addEventListener("pointerup", (event) => {
+        try {
+          canvas.releasePointerCapture(event.pointerId);
+        } catch (error) {
+          // Pointer capture may already be released by the browser.
+        }
+        if (state.activeGame === "mag-rail-run") {
+          setMagDucking(false);
+        }
+        if (isSimpleGame()) {
+          simpleGame.thrusting = false;
+          simpleGame.pulling = false;
+        }
+      });
+
+      window.addEventListener("keydown", (event) => {
+        if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", " ", "Spacebar"].includes(event.key)) {
+          event.preventDefault();
+        }
+        keys.add(event.key);
+        if (event.key === " " || event.key === "Spacebar") {
+          activateBurst();
+        }
+        if (state.activeGame === "signal-dash" && state.mode === "playing") {
+          if (event.key === "ArrowUp" || event.key === "w" || event.key === "W") {
+            setSignalLane(signalDash.targetLane - 1);
+          }
+          if (event.key === "ArrowDown" || event.key === "s" || event.key === "S") {
+            setSignalLane(signalDash.targetLane + 1);
+          }
+        }
+        if (state.activeGame === "mag-rail-run" && state.mode === "playing") {
+          if (event.key === "ArrowUp" || event.key === "w" || event.key === "W") {
+            magJump();
+          }
+          if (event.key === "ArrowDown" || event.key === "s" || event.key === "S") {
+            setMagDucking(true);
+          }
+        }
+        if (isSimpleGame() && state.mode === "playing") {
+          if (state.activeGame === "starport-sorter") {
+            if (event.key === "1") simpleGame.selected = 0;
+            if (event.key === "2") simpleGame.selected = 1;
+            if (event.key === "3") simpleGame.selected = 2;
+          }
+          if (state.activeGame === "moon-courier" && (event.key === " " || event.key === "Spacebar")) {
+            simpleGame.thrusting = true;
+          }
+          if (state.activeGame === "rift-angler" && (event.key === " " || event.key === "Spacebar")) {
+            simpleGame.pulling = true;
+          }
+        }
+        if (event.key === "p" || event.key === "P" || event.key === "Escape") {
+          state.mode === "playing" ? pauseGame() : resumeGame();
+        }
+      });
+      window.addEventListener("keyup", (event) => {
+        keys.delete(event.key);
+        if (state.activeGame === "mag-rail-run" && (event.key === "ArrowDown" || event.key === "s" || event.key === "S")) {
+          setMagDucking(false);
+        }
+        if (state.activeGame === "moon-courier" && (event.key === " " || event.key === "Spacebar")) {
+          simpleGame.thrusting = false;
+        }
+        if (state.activeGame === "rift-angler" && (event.key === " " || event.key === "Spacebar")) {
+          simpleGame.pulling = false;
+        }
+      });
+      window.addEventListener("resize", resizeCanvas);
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          pauseGame();
+        }
+      });
+
+      startButton.addEventListener("click", () => {
+        if (state.choosingGame) {
+          hideGamePicker();
+          return;
+        }
+        state.showingHelp = false;
+        ensureAudio();
+        resetRun();
+      });
+      helpButton.addEventListener("click", showHelp);
+      helpBackButton.addEventListener("click", hideHelp);
+      gameSelectButton.addEventListener("click", showGamePicker);
+      gamePicker.addEventListener("click", (event) => {
+        const option = event.target.closest("[data-game]");
+        if (!option || option.disabled) {
+          return;
+        }
+        setActiveGame(option.dataset.game);
+      });
+      difficultyButtons.forEach((button) => {
+        button.addEventListener("click", () => setDifficulty(button.dataset.difficulty));
+      });
+      mainMenuButton.addEventListener("click", returnToMainMenu);
+      resumeButton.addEventListener("click", resumeGame);
+      pauseButton.addEventListener("click", () => {
+        if (state.mode === "playing") {
+          pauseGame();
+        } else if (state.mode === "paused") {
+          resumeGame();
+        }
+      });
+      soundButton.addEventListener("click", () => {
+        state.audioOn = !state.audioOn;
+        if (state.audioOn) {
+          playTone(500, 0.08, "sine", 0.03);
+        }
+        updateHud();
+      });
+      burstButton.addEventListener("click", activateBurst);
+
+      resizeCanvas();
+      setModal("menu");
+      updateHud();
+      render();
+      requestAnimationFrame((time) => {
+        state.lastTime = time;
+        requestAnimationFrame(tick);
+      });
+    })();
+  </script>
+</body>
+</html>

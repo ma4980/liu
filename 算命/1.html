@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天機玄妙 - 4合1 命理占卜系統</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Canvas for Stars -->
+    <canvas id="starfield"></canvas>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="mystic-orb"></div>
+                <h1>天機玄妙</h1>
+            </div>
+            <p class="subtitle">融合八字、姓名、生肖、星座的終極命理占卜儀表板</p>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            
+            <!-- Section 1: Input Form -->
+            <section id="input-section" class="mystic-card">
+                <div class="card-glow"></div>
+                <div class="card-content">
+                    <h2 class="section-title"><span class="gold-text">輸入您的生辰檔案</span></h2>
+                    <p class="section-desc">請填寫以下資訊，天機系統將為您揭示命運的藍圖。</p>
+                    
+                    <form id="fortune-form" onsubmit="return false;">
+                        <div class="form-grid">
+                            <!-- Name Input -->
+                            <div class="input-group">
+                                <label for="user-name">您的姓名</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">✍️</span>
+                                    <input type="text" id="user-name" placeholder="請輸入姓名" required autocomplete="off">
+                                </div>
+                            </div>
+
+                            <!-- Gender Select -->
+                            <div class="input-group">
+                                <label>您的性別</label>
+                                <div class="gender-selector">
+                                    <label class="gender-btn">
+                                        <input type="radio" name="gender" value="male" checked>
+                                        <span class="gender-btn-custom">乾造 (男)</span>
+                                    </label>
+                                    <label class="gender-btn">
+                                        <input type="radio" name="gender" value="female">
+                                        <span class="gender-btn-custom">坤造 (女)</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Birth Date -->
+                            <div class="input-group">
+                                <label for="birth-date">出生日期 (國曆)</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">📅</span>
+                                    <input type="date" id="birth-date" required>
+                                </div>
+                            </div>
+
+                            <!-- Birth Hour -->
+                            <div class="input-group">
+                                <label for="birth-hour">出生時辰</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">⏰</span>
+                                    <select id="birth-hour" required>
+                                        <option value="0">子時 (23:00 - 00:59)</option>
+                                        <option value="1">丑時 (01:00 - 02:59)</option>
+                                        <option value="2">寅時 (03:00 - 04:59)</option>
+                                        <option value="3">卯時 (05:00 - 06:59)</option>
+                                        <option value="4">辰時 (07:00 - 08:59)</option>
+                                        <option value="5">巳時 (09:00 - 10:59)</option>
+                                        <option value="6">午時 (11:00 - 12:59)</option>
+                                        <option value="7">未時 (13:00 - 14:59)</option>
+                                        <option value="8">申時 (15:00 - 16:59)</option>
+                                        <option value="9">酉時 (17:00 - 18:59)</option>
+                                        <option value="10">戌時 (19:00 - 20:59)</option>
+                                        <option value="11">亥時 (21:00 - 22:59)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="btn-container">
+                            <button type="submit" id="submit-btn" class="mystic-btn">
+                                <span class="btn-text">啟 動 占 卜</span>
+                                <span class="btn-glow"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Section 2: Loading State -->
+            <section id="loading-section" class="hidden">
+                <div class="mystic-loader">
+                    <div class="loader-ring outer-ring"></div>
+                    <div class="loader-ring middle-ring"></div>
+                    <div class="loader-ring inner-ring"></div>
+                    <div class="loader-symbol">☯️</div>
+                    <p class="loader-text">正在推演天干地支，窺探命運流轉...</p>
+                </div>
+            </section>
+
+            <!-- Section 3: Results Dashboard -->
+            <section id="result-section" class="hidden">
+                
+                <!-- Quick User Profile Badge -->
+                <div class="profile-badge">
+                    <div class="badge-item">姓名：<span id="badge-name" class="gold-text">-</span></div>
+                    <div class="badge-item">乾坤：<span id="badge-gender">-</span></div>
+                    <div class="badge-item">國曆生日：<span id="badge-date">-</span></div>
+                    <div class="badge-item">生肖：<span id="badge-zodiac">-</span></div>
+                    <div class="badge-item">星座：<span id="badge-horoscope">-</span></div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <div class="tabs-nav">
+                    <button class="tab-link active" data-tab="tab-bazi">
+                        <span class="tab-icon">🔮</span>
+                        <span class="tab-text">八字命盤</span>
+                    </button>
+                    <button class="tab-link" data-tab="tab-name">
+                        <span class="tab-icon">✍️</span>
+                        <span class="tab-text">姓名占卜</span>
+                    </button>
+                    <button class="tab-link" data-tab="tab-zodiac">
+                        <span class="tab-icon">🐉</span>
+                        <span class="tab-text">生肖運勢</span>
+                    </button>
+                    <button class="tab-link" data-tab="tab-horoscope">
+                        <span class="tab-icon">🌌</span>
+                        <span class="tab-text">星盤分析</span>
+                    </button>
+                </div>
+
+                <!-- Tabs Contents -->
+                <div class="tabs-content">
+                    
+                    <!-- Tab 1: Bazi -->
+                    <div id="tab-bazi" class="tab-panel active">
+                        <div class="panel-grid">
+                            <!-- Bazi Chart Display -->
+                            <div class="panel-left">
+                                <h3 class="panel-title">四柱八字命盤</h3>
+                                <div class="bazi-table-container">
+                                    <table class="bazi-table">
+                                        <thead>
+                                            <tr>
+                                                <th>時柱</th>
+                                                <th>日柱</th>
+                                                <th>月柱</th>
+                                                <th>年柱</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="stems-row">
+                                                <td id="bazi-stem-hour"><span class="ganzhi-char">-</span><span class="element-tag">-</span></td>
+                                                <td id="bazi-stem-day"><span class="ganzhi-char">-</span><span class="element-tag">-</span></td>
+                                                <td id="bazi-stem-month"><span class="ganzhi-char">-</span><span class="element-tag">-</span></td>
+                                                <td id="bazi-stem-year"><span class="ganzhi-char">-</span><span class="element-tag">-</span></td>
+                                            </tr>
+                                            <tr class="branches-row">
+                                                <td id="bazi-branch-hour"><span class="ganzhi-char">-</span><span class="element-tag">-</span></td>
+                                                <td id="bazi-branch-day"><span class="ganzhi-char">-</span><span class="element-tag">-</span></td>
+                                                <td id="bazi-branch-month"><span class="ganzhi-char">-</span><span class="element-tag">-</span></td>
+                                                <td id="bazi-branch-year"><span class="ganzhi-char">-</span><span class="element-tag">-</span></td>
+                                            </tr>
+                                            <tr class="pillar-label">
+                                                <td>(時辰)</td>
+                                                <td>(生日)</td>
+                                                <td>(生月)</td>
+                                                <td>(生年)</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Five Elements Bar -->
+                                <div class="element-distribution">
+                                    <h4>五行能量分佈</h4>
+                                    <div class="element-bars">
+                                        <div class="element-bar-wrapper">
+                                            <span class="element-label element-gold">金</span>
+                                            <div class="bar-outer"><div id="bar-gold" class="bar-inner element-gold-bg" style="width: 20%"></div></div>
+                                            <span id="pct-gold" class="element-pct">20%</span>
+                                        </div>
+                                        <div class="element-bar-wrapper">
+                                            <span class="element-label element-wood">木</span>
+                                            <div class="bar-outer"><div id="bar-wood" class="bar-inner element-wood-bg" style="width: 20%"></div></div>
+                                            <span id="pct-wood" class="element-pct">20%</span>
+                                        </div>
+                                        <div class="element-bar-wrapper">
+                                            <span class="element-label element-water">水</span>
+                                            <div class="bar-outer"><div id="bar-water" class="bar-inner element-water-bg" style="width: 20%"></div></div>
+                                            <span id="pct-water" class="element-pct">20%</span>
+                                        </div>
+                                        <div class="element-bar-wrapper">
+                                            <span class="element-label element-fire">火</span>
+                                            <div class="bar-outer"><div id="bar-fire" class="bar-inner element-fire-bg" style="width: 20%"></div></div>
+                                            <span id="pct-fire" class="element-pct">20%</span>
+                                        </div>
+                                        <div class="element-bar-wrapper">
+                                            <span class="element-label element-earth">土</span>
+                                            <div class="bar-outer"><div id="bar-earth" class="bar-inner element-earth-bg" style="width: 20%"></div></div>
+                                            <span id="pct-earth" class="element-pct">20%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bazi Text Analysis -->
+                            <div class="panel-right">
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">日主與本命格局</h4>
+                                    <p id="bazi-rizhu-desc" class="analysis-text">-</p>
+                                </div>
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">五行強弱與喜用神</h4>
+                                    <p id="bazi-wuxing-desc" class="analysis-text">-</p>
+                                </div>
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">一生運勢詳解</h4>
+                                    <p id="bazi-fortune-desc" class="analysis-text">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Name Divination -->
+                    <div id="tab-name" class="tab-panel">
+                        <div class="panel-grid">
+                            <!-- Name Grid Structure -->
+                            <div class="panel-left">
+                                <h3 class="panel-title">姓名三才五格剖析</h3>
+                                <div class="name-grid-container">
+                                    <!-- Visual depiction of Name Grids -->
+                                    <div class="name-visual-grid">
+                                        <div class="grid-cell">
+                                            <div class="grid-title">天格 (祖先蔭庇)</div>
+                                            <div id="grid-tiange" class="grid-val">-</div>
+                                        </div>
+                                        <div class="grid-cell highlight-cell">
+                                            <div class="grid-title">人格 (主運/核心)</div>
+                                            <div id="grid-renge" class="grid-val">-</div>
+                                        </div>
+                                        <div class="grid-cell">
+                                            <div class="grid-title">地格 (前運/子女)</div>
+                                            <div id="grid-dige" class="grid-val">-</div>
+                                        </div>
+                                        <div class="grid-cell">
+                                            <div class="grid-title">外格 (副運/人際)</div>
+                                            <div id="grid-waige" class="grid-val">-</div>
+                                        </div>
+                                        <div class="grid-cell highlight-cell">
+                                            <div class="grid-title">總格 (後運/終身)</div>
+                                            <div id="grid-zongge" class="grid-val">-</div>
+                                        </div>
+                                    </div>
+                                    <div class="strokes-info">
+                                        <p>姓名總筆劃：<span id="name-total-strokes" class="gold-text">-</span> 劃</p>
+                                        <p>三才配置：<span id="name-sancai" class="gold-text">-</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Name Text Analysis -->
+                            <div class="panel-right">
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">人格與天格配置分析</h4>
+                                    <p id="name-sancai-desc" class="analysis-text">-</p>
+                                </div>
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">總格吉凶與終身成就</h4>
+                                    <p id="name-zongge-desc" class="analysis-text">-</p>
+                                </div>
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">姓名開運建議</h4>
+                                    <p id="name-advice" class="analysis-text">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Chinese Zodiac -->
+                    <div id="tab-zodiac" class="tab-panel">
+                        <div class="panel-grid">
+                            <div class="panel-left text-center">
+                                <div class="zodiac-avatar-container">
+                                    <div id="zodiac-avatar" class="zodiac-avatar">-</div>
+                                </div>
+                                <h3 id="zodiac-title" class="panel-title">-</h3>
+                                <div class="compat-box">
+                                    <div class="compat-item">
+                                        <span class="compat-label">三合貴人</span>
+                                        <span id="zodiac-sanhe" class="compat-val">-</span>
+                                    </div>
+                                    <div class="compat-item">
+                                        <span class="compat-label">六合貴人</span>
+                                        <span id="zodiac-liuhe" class="compat-val">-</span>
+                                    </div>
+                                    <div class="compat-item">
+                                        <span class="compat-label">相衝生肖</span>
+                                        <span id="zodiac-chong" class="compat-val chong-text">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel-right">
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">生肖基本性格</h4>
+                                    <p id="zodiac-char-desc" class="analysis-text">-</p>
+                                </div>
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">本命年/流年運勢趨勢</h4>
+                                    <p id="zodiac-year-desc" class="analysis-text">-</p>
+                                </div>
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">事業、愛情與健康指引</h4>
+                                    <p id="zodiac-life-desc" class="analysis-text">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Western Horoscope -->
+                    <div id="tab-horoscope" class="tab-panel">
+                        <div class="panel-grid">
+                            <div class="panel-left text-center">
+                                <div class="zodiac-avatar-container">
+                                    <div id="horo-avatar" class="zodiac-avatar">-</div>
+                                </div>
+                                <h3 id="horo-title" class="panel-title">-</h3>
+                                <div class="horo-meta-grid">
+                                    <div class="meta-item">
+                                        <span class="meta-label">守護星</span>
+                                        <span id="horo-planet" class="meta-val">-</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">星象屬性</span>
+                                        <span id="horo-element" class="meta-val">-</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">幸運顏色</span>
+                                        <span id="horo-color" class="meta-val">-</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">幸運數字</span>
+                                        <span id="horo-number" class="meta-val">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel-right">
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">星座性格密碼</h4>
+                                    <p id="horo-char-desc" class="analysis-text">-</p>
+                                </div>
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">當前星象運勢評析</h4>
+                                    <p id="horo-current-desc" class="analysis-text">-</p>
+                                </div>
+                                <div class="analysis-box">
+                                    <h4 class="analysis-heading">星盤開運指引</h4>
+                                    <p id="horo-advice" class="analysis-text">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Recalculate Button -->
+                <div class="recalc-container">
+                    <button id="recalc-btn" class="mystic-btn-outline">重新占卜</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>© 2026 天機玄妙. 命運掌握於手，天機僅供參考。</p>
+        </footer>
+    </div>
+
+    <!-- Core App Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
