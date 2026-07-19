@@ -8,6 +8,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const htmlElement = document.documentElement;
     const perfToggleBtns = document.querySelectorAll('.btn-perf-toggle');
     const gameContainers = document.querySelectorAll('.game-dropdown-container');
+    const toolsContainers = document.querySelectorAll('.tools-dropdown-container');
+
+    // Decode email safely to prevent scrapers
+    const email = atob("bGl1MDMwOEBsaXUwMzA4LnVzLmtn");
+
+    // Prevent image context menu and dragging for minor protection
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('contextmenu', e => e.preventDefault());
+        img.addEventListener('dragstart', e => e.preventDefault());
+    });
 
     // 1. Initialize Lucide Icons
     if (typeof lucide !== 'undefined') {
@@ -157,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 * 輸入 'gui' 可直接滾動至圖形化介面瀏覽專案。
 `,
             'term_contact': `=== 聯絡資訊 ===
-- Email: liu0308@liu0308.us.kg
+- Email: {email}
 - GitHub: https://github.com/ma4980
 - 所在地: 台灣 (Taiwan)
 - Proxmox 主節點狀態: ONLINE
@@ -369,7 +379,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'lang_ja': '日文',
             'lang_en': '英文',
             'lang_auto': '跟隨本機',
-            'page_title': '劉峻瑋 | Network Engineer & AIoT Developer'
+            'page_title': '劉峻瑋 | Jun Wei Liu',
+            'tools_toggle_title': '工具 / Tools',
+            'tools_toggle_aria': '我的工具',
+            'tool_pcb_date': 'PCB日期標籤編輯器'
         },
         'en': {
             // Nav
@@ -453,7 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
 * Type 'gui' to scroll down to visual portfolio cards.
 `,
             'term_contact': `=== Contact Information ===
-- Email: liu0308@liu0308.us.kg
+- Email: {email}
 - GitHub: https://github.com/ma4980
 - Location: Taiwan
 - Proxmox Node Status: ONLINE
@@ -665,7 +678,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'lang_ja': 'Japanese',
             'lang_en': 'English',
             'lang_auto': 'System Default',
-            'page_title': 'Jun Wei Liu | Network Engineer & AIoT Developer'
+            'page_title': 'Jun Wei Liu | Network Engineer & AIoT Developer',
+            'tools_toggle_title': 'Tools',
+            'tools_toggle_aria': 'My Tools',
+            'tool_pcb_date': 'PCB Date Label Editor',
         },
         'ja': {
             // Nav
@@ -748,8 +764,8 @@ document.addEventListener('DOMContentLoaded', () => {
 4. [製造] 3Dプリンター Klipper改修 - 高速かつ精密な印刷調整
 * 'gui' コマンドでグラフィカルポートフォリオを表示できます。
 `,
-            'term_contact': `=== 連絡先情報 ===
-- Email: liu0308@liu0308.us.kg
+            'term_contact': `=== 連絡先一覧 ===
+- Email: {email}
 - GitHub: https://github.com/ma4980
 - 所在地: 台湾
 - Proxmox ノード状態: ONLINE
@@ -961,7 +977,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'lang_ja': '日本語',
             'lang_en': '英語',
             'lang_auto': 'システム設定',
-            'page_title': '劉峻瑋 | Network Engineer & AIoT Developer'
+            'page_title': '劉峻瑋 | Jun Wei Liu',
+            'tools_toggle_title': 'ツール / Tools',
+            'tools_toggle_aria': 'ツール',
+            'tool_pcb_date': 'PCB日付ラベルエディタ'
         }
     };
 
@@ -988,10 +1007,14 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (translations[targetLang] && translations[targetLang][key] !== undefined) {
+                let htmlStr = translations[targetLang][key];
+                if (htmlStr.includes('{email}')) {
+                    htmlStr = htmlStr.replace(/{email}/g, email);
+                }
                 if (el.tagName.toLowerCase() === 'title') {
-                    document.title = translations[targetLang][key];
+                    document.title = htmlStr;
                 } else {
-                    el.innerHTML = translations[targetLang][key];
+                    el.innerHTML = htmlStr;
                 }
             }
         });
@@ -1050,7 +1073,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('lang', lang);
     };
 
-    // Dropdown toggle events
+        // Dropdown toggle events
     langContainers.forEach(container => {
         const btn = container.querySelector('.btn-lang-toggle');
         const menu = container.querySelector('.lang-dropdown-menu');
@@ -1068,6 +1091,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Close game menus first
                 gameContainers.forEach(otherContainer => {
                     const otherMenu = otherContainer.querySelector('.game-dropdown-menu');
+                    if (otherMenu) otherMenu.classList.remove('show');
+                });
+                // Close tools menus first
+                toolsContainers.forEach(otherContainer => {
+                    const otherMenu = otherContainer.querySelector('.tools-dropdown-menu');
                     if (otherMenu) otherMenu.classList.remove('show');
                 });
                 menu.classList.toggle('show');
@@ -1094,6 +1122,40 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (otherMenu) otherMenu.classList.remove('show');
                     }
                 });
+                // Close tools menus first
+                toolsContainers.forEach(otherContainer => {
+                    const otherMenu = otherContainer.querySelector('.tools-dropdown-menu');
+                    if (otherMenu) otherMenu.classList.remove('show');
+                });
+                menu.classList.toggle('show');
+            });
+        }
+    });
+
+    toolsContainers.forEach(container => {
+        const btn = container.querySelector('.btn-tools-toggle');
+        const menu = container.querySelector('.tools-dropdown-menu');
+        
+        if (btn && menu) {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Close lang menus first
+                langContainers.forEach(otherContainer => {
+                    const otherMenu = otherContainer.querySelector('.lang-dropdown-menu');
+                    if (otherMenu) otherMenu.classList.remove('show');
+                });
+                // Close game menus first
+                gameContainers.forEach(otherContainer => {
+                    const otherMenu = otherContainer.querySelector('.game-dropdown-menu');
+                    if (otherMenu) otherMenu.classList.remove('show');
+                });
+                // Close other tools menus first
+                toolsContainers.forEach(otherContainer => {
+                    if (otherContainer !== container) {
+                        const otherMenu = otherContainer.querySelector('.tools-dropdown-menu');
+                        if (otherMenu) otherMenu.classList.remove('show');
+                    }
+                });
                 menu.classList.toggle('show');
             });
         }
@@ -1114,12 +1176,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 menu.classList.remove('show');
             }
         });
+        toolsContainers.forEach(container => {
+            const btn = container.querySelector('.btn-tools-toggle');
+            const menu = container.querySelector('.tools-dropdown-menu');
+            if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('show');
+            }
+        });
     });
 
     const gameLinks = document.querySelectorAll('.game-dropdown-menu a');
     gameLinks.forEach(link => {
         link.addEventListener('click', () => {
             document.querySelectorAll('.game-dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        });
+    });
+
+    const toolsLinks = document.querySelectorAll('.tools-dropdown-menu a');
+    toolsLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            document.querySelectorAll('.tools-dropdown-menu').forEach(menu => {
                 menu.classList.remove('show');
             });
         });
@@ -1252,7 +1330,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     outputLine.innerText = translations[activeLanguage]['term_projects'];
                     break;
                 case 'contact':
-                    outputLine.innerText = translations[activeLanguage]['term_contact'];
+                    let contactMsg = translations[activeLanguage]['term_contact'];
+                    if (contactMsg.includes('{email}')) {
+                        contactMsg = contactMsg.replace(/{email}/g, email);
+                    }
+                    outputLine.innerText = contactMsg;
                     break;
                 case 'clear':
                     terminalHistory.innerHTML = '';
@@ -1601,7 +1683,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             
-            const email = 'liu0308@liu0308.us.kg';
             const toastMsg = (translations[activeLanguage] && translations[activeLanguage]['toast_email_copied']) || 'Email address copied!';
             navigator.clipboard.writeText(email).then(() => {
                 showToast(toastMsg);
@@ -1614,6 +1695,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 contactSection.scrollIntoView({ behavior: 'smooth' });
             }
         });
+    });
+
+    // Populate email hrefs and placeholders dynamically
+    document.querySelectorAll('.email-placeholder').forEach(el => {
+        el.textContent = email;
+    });
+    document.querySelectorAll('.btn-email-action').forEach(el => {
+        el.href = `mailto:${email}`;
+    });
+
+    // Prevent Image Downloads / Copying
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+            const toastMsg = activeLanguage === 'zh-TW' ? '本站圖片受保護，無法複製或下載' : 
+                             (activeLanguage === 'ja' ? '当サイトの画像は保護されており、ダウンロードできません' : 'Images on this site are protected and cannot be downloaded.');
+            showToast(toastMsg);
+        }
+    });
+    document.addEventListener('dragstart', (e) => {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+        }
     });
 
     // Toast notification function
