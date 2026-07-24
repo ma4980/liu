@@ -1,17 +1,16 @@
-# PCB 日期標籤編輯器
+# PCB 日期標籤編輯器－分隔線點選把手版
 
-此版本修正「整體加粗後水平／垂直分隔線消失」的問題。
+本版調整：
 
-修正方式：
-
-- Logo 與文字繼續使用 SVG morphology 濾鏡加粗。
-- 外框、水平線與垂直線改為直接增加 `stroke-width`。
-- SVG 與 PNG 輸出都會保留修正後效果。
-- 預設日期為開啟網頁當天。
-- 保留字體篩選與細明體預設功能。
+- 藍色端點不再一直顯示
+- 點選水平分隔線時，只顯示水平線左右端點
+- 點選垂直分隔線時，只顯示垂直線上下端點
+- 點擊預覽空白處或其他物件時，藍色端點會隱藏
+- 拖曳整條線時會自動選取該分隔線
+- 藍色端點不會出現在 SVG、Path SVG 或 PNG 輸出中
 
 ## GitHub Pages
 
-將資料夾內容上傳至 Repository 根目錄，再設定：
+將 `index.html`、`.nojekyll` 與 `README.md` 上傳到 Repository 根目錄，然後設定：
 
 `Settings → Pages → Deploy from a branch → main → /(root)`

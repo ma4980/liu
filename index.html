@@ -746,26 +746,25 @@
 
                         <div class="contact-details">
                             <div class="contact-item">
-                                <div class="contact-icon"><i data-lucide="mail"></i></div>
+                                <a href="#" class="contact-icon btn-email-action" aria-label="Email"><i data-lucide="mail"></i></a>
                                 <div class="contact-value">
                                     <span class="contact-label" data-i18n="contact_label_email">Email</span>
                                     <a href="#" class="contact-link btn-email-action email-placeholder">載入中...</a>
                                 </div>
                             </div>
                             <div class="contact-item">
-                                <div class="contact-icon"><i data-lucide="map-pin"></i></div>
-                                <div class="contact-value">
-                                    <span class="contact-label" data-i18n="contact_label_location">所在地</span>
-                                    <span class="contact-text" data-i18n="contact_text_location">台灣 (Taiwan)</span>
-                                </div>
-                            </div>
-                            <div class="contact-item">
-                                <div class="contact-icon"><img src="assets/github.png" alt="GitHub"
-                                        class="contact-icon-img"></div>
+                                <a href="https://github.com/ma4980" target="_blank" rel="noopener" class="contact-icon" aria-label="GitHub"><img src="assets/github.png" alt="GitHub" class="contact-icon-img"></a>
                                 <div class="contact-value">
                                     <span class="contact-label" data-i18n="contact_label_github">GitHub</span>
                                     <a href="https://github.com/ma4980" target="_blank" rel="noopener"
                                         class="contact-link">github.com/ma4980</a>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Taiwan" target="_blank" rel="noopener" class="contact-icon" aria-label="Google Maps"><i data-lucide="map-pin"></i></a>
+                                <div class="contact-value">
+                                    <span class="contact-label" data-i18n="contact_label_location">所在地</span>
+                                    <a href="https://www.google.com/maps/search/?api=1&query=Taiwan" target="_blank" rel="noopener" class="contact-link" data-i18n="contact_text_location">台灣 (Taiwan)</a>
                                 </div>
                             </div>
                             <div class="contact-item">
@@ -792,51 +791,6 @@
                                 <span data-i18n="contact_status_cpu">PVE CPU Usage: 14%</span>
                                 <span data-i18n="contact_status_latency">Network Latency: 4ms</span>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Contact Form -->
-                    <div class="contact-form-panel glassmorphism reveal reveal-right">
-                        <form id="contact-form" novalidate>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="form-name" data-i18n="form_label_name">您的姓名</label>
-                                    <input type="text" id="form-name" required placeholder="例如：林小明"
-                                        data-i18n-placeholder="form_placeholder_name">
-                                    <span class="error-msg" id="name-error" data-i18n="form_error_name">請填寫姓名</span>
-                                </div>
-                                <div class="form-group">
-                                    <label for="form-email" data-i18n="form_label_email">電子信箱</label>
-                                    <input type="email" id="form-email" required placeholder="例如：example@email.com"
-                                        data-i18n-placeholder="form_placeholder_email">
-                                    <span class="error-msg" id="email-error"
-                                        data-i18n="form_error_email">請填寫有效的電子信箱</span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="form-subject" data-i18n="form_label_subject">信件主題</label>
-                                <input type="text" id="form-subject" required placeholder="例如：關於合作案詢問"
-                                    data-i18n-placeholder="form_placeholder_subject">
-                                <span class="error-msg" id="subject-error" data-i18n="form_error_subject">請填寫主題</span>
-                            </div>
-                            <div class="form-group">
-                                <label for="form-message" data-i18n="form_label_message">您的訊息</label>
-                                <textarea id="form-message" rows="6" required placeholder="請在此輸入您的詳細訊息..."
-                                    data-i18n-placeholder="form_placeholder_message"></textarea>
-                                <span class="error-msg" id="message-error" data-i18n="form_error_message">請輸入訊息內容</span>
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-submit" id="btn-submit">
-                                <span class="btn-text" data-i18n="form_btn_submit">送出訊息</span>
-                                <i data-lucide="send" class="btn-icon"></i>
-                                <span class="spinner hide"></span>
-                            </button>
-                        </form>
-                        <div class="form-success-alert hide" id="form-success-alert">
-                            <div class="alert-icon"><i data-lucide="check-circle"></i></div>
-                            <h3 data-i18n="form_success_title">訊息送出成功！</h3>
-                            <p data-i18n="form_success_desc">感謝您的聯絡，我已收到您的訊息，將會盡快與您聯繫。</p>
-                            <button class="btn btn-secondary btn-sm" id="btn-reset-form"
-                                data-i18n="form_btn_reset">再次發送訊息</button>
                         </div>
                     </div>
                 </div>

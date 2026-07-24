@@ -1441,99 +1441,112 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 9. Contact Form Validation and Mock Submission
     const contactForm = document.getElementById('contact-form');
-    const formSuccessAlert = document.getElementById('form-success-alert');
-    const btnSubmit = document.getElementById('btn-submit');
-    const btnResetForm = document.getElementById('btn-reset-form');
-    
-    const fields = {
-        name: { input: document.getElementById('form-name'), error: document.getElementById('name-error') },
-        email: { input: document.getElementById('form-email'), error: document.getElementById('email-error') },
-        subject: { input: document.getElementById('form-subject'), error: document.getElementById('subject-error') },
-        message: { input: document.getElementById('form-message'), error: document.getElementById('message-error') }
-    };
+    if (contactForm) {
+        const formSuccessAlert = document.getElementById('form-success-alert');
+        const btnSubmit = document.getElementById('btn-submit');
+        const btnResetForm = document.getElementById('btn-reset-form');
+        
+        const fields = {
+            name: { input: document.getElementById('form-name'), error: document.getElementById('name-error') },
+            email: { input: document.getElementById('form-email'), error: document.getElementById('email-error') },
+            subject: { input: document.getElementById('form-subject'), error: document.getElementById('subject-error') },
+            message: { input: document.getElementById('form-message'), error: document.getElementById('message-error') }
+        };
 
-    // Regex for basic email verification
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        // Regex for basic email verification
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    // Helper to validate single field
-    const validateField = (fieldKey) => {
-        const field = fields[fieldKey];
-        const val = field.input.value.trim();
-        const parent = field.input.parentElement;
-        
-        let isValid = true;
-        
-        if (fieldKey === 'email') {
-            isValid = emailRegex.test(val);
-        } else {
-            isValid = val !== '';
-        }
-        
-        if (isValid) {
-            parent.classList.remove('invalid');
-        } else {
-            parent.classList.add('invalid');
-        }
-        
-        return isValid;
-    };
+        // Helper to validate single field
+        const validateField = (fieldKey) => {
+            const field = fields[fieldKey];
+            if (!field || !field.input) return true;
+            const val = field.input.value.trim();
+            const parent = field.input.parentElement;
+            
+            let isValid = true;
+            
+            if (fieldKey === 'email') {
+                isValid = emailRegex.test(val);
+            } else {
+                isValid = val !== '';
+            }
+            
+            if (isValid) {
+                parent.classList.remove('invalid');
+            } else {
+                parent.classList.add('invalid');
+            }
+            
+            return isValid;
+        };
 
-    // Remove errors dynamically when user types
-    Object.keys(fields).forEach(key => {
-        fields[key].input.addEventListener('input', () => {
-            const parent = fields[key].input.parentElement;
-            if (parent.classList.contains('invalid')) {
-                validateField(key);
+        // Remove errors dynamically when user types
+        Object.keys(fields).forEach(key => {
+            if (fields[key] && fields[key].input) {
+                fields[key].input.addEventListener('input', () => {
+                    const parent = fields[key].input.parentElement;
+                    if (parent.classList.contains('invalid')) {
+                        validateField(key);
+                    }
+                });
             }
         });
-    });
 
-    // Form Submission
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        let isFormValid = true;
-        Object.keys(fields).forEach(key => {
-            const isFieldValid = validateField(key);
-            if (!isFieldValid) isFormValid = false;
+        // Form Submission
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            let isFormValid = true;
+            Object.keys(fields).forEach(key => {
+                const isFieldValid = validateField(key);
+                if (!isFieldValid) isFormValid = false;
+            });
+
+            if (isFormValid) {
+                // Trigger submit loading status
+                if (btnSubmit) {
+                    btnSubmit.setAttribute('disabled', 'true');
+                    const sendingText = (translations[activeLanguage] && translations[activeLanguage]['form_btn_sending']) || 'Sending...';
+                    btnSubmit.querySelector('.btn-text').textContent = sendingText;
+                    btnSubmit.querySelector('.btn-icon').classList.add('hide');
+                    btnSubmit.querySelector('.spinner').classList.remove('hide');
+                }
+
+                // Simulate server network latency (1.5 seconds)
+                setTimeout(() => {
+                    // Hide Form and Show Success Alert
+                    contactForm.classList.add('hide');
+                    if (formSuccessAlert) formSuccessAlert.classList.remove('hide');
+                    
+                    // Reset submit button state
+                    if (btnSubmit) {
+                        btnSubmit.removeAttribute('disabled');
+                        const submitText = (translations[activeLanguage] && translations[activeLanguage]['form_btn_submit']) || 'Send Message';
+                        btnSubmit.querySelector('.btn-text').textContent = submitText;
+                        btnSubmit.querySelector('.btn-icon').classList.remove('hide');
+                        btnSubmit.querySelector('.spinner').classList.add('hide');
+                    }
+                }, 1500);
+            }
         });
 
-        if (isFormValid) {
-            // Trigger submit loading status
-            btnSubmit.setAttribute('disabled', 'true');
-            const sendingText = (translations[activeLanguage] && translations[activeLanguage]['form_btn_sending']) || 'Sending...';
-            btnSubmit.querySelector('.btn-text').textContent = sendingText;
-            btnSubmit.querySelector('.btn-icon').classList.add('hide');
-            btnSubmit.querySelector('.spinner').classList.remove('hide');
-
-            // Simulate server network latency (1.5 seconds)
-            setTimeout(() => {
-                // Hide Form and Show Success Alert
-                contactForm.classList.add('hide');
-                formSuccessAlert.classList.remove('hide');
+        // Reset Form to send another message
+        if (btnResetForm) {
+            btnResetForm.addEventListener('click', () => {
+                // Reset inputs
+                contactForm.reset();
+                Object.keys(fields).forEach(key => {
+                    if (fields[key] && fields[key].input) {
+                        fields[key].input.parentElement.classList.remove('invalid');
+                    }
+                });
                 
-                // Reset submit button state
-                btnSubmit.removeAttribute('disabled');
-                const submitText = (translations[activeLanguage] && translations[activeLanguage]['form_btn_submit']) || 'Send Message';
-                btnSubmit.querySelector('.btn-text').textContent = submitText;
-                btnSubmit.querySelector('.btn-icon').classList.remove('hide');
-                btnSubmit.querySelector('.spinner').classList.add('hide');
-            }, 1500);
+                // Toggle view
+                if (formSuccessAlert) formSuccessAlert.classList.add('hide');
+                contactForm.classList.remove('hide');
+            });
         }
-    });
-
-    // Reset Form to send another message
-    btnResetForm.addEventListener('click', () => {
-        // Reset inputs
-        contactForm.reset();
-        Object.keys(fields).forEach(key => {
-            fields[key].input.parentElement.classList.remove('invalid');
-        });
-        
-        // Toggle view
-        formSuccessAlert.classList.add('hide');
-        contactForm.classList.remove('hide');
-    });
+    }
 
     // 10. Lightbox Gallery Modal
     const lightbox = document.getElementById('lightbox');
@@ -1677,7 +1690,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // Email Copy and Scroll Action
+    // Email Copy and Open Mail Client Action
     const emailActions = document.querySelectorAll('.btn-email-action');
     emailActions.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -1690,10 +1703,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Could not copy email: ', err);
             });
             
-            const contactSection = document.getElementById('contact');
-            if (contactSection) {
-                contactSection.scrollIntoView({ behavior: 'smooth' });
-            }
+            window.location.href = `mailto:${email}`;
         });
     });
 
@@ -1703,6 +1713,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.querySelectorAll('.btn-email-action').forEach(el => {
         el.href = `mailto:${email}`;
+        el.removeAttribute('target');
     });
 
     // Prevent Image Downloads / Copying
