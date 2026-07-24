@@ -503,7 +503,7 @@ button:hover { transform: translateY(-1px); }
         <input id="titleText" type="text" value="FINAL DATE">
 
         <label for="dateValue">完成日期</label>
-        <input id="dateValue" type="date" value="2026-07-19">
+        <input id="dateValue" type="date" value="">
 
         <label for="dateFormat">日期格式</label>
         <select id="dateFormat">
@@ -515,7 +515,7 @@ button:hover { transform: translateY(-1px); }
         </select>
 
         <label for="customDate">自訂下方文字</label>
-        <input id="customDate" type="text" value="2026.07.19" disabled>
+        <input id="customDate" type="text" value="" disabled>
       </div>
     </details>
 
@@ -664,6 +664,10 @@ button:hover { transform: translateY(-1px); }
         <label for="dividerWidth">分隔線寬 <span class="value" id="dividerWidthVal"></span></label>
         <input id="dividerWidth" type="range" min="0" max="14" value="5">
 
+        <label for="overallBold">整體加粗 <span class="value" id="overallBoldVal"></span></label>
+        <input id="overallBold" type="range" min="0" max="5" step="0.25" value="0">
+        <div class="help">會同時加粗 Logo、文字、外框與分隔線；分隔線會以增加線寬的方式加粗，不會再消失。下載 SVG／PNG 時也會保留。</div>
+
         <div class="check"><input id="showBorder" type="checkbox" checked><span>顯示外框</span></div>
         <div class="check"><input id="showVertical" type="checkbox" checked><span>顯示垂直分隔線</span></div>
         <div class="check"><input id="showHorizontal" type="checkbox" checked><span>顯示水平分隔線</span></div>
@@ -722,6 +726,11 @@ button:hover { transform: translateY(-1px); }
     <div class="preview">
       <div class="paper">
         <svg id="previewSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 430">
+          <defs>
+            <filter id="overallBoldFilter" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+              <feMorphology id="overallBoldMorphology" in="SourceGraphic" operator="dilate" radius="0"/>
+            </filter>
+          </defs>
           <rect id="bgRect" x="0" y="0" width="1200" height="430" fill="#ffffff"/>
           <rect id="borderRect" x="22" y="22" width="1156" height="386" rx="36"
                 fill="none" stroke="#000000" stroke-width="7"/>
@@ -775,7 +784,7 @@ const controlIds = [
   "titleSize","dateSize","letterSpacing",
   "titleYOffset","lineYOffset","dateYOffset","titleScaleY","dateScaleY",
   "logoScale","logoOffsetX","logoOffsetY","showLogo",
-  "fgColor","bgColor","borderWidth","cornerRadius","dividerWidth",
+  "fgColor","bgColor","borderWidth","cornerRadius","dividerWidth","overallBold",
   "showBorder","showVertical","showHorizontal","transparentBg",
   "svgWidth","svgHeight","verticalCanvasPadding","horizontalCanvasPadding"
 ];
@@ -1090,6 +1099,19 @@ function addManualFontName() {
   document.getElementById("systemFontName").value = "";
   setFontStatus(`已確認並加入可用字體：${raw}`, "ok");
 }
+function getTodayLocalISO() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatISODateWithDots(iso) {
+  const parts = String(iso || "").split("-");
+  return parts.length === 3 ? `${parts[0]}.${parts[1]}.${parts[2]}` : "";
+}
+
 function formatDate() {
   if (el.dateFormat.value === "custom") return el.customDate.value || "";
   const value = el.dateValue.value;
@@ -1118,6 +1140,7 @@ function setValueText() {
   document.getElementById("borderWidthVal").textContent = el.borderWidth.value + " px";
   document.getElementById("cornerRadiusVal").textContent = el.cornerRadius.value + " px";
   document.getElementById("dividerWidthVal").textContent = el.dividerWidth.value + " px";
+  document.getElementById("overallBoldVal").textContent = Number(el.overallBold.value).toFixed(2) + " px";
   document.getElementById("verticalCanvasPaddingVal").textContent = el.verticalCanvasPadding.value + " px";
   document.getElementById("horizontalCanvasPaddingVal").textContent = el.horizontalCanvasPadding.value + " px";
 }
@@ -1175,6 +1198,33 @@ async function update() {
   const bg = el.bgColor.value;
   updateTransparentPreview(fg);
 
+  const overallBold = Math.max(0, Number(el.overallBold.value) || 0);
+  const morphology = document.getElementById("overallBoldMorphology");
+  morphology.setAttribute("radius", overallBold);
+
+  // 文字與 Logo 使用 morphology 加粗。
+  // 線段不能使用此濾鏡，因為 SVG 的水平／垂直 line 邊界可能為 0，
+  // 某些瀏覽器套用濾鏡後會直接消失。
+  const morphologyElements = [
+    document.getElementById("logoImage"),
+    document.getElementById("titleSvg"),
+    document.getElementById("dateSvg")
+  ];
+
+  for (const node of morphologyElements) {
+    if (overallBold > 0) node.setAttribute("filter", "url(#overallBoldFilter)");
+    else node.removeAttribute("filter");
+  }
+
+  const border = document.getElementById("borderRect");
+  const vLine = document.getElementById("vLine");
+  const hLine = document.getElementById("hLine");
+
+  // 外框與分隔線改用增加 stroke-width，避免整體加粗時消失。
+  border.removeAttribute("filter");
+  vLine.removeAttribute("filter");
+  hLine.removeAttribute("filter");
+
   const marginY = Math.max(0, Number(el.verticalCanvasPadding.value) || 0);
   const marginX = Math.max(0, Number(el.horizontalCanvasPadding.value) || 0);
 
@@ -1191,14 +1241,18 @@ async function update() {
   bgRect.setAttribute("height", H);
   bgRect.setAttribute("fill", el.transparentBg.checked ? "none" : bg);
 
-  const border = document.getElementById("borderRect");
   border.setAttribute("x", marginX);
   border.setAttribute("y", marginY);
   border.setAttribute("width", innerW);
   border.setAttribute("height", innerH);
   border.setAttribute("rx", el.cornerRadius.value);
   border.setAttribute("stroke", fg);
-  border.setAttribute("stroke-width", el.showBorder.checked ? el.borderWidth.value : 0);
+  border.setAttribute(
+    "stroke-width",
+    el.showBorder.checked
+      ? Number(el.borderWidth.value) + overallBold * 2
+      : 0
+  );
 
   const logo = document.getElementById("logoImage");
   const logoBoxW = leftW - Math.round(innerW * 0.04);
@@ -1211,13 +1265,17 @@ async function update() {
   logo.setAttribute("height", logoBoxH * scale);
   logo.style.display = el.showLogo.checked ? "" : "none";
 
-  const vLine = document.getElementById("vLine");
   vLine.setAttribute("x1", dividerX);
   vLine.setAttribute("x2", dividerX);
   vLine.setAttribute("y1", marginY + Math.round(innerH * 0.07));
   vLine.setAttribute("y2", H - marginY - Math.round(innerH * 0.07));
   vLine.setAttribute("stroke", fg);
-  vLine.setAttribute("stroke-width", el.showVertical.checked ? el.dividerWidth.value : 0);
+  vLine.setAttribute(
+    "stroke-width",
+    el.showVertical.checked
+      ? Number(el.dividerWidth.value) + overallBold * 2
+      : 0
+  );
 
   const title = document.getElementById("titleSvg");
   const titleBaseY = Math.round(marginY + innerH * 0.34);
@@ -1234,14 +1292,18 @@ async function update() {
   title.setAttribute("letter-spacing", el.letterSpacing.value);
   title.setAttribute("transform", `translate(0 ${titleY}) scale(1 ${titleScaleY}) translate(0 ${-titleY})`);
 
-  const hLine = document.getElementById("hLine");
   const hLineY = Math.round(marginY + innerH * 0.49) + Number(el.lineYOffset.value);
   hLine.setAttribute("x1", rightX);
   hLine.setAttribute("x2", rightEnd);
   hLine.setAttribute("y1", hLineY);
   hLine.setAttribute("y2", hLineY);
   hLine.setAttribute("stroke", fg);
-  hLine.setAttribute("stroke-width", el.showHorizontal.checked ? el.dividerWidth.value : 0);
+  hLine.setAttribute(
+    "stroke-width",
+    el.showHorizontal.checked
+      ? Number(el.dividerWidth.value) + overallBold * 2
+      : 0
+  );
 
   const date = document.getElementById("dateSvg");
   const dateBaseY = Math.round(marginY + innerH * 0.75);
@@ -1423,10 +1485,17 @@ document.getElementById("resetBtn").addEventListener("click", () => {
 });
 
 async function initializeApp() {
+  const today = getTodayLocalISO();
+  el.dateValue.value = today;
+  el.customDate.value = formatISODateWithDots(today);
+
   renderFontOptions();
   loadSettings();
   await refreshFontAvailability(true);
   renderFontOptions();
+
+  if (!el.dateValue.value) el.dateValue.value = today;
+  if (!el.customDate.value) el.customDate.value = formatISODateWithDots(el.dateValue.value || today);
 
   if ([...el.titleFont.options].some(option => option.value === PREFERRED_FONT_VALUE)) {
     const saved = JSON.parse(localStorage.getItem("pcbDateLabelSettingsV3") || "null");
