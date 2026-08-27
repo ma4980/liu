@@ -12,6 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Decode email safely to prevent scrapers
     const email = atob("bGl1MDMwOEBsaXUwMzA4LnVzLmtn");
+    document.querySelectorAll('.email-placeholder').forEach(el => {
+        el.textContent = email;
+        if (el.tagName === 'A') {
+            el.href = `mailto:${email}`;
+        }
+    });
 
     // Prevent image context menu and dragging for minor protection
     document.querySelectorAll('img').forEach(img => {
@@ -104,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'about_role': 'Network & AIoT Developer',
             'about_email_title': '發送 Email / 複製位址',
             'about_card_bg_title': '個人背景',
-            'about_card_bg_text': '我目前是電子工程系的學生，專注於網路工程 (Network Engineering) 與 AIoT 邊緣運算。我喜歡拆解複雜的系統架構，探究硬體、韌體、網路到上層軟體的溝通機制。對我而言，將數位程式碼與實體硬體世界連結，是無與倫比的樂趣。',
+            'about_card_bg_text': '我目前是電子工程系碩士班學生，專注於網路工程 (Network Engineering) 與 AIoT 邊緣運算。我喜歡拆解複雜的系統架構，探究硬體、韌體、網路到上層軟體的溝通機制。對我而言，將數位程式碼與實體硬體世界連結，是無與倫比的樂趣。',
             'about_card_edu_title': '教育與經歷',
             'about_card_phil_title': '開發哲學',
             'about_card_phil_text': '「專業、穩健、極客精神」。面對複雜的基礎設施架構與除錯挑戰，我秉持系統化的思考方式，以穩健的方式部署環境，並以極客精神追求極限效能與自動化。',
@@ -135,8 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
   help        - 顯示此指令選單
 `,
             'term_experience': `=== 個人經歷與求學背景 (Timeline) ===
-- [即將] 雲林縣虎尾科技大學 電子工程系 碩士班
-- [目前] 雲林縣虎尾科技大學 電子工程系 (專注於邊緣運算、軟硬體整合、影像辨識及無人機控制)
+- [目前] 雲林縣虎尾科技大學 電子工程系 碩士班 (深造嵌入式系統與 AIoT 領域)
+- [經歷] 雲林縣虎尾科技大學 電子工程系 (主修電子工程，專注於邊緣運算、軟硬體整合與無人機控制)
 - [經歷] 雲林縣政府 (服務並累積實務經驗)
 - [經歷] 雲林縣虎尾科技大學 電子工程科
 - [經歷] 雲林縣西螺農工 電子科
@@ -169,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'term_contact': `=== 聯絡資訊 ===
 - Email: {email}
 - GitHub: https://github.com/ma4980
-- 所在地: 台灣 (Taiwan)
+- 所在地: 雲林 (Yunlin, Taiwan)
 - Proxmox 主節點狀態: ONLINE
 * 您也可以在右側網頁的聯絡表單直接發送訊息！
 `,
@@ -184,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="nf-label">OS:</span> Proxmox VE / Ubuntu LTS<br>
                             <span class="nf-label">Host:</span> Edge AIoT Lab & Homelab Node<br>
                             <span class="nf-label">Kernel:</span> 6.8.0-proxmox-pve<br>
-                            <span class="nf-label">Uptime:</span> 18y 9m (EE Student Life)<br>
+                            <span class="nf-label">Uptime:</span> 18y 9m (EE Master Student Life)<br>
                             <span class="nf-label">Shell:</span> bash / zsh<br>
                             <span class="nf-label">Core Tech:</span> Proxmox, Docker, ROS 2, OpenWrt<br>
                             <span class="nf-label">Interests:</span> 3D Printing, Drone Control, Virtualization
@@ -256,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'proj_mfg_desc': '將 Creality 3D 列印機升級為主動雙軸，重寫 Klipper 控制韌體，並用 Fusion 360 設計散熱風道與列印零件，顯著提升了列印精度與速度。',
             'proj_mfg_link': '設計零件 STL',
             'proj_ta_badge': '教學服務',
-            'proj_ta_title': '嵌入式系統與 AIoT 課程助理',
+            'proj_ta_title': '課程助理',
             'proj_ta_desc': '擔任電子工程系專業課程教學助理，負責實驗課環境建置指導、電子電路除錯教學、微處理器程式撰寫引導，並協助維護實驗室設備與教材準備。',
             'proj_ta_link': '教學花絮照片',
             'proj_grad_badge': '過往紀錄',
@@ -286,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'contact_info_sub': '歡迎透過以下管道與我取得聯繫，我會盡快回覆您！',
             'contact_label_email': 'Email',
             'contact_label_location': '所在地',
-            'contact_text_location': '台灣 (Taiwan)',
+            'contact_text_location': '雲林 (Yunlin, Taiwan)',
             'contact_label_github': 'GitHub',
             'contact_label_instagram': 'Instagram',
             'contact_status_title': 'Lab Node Status: Online',
@@ -403,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'about_role': 'Network & AIoT Developer',
             'about_email_title': 'Send Email / Copy Address',
             'about_card_bg_title': 'Background',
-            'about_card_bg_text': 'I am currently a student in Electronic Engineering, focusing on Network Engineering and AIoT edge computing. I love dissecting complex system architectures to discover how hardware, firmware, network and software communicate. For me, bridging the digital code with the physical hardware world is an unmatched joy.',
+            'about_card_bg_text': 'I am currently a Master\'s student in Electronic Engineering, focusing on Network Engineering and AIoT edge computing. I love dissecting complex system architectures to discover how hardware, firmware, network and software communicate. For me, bridging the digital code with the physical hardware world is an unmatched joy.',
             'about_card_edu_title': 'Education & Experience',
             'about_card_phil_title': 'Philosophy',
             'about_card_phil_text': '"Professional, Stable, Geek Spirit". Facing complex infrastructure architectures and troubleshooting challenges, I follow systematic thinking to deploy environments securely, pursuing performance limits and automation.',
@@ -434,8 +440,8 @@ document.addEventListener('DOMContentLoaded', () => {
   help        - Display this menu
 `,
             'term_experience': `=== Education & Experience Timeline ===
-- [Soon] National Formosa University - MS in Electronic Engineering
-- [Active] National Formosa University - BS in EE (Edge AIoT & Drone Controls)
+- [Active] National Formosa University - MS in Electronic Engineering
+- [Past] National Formosa University - BS in EE (Edge AIoT & Drone Controls)
 - [Past] Yunlin County Government (Service & management experience)
 - [Past] National Formosa University (5-Year Associate Degree in EE)
 - [Past] Silo Senior Vocational School (Electronics Dept.)
@@ -468,7 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'term_contact': `=== Contact Information ===
 - Email: {email}
 - GitHub: https://github.com/ma4980
-- Location: Taiwan
+- Location: Yunlin, Taiwan
 - Proxmox Node Status: ONLINE
 * You can also use the contact form on the right!
 `,
@@ -483,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="nf-label">OS:</span> Proxmox VE / Ubuntu LTS<br>
                             <span class="nf-label">Host:</span> Edge AIoT Lab & Homelab Node<br>
                             <span class="nf-label">Kernel:</span> 6.8.0-proxmox-pve<br>
-                            <span class="nf-label">Uptime:</span> 18y 9m (EE Student Life)<br>
+                            <span class="nf-label">Uptime:</span> 18y 9m (EE Master Student Life)<br>
                             <span class="nf-label">Shell:</span> bash / zsh<br>
                             <span class="nf-label">Core Tech:</span> Proxmox, Docker, ROS 2, OpenWrt<br>
                             <span class="nf-label">Interests:</span> 3D Printing, Drone Control, Virtualization
@@ -585,7 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'contact_info_sub': 'Feel free to reach out through any of these channels. I will get back to you as soon as possible!',
             'contact_label_email': 'Email',
             'contact_label_location': 'Location',
-            'contact_text_location': 'Taiwan',
+            'contact_text_location': 'Yunlin, Taiwan',
             'contact_label_github': 'GitHub',
             'contact_label_instagram': 'Instagram',
             'contact_status_title': 'Lab Node Status: Online',
@@ -702,7 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'about_role': 'Network & AIoT Developer',
             'about_email_title': 'メール送信 / アドレスコピー',
             'about_card_bg_title': 'バックグラウンド',
-            'about_card_bg_text': '現在電子工学専攻の学生で、ネットワーク工学とAIoTエッジコンピューティングに情熱を注いでいます。複雑なシステムアーキテクチャを分析し、ハードウェア、ファームウェア、ネットワーク、上位ソフトウェアがどのように通信するかを探求するのが大好きです。',
+            'about_card_bg_text': '現在電子工学科の修士課程（大学院）に在籍している学生で、ネットワーク工学とAIoTエッジコンピューティングに情熱を注いでいます。複雑なシステムアーキテクチャを分析し、ハードウェア、ファームウェア、ネットワーク、上位ソフトウェアがどのように通信するかを探求するのが大好きです。',
             'about_card_edu_title': '学歴と経歴',
             'about_card_phil_title': '開発理念',
             'about_card_phil_text': '「プロフェッショナル、安定、ギーク精神」。複雑なインフラのトラブルシューティングやデプロイに対し、システム的な思考アプローチで安定した環境を構築し、極限のパフォーマンスと自動化を追求します。',
@@ -733,8 +739,8 @@ document.addEventListener('DOMContentLoaded', () => {
   help        - このヘルプメニューを表示
 `,
             'term_experience': `=== 学歴と経歴タイムライン ===
-- [予定] 国立虎尾科技大学 - 電子工学科 修士課程
-- [現在] 国立虎尾科技大学 - 電子工学科（エッジAIoT & ドローン制御）
+- [現在] 国立虎尾科技大学 - 電子工学科 修士課程
+- [過去] 国立虎尾科技大学 - 電子工学科（エッジAIoT & ドローン制御）
 - [過去] 雲林県政府（実務経験）
 - [過去] 国立虎尾科技大学（電子工学科 5年制）
 - [過去] 西螺農工高校（電子科）
@@ -767,7 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'term_contact': `=== 連絡先一覧 ===
 - Email: {email}
 - GitHub: https://github.com/ma4980
-- 所在地: 台湾
+- 所在地: 雲林 (Yunlin, Taiwan)
 - Proxmox ノード状態: ONLINE
 * 画面右側のコンタクトフォームからも直接メッセージを送信できます！
 `,
@@ -782,7 +788,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="nf-label">OS:</span> Proxmox VE / Ubuntu LTS<br>
                             <span class="nf-label">Host:</span> Edge AIoT Lab & Homelab Node<br>
                             <span class="nf-label">Kernel:</span> 6.8.0-proxmox-pve<br>
-                            <span class="nf-label">Uptime:</span> 18y 9m (EE Student Life)<br>
+                            <span class="nf-label">Uptime:</span> 18y 9m (EE Master Student Life)<br>
                             <span class="nf-label">Shell:</span> bash / zsh<br>
                             <span class="nf-label">Core Tech:</span> Proxmox, Docker, ROS 2, OpenWrt<br>
                             <span class="nf-label">Interests:</span> 3D Printing, Drone Control, Virtualization
@@ -884,7 +890,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'contact_info_sub': '以下の方法でお気軽にご連絡ください。できるだけ早くお返事いたします！',
             'contact_label_email': 'メール',
             'contact_label_location': '所在地',
-            'contact_text_location': '台湾',
+            'contact_text_location': '雲林 (Yunlin, Taiwan)',
             'contact_label_github': 'GitHub',
             'contact_label_instagram': 'Instagram',
             'contact_status_title': 'Lab Node Status: Online',
@@ -984,7 +990,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    let activeLanguage = 'zh-TW';
+    let activeLanguage = 'auto';
 
     const getSystemLanguage = () => {
         const sysLang = navigator.language || navigator.userLanguage;
@@ -1224,22 +1230,26 @@ document.addEventListener('DOMContentLoaded', () => {
     
     mobileMenuToggle.addEventListener('click', () => {
         navMenu.classList.toggle('active');
-        const icon = mobileMenuToggle.querySelector('i');
-        if (navMenu.classList.contains('active')) {
-            icon.setAttribute('data-lucide', 'x');
-        } else {
-            icon.setAttribute('data-lucide', 'menu');
+        const icon = mobileMenuToggle.querySelector('i, svg');
+        if (icon) {
+            if (navMenu.classList.contains('active')) {
+                icon.setAttribute('data-lucide', 'x');
+            } else {
+                icon.setAttribute('data-lucide', 'menu');
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
-        lucide.createIcons();
     });
 
     // Close menu when clicking a link
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
             navMenu.classList.remove('active');
-            const icon = mobileMenuToggle.querySelector('i');
-            icon.setAttribute('data-lucide', 'menu');
-            lucide.createIcons();
+            const icon = mobileMenuToggle.querySelector('i, svg');
+            if (icon) {
+                icon.setAttribute('data-lucide', 'menu');
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
         });
     });
 
@@ -1248,9 +1258,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (navMenu.classList.contains('active')) {
             if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
                 navMenu.classList.remove('active');
-                const icon = mobileMenuToggle.querySelector('i');
-                icon.setAttribute('data-lucide', 'menu');
-                lucide.createIcons();
+                const icon = mobileMenuToggle.querySelector('i, svg');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'menu');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }
             }
         }
     });
@@ -1602,18 +1614,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentGallery = [];
     let currentIndex = 0;
 
-    // Open lightbox function
     const openLightbox = (galleryKey, imageSrc) => {
         currentGallery = galleries[galleryKey] || [];
-        // Find if the clicked image is in the gallery, else default to index 0
         const foundIndex = currentGallery.findIndex(item => imageSrc.includes(item.src));
         currentIndex = foundIndex !== -1 ? foundIndex : 0;
 
         updateLightboxContent();
         lightbox.classList.remove('hide');
-        // trigger transitions
         setTimeout(() => lightbox.classList.add('active'), 50);
-        document.body.style.overflow = 'hidden'; // lock background scroll
+        document.body.style.overflow = 'hidden';
     };
 
     const updateLightboxContent = () => {
@@ -1621,14 +1630,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentItem = currentGallery[currentIndex];
         lightboxImg.src = currentItem.src;
         
-        // Translate caption dynamically if key exists
         if (currentItem.caption_key && translations[activeLanguage] && translations[activeLanguage][currentItem.caption_key]) {
             lightboxCaption.textContent = translations[activeLanguage][currentItem.caption_key];
         } else {
             lightboxCaption.textContent = currentItem.caption;
         }
 
-        // Toggle navigation arrows if there's only 1 image
         if (currentGallery.length <= 1) {
             btnPrev.style.display = 'none';
             btnNext.style.display = 'none';
@@ -1652,11 +1659,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const closeLightbox = () => {
         lightbox.classList.remove('active');
-        document.body.style.overflow = ''; // restore scroll
+        document.body.style.overflow = '';
         setTimeout(() => lightbox.classList.add('hide'), 300);
     };
 
-    // Attach click events to project cards
     const projectCardElements = document.querySelectorAll('.project-card');
     projectCardElements.forEach(card => {
         const img = card.querySelector('.project-img');
@@ -1670,121 +1676,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Lightbox Controls Events
-    btnClose.addEventListener('click', closeLightbox);
-    btnNext.addEventListener('click', (e) => { e.stopPropagation(); nextImage(); });
-    btnPrev.addEventListener('click', (e) => { e.stopPropagation(); prevImage(); });
-    lightbox.addEventListener('click', closeLightbox); // Close when clicking backdrop
-    
-    lightboxImg.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent closing when clicking image itself
-        nextImage(); // clicking image advances to next image
-    });
+    if (btnClose) btnClose.addEventListener('click', closeLightbox);
+    if (btnNext) btnNext.addEventListener('click', nextImage);
+    if (btnPrev) btnPrev.addEventListener('click', prevImage);
 
-    // Keyboard support
-    document.addEventListener('keydown', (e) => {
-        if (!lightbox.classList.contains('active')) return;
-        if (e.key === 'Escape') closeLightbox();
-        if (e.key === 'ArrowRight') nextImage();
-        if (e.key === 'ArrowLeft') prevImage();
-    });
-
-
-    // Email Copy and Open Mail Client Action
-    const emailActions = document.querySelectorAll('.btn-email-action');
-    emailActions.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            const toastMsg = (translations[activeLanguage] && translations[activeLanguage]['toast_email_copied']) || 'Email address copied!';
-            navigator.clipboard.writeText(email).then(() => {
-                showToast(toastMsg);
-            }).catch(err => {
-                console.error('Could not copy email: ', err);
-            });
-            
-            window.location.href = `mailto:${email}`;
+    if (lightbox) {
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox || e.target.classList.contains('lightbox-overlay')) {
+                closeLightbox();
+            }
         });
-    });
+    }
 
-    // Populate email hrefs and placeholders dynamically
-    document.querySelectorAll('.email-placeholder').forEach(el => {
-        el.textContent = email;
-    });
-    document.querySelectorAll('.btn-email-action').forEach(el => {
-        el.href = `mailto:${email}`;
-        el.removeAttribute('target');
-    });
-
-    // Prevent Image Downloads / Copying
-    document.addEventListener('contextmenu', (e) => {
-        if (e.target.tagName === 'IMG') {
-            e.preventDefault();
-            const toastMsg = activeLanguage === 'zh-TW' ? '本站圖片受保護，無法複製或下載' : 
-                             (activeLanguage === 'ja' ? '当サイトの画像は保護されており、ダウンロードできません' : 'Images on this site are protected and cannot be downloaded.');
-            showToast(toastMsg);
-        }
-    });
-    document.addEventListener('dragstart', (e) => {
-        if (e.target.tagName === 'IMG') {
-            e.preventDefault();
+    document.addEventListener('keydown', (e) => {
+        if (lightbox && lightbox.classList.contains('active')) {
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowRight') nextImage();
+            if (e.key === 'ArrowLeft') prevImage();
         }
     });
 
-    // Toast notification function
-    const showToast = (message) => {
-        const existingToast = document.querySelector('.toast-notification');
-        if (existingToast) existingToast.remove();
-        
-        const toast = document.createElement('div');
-        toast.className = 'toast-notification';
-        toast.innerHTML = `
-            <span class="toast-icon"><i data-lucide="check-circle"></i></span>
-            <span>${message}</span>
-        `;
-        document.body.appendChild(toast);
-        
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
-        
-        setTimeout(() => toast.classList.add('show'), 50);
-        
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 400);
-        }, 3000);
-    };
-
-    // 11. Scroll Reveal Intersection Observer
+    // 11. Scroll Reveal Animations
     const initScrollReveal = () => {
-        const revealElements = document.querySelectorAll('.reveal');
+        const revealElements = document.querySelectorAll('.reveal, .reveal-on-scroll');
         if (revealElements.length === 0) return;
 
         const observerOptions = {
             root: null,
-            threshold: 0.1,
-            rootMargin: '0px 0px -40px 0px'
+            rootMargin: '0px 0px -20px 0px',
+            threshold: 0.05
         };
 
         const revealObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    observer.unobserve(entry.target); // Trigger animation only once
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
         revealElements.forEach(el => {
             revealObserver.observe(el);
+            // Immediate fallback for elements already in or near the viewport
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
+                el.classList.add('visible');
+            }
         });
     };
 
-    // Run scroll reveal init
     initScrollReveal();
 
-    // 12. Interactive Background Particle System
+    // 12. Interactive Background Particle System (Starfield & Gravity Vortex)
     const initBgParticles = () => {
         const canvas = document.getElementById('bg-particles');
         if (!canvas) return;
@@ -1792,7 +1736,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         let animationFrameId = null;
         let particles = [];
-        let mouse = { x: null, y: null, active: false };
+        let mouse = { x: -1000, y: -1000, active: false, isDown: false };
         
         let colors = getThemeColors();
         
@@ -1824,7 +1768,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         }
 
-        // Setup resizing with support for devicePixelRatio
         const resizeCanvas = () => {
             const dpr = window.devicePixelRatio || 1;
             const width = window.innerWidth;
@@ -1832,85 +1775,115 @@ document.addEventListener('DOMContentLoaded', () => {
             
             canvas.width = width * dpr;
             canvas.height = height * dpr;
-            ctx.scale(dpr, dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             
             canvas.style.width = `${width}px`;
             canvas.style.height = `${height}px`;
             
-            // Adjust particles count based on screen size (Optimized: 60 max on desktop, 15 on mobile)
             const area = width * height;
-            const targetCount = Math.min(Math.floor(area / 25000), window.innerWidth < 768 ? 15 : 60);
+            const targetCount = Math.min(Math.floor(area / 28000), window.innerWidth < 768 ? 20 : 55);
             
             adjustParticlesCount(targetCount, width, height);
         };
 
         class Particle {
             constructor(w, h) {
+                this.reset(w, h);
+            }
+
+            reset(w, h) {
                 this.x = Math.random() * w;
                 this.y = Math.random() * h;
-                // very slow and fluid motion
-                this.vx = (Math.random() - 0.5) * 0.4;
-                this.vy = (Math.random() - 0.5) * 0.4;
-                this.radius = Math.random() * 1.5 + 1; // 1px to 2.5px
-                // Assign a color group (cyan or purple)
-                this.colorType = Math.random() > 0.5 ? 'cyan' : 'purple';
-                this.alpha = Math.random() * 0.4 + 0.3; // base opacity
+                this.angle = Math.random() * Math.PI * 2;
+                this.baseSpeed = Math.random() * 0.3 + 0.15;
+                this.vx = Math.cos(this.angle) * this.baseSpeed;
+                this.vy = Math.sin(this.angle) * this.baseSpeed;
+                this.radius = Math.random() * 1.5 + 1.0;
+                this.colorType = Math.random() > 0.4 ? 'cyan' : 'purple';
+                this.baseAlpha = Math.random() * 0.35 + 0.25;
+                this.pulseSpeed = Math.random() * 0.02 + 0.01;
+                this.pulse = Math.random() * Math.PI * 2;
             }
 
             update(w, h) {
-                // Apply mouse interaction
-                if (mouse.active && mouse.x !== null && mouse.y !== null) {
+                this.angle += (Math.random() - 0.5) * 0.03;
+                const targetVx = Math.cos(this.angle) * this.baseSpeed;
+                const targetVy = Math.sin(this.angle) * this.baseSpeed;
+
+                // Mouse Left Click Hold: Gravitational singularity gather pull
+                if (mouse.isDown && mouse.active && mouse.x > 0 && mouse.y > 0) {
                     const dx = mouse.x - this.x;
                     const dy = mouse.y - this.y;
                     const distSq = dx * dx + dy * dy;
+                    const pullRadius = 600;
                     
-                    if (distSq < 32400) { // 180 * 180
-                        const dist = Math.sqrt(distSq);
-                        // Gentle attraction force
-                        const force = (180 - dist) / 180; // stronger force closer to cursor
-                        this.vx += (dx / dist) * force * 0.02;
-                        this.vy += (dy / dist) * force * 0.02;
+                    if (distSq < pullRadius * pullRadius) {
+                        const dist = Math.sqrt(distSq) || 1;
+                        const force = (pullRadius - dist) / pullRadius;
+                        // Gravitational pull towards cursor
+                        this.vx += (dx / dist) * force * 0.45;
+                        this.vy += (dy / dist) * force * 0.45;
+                    }
+                    // Apply light damping while gathering
+                    this.vx *= 0.95;
+                    this.vy *= 0.95;
+                } else {
+                    // Normal state: blend to base velocity + subtle repulsion on hover
+                    this.vx = this.vx * 0.98 + targetVx * 0.02;
+                    this.vy = this.vy * 0.98 + targetVy * 0.02;
+
+                    if (mouse.active && mouse.x > 0 && mouse.y > 0) {
+                        const dx = this.x - mouse.x;
+                        const dy = this.y - mouse.y;
+                        const distSq = dx * dx + dy * dy;
+                        const maxMouseDist = 130;
+                        
+                        if (distSq < maxMouseDist * maxMouseDist) {
+                            const dist = Math.sqrt(distSq) || 1;
+                            const force = (maxMouseDist - dist) / maxMouseDist;
+                            this.vx += (dx / dist) * force * 0.12;
+                            this.vy += (dy / dist) * force * 0.12;
+                        }
                     }
                 }
 
-                // Apply simple friction/damping
-                this.vx *= 0.98;
-                this.vy *= 0.98;
-
-                // Enforce max speed
-                const speedSq = this.vx * this.vx + this.vy * this.vy;
-                const maxSpeed = window.innerWidth < 768 ? 0.6 : 1.0;
-                const maxSpeedSq = maxSpeed * maxSpeed;
-                if (speedSq > maxSpeedSq) {
-                    const speed = Math.sqrt(speedSq);
+                // Speed limit depends on left-click hold state
+                const speed = Math.hypot(this.vx, this.vy);
+                const maxSpeed = mouse.isDown ? 4.5 : 1.0;
+                if (speed > maxSpeed) {
                     this.vx = (this.vx / speed) * maxSpeed;
                     this.vy = (this.vy / speed) * maxSpeed;
                 }
 
-                // Update position
                 this.x += this.vx;
                 this.y += this.vy;
+                this.pulse += this.pulseSpeed;
 
-                // Bounce off boundaries with padding
-                const pad = 10;
-                if (this.x < -pad) {
-                    this.x = w + pad;
-                } else if (this.x > w + pad) {
-                    this.x = -pad;
-                }
-                
-                if (this.y < -pad) {
-                    this.y = h + pad;
-                } else if (this.y > h + pad) {
-                    this.y = -pad;
-                }
+                const pad = 20;
+                if (this.x < -pad) this.x = w + pad;
+                if (this.x > w + pad) this.x = -pad;
+                if (this.y < -pad) this.y = h + pad;
+                if (this.y > h + pad) this.y = -pad;
             }
 
             draw() {
                 const color = this.colorType === 'cyan' ? colors.cyan : colors.purple;
+                let currentAlpha = Math.min(0.8, Math.max(0.15, this.baseAlpha + Math.sin(this.pulse) * 0.15));
+
+                if (mouse.active && mouse.x > 0) {
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const distSq = dx * dx + dy * dy;
+                    const effectDist = mouse.isDown ? 400 : 126;
+                    if (distSq < effectDist * effectDist) {
+                        const dist = Math.sqrt(distSq);
+                        currentAlpha = Math.min(0.98, currentAlpha + (1 - dist / effectDist) * (mouse.isDown ? 0.6 : 0.4));
+                    }
+                }
+
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${this.alpha})`;
+                ctx.arc(this.x, this.y, this.radius * (mouse.isDown ? 1.3 : 1.0), 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${currentAlpha})`;
                 ctx.fill();
             }
         }
@@ -1926,63 +1899,65 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const drawConnections = () => {
-            // Reduced connection distance (100 max on desktop, 70 on mobile) to save drawing calculations
-            const maxDist = window.innerWidth < 768 ? 70 : 100;
+            const maxDist = window.innerWidth < 768 ? 65 : 85;
             const maxDistSq = maxDist * maxDist;
-            const w = window.innerWidth;
-            const h = window.innerHeight;
+            const colCyan = colors.cyan;
+            const colPurple = colors.purple;
+            const len = particles.length;
 
-            for (let i = 0; i < particles.length; i++) {
+            // 1. Sleek local node-to-node constellation lines
+            for (let i = 0; i < len; i++) {
                 const p1 = particles[i];
-                
-                // Draw connection to mouse cursor
-                if (mouse.active && mouse.x !== null && mouse.y !== null) {
-                    const dx = mouse.x - p1.x;
-                    const dy = mouse.y - p1.y;
-                    const distSq = dx * dx + dy * dy;
-                    
-                    if (distSq < 22500) { // 150 * 150
-                        const dist = Math.sqrt(distSq);
-                        const alpha = (1 - dist / 150) * 0.25;
-                        const col = p1.colorType === 'cyan' ? colors.cyan : colors.purple;
-                        ctx.beginPath();
-                        ctx.moveTo(p1.x, p1.y);
-                        ctx.lineTo(mouse.x, mouse.y);
-                        ctx.strokeStyle = `rgba(${col.r}, ${col.g}, ${col.b}, ${alpha})`;
-                        ctx.lineWidth = 0.8;
-                        ctx.stroke();
-                    }
-                }
-
-                // Draw connections between nodes
-                for (let j = i + 1; j < particles.length; j++) {
+                for (let j = i + 1; j < len; j++) {
                     const p2 = particles[j];
                     const dx = p1.x - p2.x;
                     const dy = p1.y - p2.y;
-                    const distSq = dx * dx + dy * dy;
 
-                    // Micro-optimization: check square distance first to avoid Math.sqrt for far-away nodes
-                    if (distSq < maxDistSq) {
-                        const dist = Math.sqrt(distSq);
-                        const alpha = (1 - dist / maxDist) * 0.15;
-                        
-                        // Performance optimization: Draw with solid stroke color (start node color)
-                        // rather than createLinearGradient which is extremely slow on older devices.
-                        const c1 = p1.colorType === 'cyan' ? colors.cyan : colors.purple;
-                        
-                        ctx.beginPath();
-                        ctx.moveTo(p1.x, p1.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(${c1.r}, ${c1.g}, ${c1.b}, ${alpha})`;
-                        ctx.lineWidth = 0.6;
-                        ctx.stroke();
+                    if (Math.abs(dx) < maxDist && Math.abs(dy) < maxDist) {
+                        const distSq = dx * dx + dy * dy;
+                        if (distSq < maxDistSq) {
+                            const dist = Math.sqrt(distSq);
+                            const alpha = (1 - dist / maxDist) * 0.15;
+                            const col = p1.colorType === 'cyan' ? colCyan : colPurple;
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.strokeStyle = `rgba(${col.r}, ${col.g}, ${col.b}, ${alpha})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            // 2. Interactive glowing cursor connection lines (stronger rays during click hold)
+            if (mouse.active && mouse.x !== null && mouse.y !== null && mouse.x > 0) {
+                const mouseDist = mouse.isDown ? 300 : 125;
+                const mouseDistSq = mouseDist * mouseDist;
+                for (let i = 0; i < len; i++) {
+                    const p1 = particles[i];
+                    const dx = mouse.x - p1.x;
+                    const dy = mouse.y - p1.y;
+                    if (Math.abs(dx) < mouseDist && Math.abs(dy) < mouseDist) {
+                        const distSq = dx * dx + dy * dy;
+                        if (distSq < mouseDistSq) {
+                            const dist = Math.sqrt(distSq);
+                            const alpha = (1 - dist / mouseDist) * (mouse.isDown ? 0.75 : 0.35);
+                            const col = p1.colorType === 'cyan' ? colCyan : colPurple;
+                            ctx.beginPath();
+                            ctx.moveTo(p1.x, p1.y);
+                            ctx.lineTo(mouse.x, mouse.y);
+                            ctx.strokeStyle = `rgba(${col.r}, ${col.g}, ${col.b}, ${alpha})`;
+                            ctx.lineWidth = mouse.isDown ? 1.2 : 0.8;
+                            ctx.stroke();
+                        }
                     }
                 }
             }
         };
 
         const animate = () => {
-            // Performance mode check: If eco-mode class is active, stop animation loop to free CPU usage
             if (document.body.classList.contains('eco-mode')) {
                 ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
                 animationFrameId = null;
@@ -1994,44 +1969,43 @@ document.addEventListener('DOMContentLoaded', () => {
             
             ctx.clearRect(0, 0, w, h);
 
-            // Draw a subtle mouse glow highlight
-            if (mouse.active && mouse.x !== null && mouse.y !== null && window.innerWidth >= 768) {
+            // Ambient mouse spotlight (expands into glowing gravity core on click hold)
+            if (mouse.active && mouse.x > 0 && mouse.y > 0 && window.innerWidth >= 768) {
                 const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                const glowRadius = mouse.isDown ? 320 : 220;
                 const radialGlow = ctx.createRadialGradient(
                     mouse.x, mouse.y, 0,
-                    mouse.x, mouse.y, 250
+                    mouse.x, mouse.y, glowRadius
                 );
                 
                 if (isLight) {
-                    radialGlow.addColorStop(0, `rgba(${colors.cyan.r}, ${colors.cyan.g}, ${colors.cyan.b}, 0.05)`);
+                    const coreAlpha = mouse.isDown ? 0.15 : 0.04;
+                    radialGlow.addColorStop(0, `rgba(${colors.cyan.r}, ${colors.cyan.g}, ${colors.cyan.b}, ${coreAlpha})`);
                     radialGlow.addColorStop(1, 'rgba(255, 255, 255, 0)');
                 } else {
-                    radialGlow.addColorStop(0, `rgba(${colors.cyan.r}, ${colors.cyan.g}, ${colors.cyan.b}, 0.07)`);
+                    const coreAlpha = mouse.isDown ? 0.22 : 0.06;
+                    radialGlow.addColorStop(0, `rgba(${colors.cyan.r}, ${colors.cyan.g}, ${colors.cyan.b}, ${coreAlpha})`);
                     radialGlow.addColorStop(1, 'rgba(8, 12, 20, 0)');
                 }
                 
                 ctx.beginPath();
-                ctx.arc(mouse.x, mouse.y, 250, 0, Math.PI * 2);
+                ctx.arc(mouse.x, mouse.y, glowRadius, 0, Math.PI * 2);
                 ctx.fillStyle = radialGlow;
                 ctx.fill();
             }
 
-            // Update & Draw Particles
             particles.forEach(p => {
                 p.update(w, h);
                 p.draw();
             });
 
-            // Draw lines between particles
             drawConnections();
 
             animationFrameId = requestAnimationFrame(animate);
         };
 
-        // Event listeners
-        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('resize', resizeCanvas, { passive: true });
         
-        // Listen for performance mode change custom event to resume particle animation loop
         window.addEventListener('perfModeChanged', () => {
             if (!document.body.classList.contains('eco-mode')) {
                 if (!animationFrameId) {
@@ -2043,36 +2017,60 @@ document.addEventListener('DOMContentLoaded', () => {
         const updateMousePosition = (e) => {
             mouse.x = e.clientX;
             mouse.y = e.clientY;
+            mouse.active = true;
         };
 
-        window.addEventListener('mousemove', updateMousePosition);
+        window.addEventListener('mousemove', updateMousePosition, { passive: true });
+        document.addEventListener('mousemove', updateMousePosition, { passive: true });
         
+        window.addEventListener('mousedown', (e) => {
+            if (e.button === 0) { // Left click
+                mouse.isDown = true;
+                mouse.active = true;
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            }
+        }, { passive: true });
+
+        window.addEventListener('mouseup', () => {
+            mouse.isDown = false;
+        }, { passive: true });
+
         window.addEventListener('mouseenter', () => {
             mouse.active = true;
         });
 
         window.addEventListener('mouseleave', () => {
             mouse.active = false;
-            mouse.x = null;
-            mouse.y = null;
+            mouse.isDown = false;
+            mouse.x = -1000;
+            mouse.y = -1000;
         });
 
-        // Touch support for tablets/mobile
+        window.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) {
+                mouse.isDown = true;
+                mouse.active = true;
+                mouse.x = e.touches[0].clientX;
+                mouse.y = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
         window.addEventListener('touchmove', (e) => {
             if (e.touches.length > 0) {
                 mouse.active = true;
                 mouse.x = e.touches[0].clientX;
                 mouse.y = e.touches[0].clientY;
             }
-        });
+        }, { passive: true });
 
         window.addEventListener('touchend', () => {
             mouse.active = false;
-            mouse.x = null;
-            mouse.y = null;
+            mouse.isDown = false;
+            mouse.x = -1000;
+            mouse.y = -1000;
         });
 
-        // MutationObserver for detecting theme toggle and updating colors dynamically
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
@@ -2083,11 +2081,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         observer.observe(document.documentElement, { attributes: true });
 
-        // Initialize
         resizeCanvas();
         animate();
     };
 
-    // Run particles background
     initBgParticles();
 });

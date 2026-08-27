@@ -61,10 +61,10 @@
                             <i data-lucide="languages"></i>
                         </button>
                         <ul class="lang-dropdown-menu">
-                            <li data-lang="zh-TW" class="lang-option active" data-i18n="lang_zh">繁體中文</li>
+                            <li data-lang="zh-TW" class="lang-option" data-i18n="lang_zh">繁體中文</li>
                             <li data-lang="ja" class="lang-option" data-i18n="lang_ja">日文</li>
                             <li data-lang="en" class="lang-option" data-i18n="lang_en">英文</li>
-                            <li data-lang="auto" class="lang-option" data-i18n="lang_auto">跟隨本機</li>
+                            <li data-lang="auto" class="lang-option active" data-i18n="lang_auto">跟隨本機</li>
                         </ul>
                     </div>
                     <div class="tools-dropdown-container">
@@ -77,19 +77,7 @@
                                         data-i18n="tool_pcb_date">PCB日期標籤編輯器</span></a></li>
                         </ul>
                     </div>
-                    <div class="game-dropdown-container">
-                        <button class="btn-game-toggle" data-i18n-aria-label="game_toggle_aria"
-                            data-i18n-title="game_toggle_title" aria-label="我的遊戲與互動"
-                            title="我的遊戲與互動 / Games & Interactives">
-                            <i data-lucide="gamepad-2"></i>
-                        </button>
-                        <ul class="game-dropdown-menu">
-                            <li><a href="算命/1.html" target="_blank"><i data-lucide="sparkles"></i><span
-                                        data-i18n="game_fortune">天機占卜</span></a></li>
-                            <li><a href="neon-tide.html" target="_blank"><i data-lucide="joystick"></i><span
-                                        data-i18n="game_neon_tide">霓虹街機 (11合1)</span></a></li>
-                        </ul>
-                    </div>
+
                     <button class="btn-perf-toggle" data-i18n-aria-label="perf_toggle_aria"
                         data-i18n-title="perf_toggle_title" aria-label="切換省電模式" title="切換省電模式">
                         <i data-lucide="zap"></i>
@@ -108,10 +96,10 @@
                         <i data-lucide="languages"></i>
                     </button>
                     <ul class="lang-dropdown-menu" id="lang-menu">
-                        <li data-lang="zh-TW" class="lang-option active" data-i18n="lang_zh">繁體中文</li>
+                        <li data-lang="zh-TW" class="lang-option" data-i18n="lang_zh">繁體中文</li>
                         <li data-lang="ja" class="lang-option" data-i18n="lang_ja">日文</li>
                         <li data-lang="en" class="lang-option" data-i18n="lang_en">英文</li>
-                        <li data-lang="auto" class="lang-option" data-i18n="lang_auto">跟隨本機</li>
+                        <li data-lang="auto" class="lang-option active" data-i18n="lang_auto">跟隨本機</li>
                     </ul>
                 </div>
                 <div class="tools-dropdown-container">
@@ -124,18 +112,7 @@
                                     data-i18n="tool_pcb_date">PCB日期標籤編輯器</span></a></li>
                     </ul>
                 </div>
-                <div class="game-dropdown-container">
-                    <button class="btn-game-toggle" data-i18n-aria-label="game_toggle_aria"
-                        data-i18n-title="game_toggle_title" aria-label="我的遊戲與互動" title="我的遊戲與互動 / Games & Interactives">
-                        <i data-lucide="gamepad-2"></i>
-                    </button>
-                    <ul class="game-dropdown-menu">
-                        <li><a href="算命/1.html" target="_blank"><i data-lucide="sparkles"></i><span
-                                    data-i18n="game_fortune">天機占卜</span></a></li>
-                        <li><a href="neon-tide.html" target="_blank"><i data-lucide="joystick"></i><span
-                                    data-i18n="game_neon_tide">霓虹街機 (11合1)</span></a></li>
-                    </ul>
-                </div>
+
                 <button class="btn-perf-toggle" id="perf-toggle" data-i18n-aria-label="perf_toggle_aria"
                     data-i18n-title="perf_toggle_title" aria-label="切換省電模式" title="切換省電模式">
                     <i data-lucide="zap"></i>
@@ -208,7 +185,7 @@
                                         <span class="nf-label">OS:</span> Proxmox VE / Ubuntu LTS<br>
                                         <span class="nf-label">Host:</span> Edge AIoT Lab & Homelab Node<br>
                                         <span class="nf-label">Kernel:</span> 6.8.0-proxmox-pve<br>
-                                        <span class="nf-label">Uptime:</span> 18y 9m (EE Student Life)<br>
+                                        <span class="nf-label">Uptime:</span> 18y 9m (EE Master Student Life)<br>
                                         <span class="nf-label">Shell:</span> bash / zsh<br>
                                         <span class="nf-label">Core Tech:</span> Proxmox, Docker, ROS 2, OpenWrt<br>
                                         <span class="nf-label">Interests:</span> 3D Printing, Drone Control,
@@ -265,13 +242,14 @@
                                 <a href="https://github.com/ma4980" target="_blank" rel="noopener"
                                     aria-label="GitHub"><img src="assets/github.png" alt="GitHub"
                                         class="social-icon-img"></a>
-                                <a href="https://www.instagram.com/liu0308/" target="_blank" rel="noopener"
+                                <a href="https://www.instagram.com/liu030308/" target="_blank" rel="noopener"
                                     class="ig-hover-qr-container" aria-label="Instagram"><img src="assets/IG.png"
                                         alt="Instagram" class="social-icon-img"><span class="ig-hover-qr"><img
                                             src="assets/IMG_20260614_201934_141.png" alt="Instagram QR Code"><span
                                             class="qr-tooltip-text" data-i18n="qr_tooltip">掃描追蹤 IG</span></span></a>
-                                <a href="#" class="btn-email-action" aria-label="Email" title="發送 Email / 複製位址"
-                                    data-i18n-title="about_email_title"><i data-lucide="mail"></i></a>
+                                <a href="mailto:liu0308@liu0308.us.kg" class="btn-email-action" aria-label="Email"
+                                    title="發送 Email / 複製位址" data-i18n-title="about_email_title"><i
+                                        data-lucide="mail"></i></a>
                             </div>
                         </div>
                     </div>
@@ -282,7 +260,7 @@
                             <div class="about-icon"><i data-lucide="user"></i></div>
                             <h3 data-i18n="about_card_bg_title">個人背景</h3>
                             <p class="about-text" data-i18n="about_card_bg_text">
-                                我目前是電子工程系的學生，專注於網路工程 (Network Engineering) 與 AIoT
+                                我目前是電子工程系碩士班學生，專注於網路工程 (Network Engineering) 與 AIoT
                                 邊緣運算。我喜歡拆解複雜的系統架構，探究硬體、韌體、網路到上層軟體的溝通機制。對我而言，將數位程式碼與實體硬體世界連結，是無與倫比的樂趣。
                             </p>
                         </div>
@@ -292,16 +270,16 @@
                             <h3 data-i18n="about_card_edu_title">教育與經歷</h3>
                             <div class="about-timeline-compact">
                                 <div class="timeline-compact-item">
-                                    <span class="timeline-compact-badge badge-upcoming"
-                                        data-i18n="timeline_upcoming">即將</span>
+                                    <span class="timeline-compact-badge badge-current"
+                                        data-i18n="timeline_current">目前</span>
                                     <div class="timeline-compact-info">
                                         <strong data-i18n="timeline_edu_ms">雲林縣虎尾科技大學 電子工程系 碩士班</strong>
                                         <p data-i18n="timeline_edu_ms_desc">深造嵌入式系統與 AIoT 領域</p>
                                     </div>
                                 </div>
                                 <div class="timeline-compact-item">
-                                    <span class="timeline-compact-badge badge-current"
-                                        data-i18n="timeline_current">目前</span>
+                                    <span class="timeline-compact-badge badge-past"
+                                        data-i18n="timeline_past">經歷</span>
                                     <div class="timeline-compact-info">
                                         <strong data-i18n="timeline_edu_bs">雲林縣虎尾科技大學 電子工程系</strong>
                                         <p data-i18n="timeline_edu_bs_desc">主修電子工程，專注於邊緣運算、軟硬體整合、影像辨識及無人機控制系統開發。</p>
@@ -640,7 +618,7 @@
                                 <span class="tech-tag">Lab Instruction</span>
                                 <span class="tech-tag">Microprocessor</span>
                             </span>
-                            <h3 class="project-title" data-i18n="proj_ta_title">嵌入式系統與 AIoT 課程助理</h3>
+                            <h3 class="project-title" data-i18n="proj_ta_title">課程助理</h3>
                             <p class="project-desc" data-i18n="proj_ta_desc">
                                 擔任電子工程系專業課程教學助理，負責實驗課環境建置指導、電子電路除錯教學、微處理器程式撰寫引導，並協助維護實驗室設備與教材準備。
                             </p>
@@ -761,10 +739,10 @@
                                 </div>
                             </div>
                             <div class="contact-item">
-                                <a href="https://www.google.com/maps/search/?api=1&query=Taiwan" target="_blank" rel="noopener" class="contact-icon" aria-label="Google Maps"><i data-lucide="map-pin"></i></a>
+                                <a href="https://www.google.com/maps/search/?api=1&query=Yunlin+Taiwan" target="_blank" rel="noopener" class="contact-icon" aria-label="Google Maps"><i data-lucide="map-pin"></i></a>
                                 <div class="contact-value">
                                     <span class="contact-label" data-i18n="contact_label_location">所在地</span>
-                                    <a href="https://www.google.com/maps/search/?api=1&query=Taiwan" target="_blank" rel="noopener" class="contact-link" data-i18n="contact_text_location">台灣 (Taiwan)</a>
+                                    <a href="https://www.google.com/maps/search/?api=1&query=Yunlin+Taiwan" target="_blank" rel="noopener" class="contact-link" data-i18n="contact_text_location">雲林 (Yunlin, Taiwan)</a>
                                 </div>
                             </div>
                             <div class="contact-item">
@@ -772,8 +750,8 @@
                                         class="contact-icon-img"></div>
                                 <div class="contact-value">
                                     <span class="contact-label" data-i18n="contact_label_instagram">Instagram</span>
-                                    <a href="https://www.instagram.com/liu0308/" target="_blank" rel="noopener"
-                                        class="contact-link ig-hover-qr-container">@liu0308<span
+                                    <a href="https://www.instagram.com/liu030308/" target="_blank" rel="noopener"
+                                        class="contact-link ig-hover-qr-container">@liu030308<span
                                             class="ig-hover-qr contact-qr-position"><img
                                                 src="assets/IMG_20260614_201934_141.png" alt="Instagram QR Code"><span
                                                 class="qr-tooltip-text" data-i18n="qr_tooltip">掃描追蹤 IG</span></span></a>
@@ -814,7 +792,7 @@
             <div class="footer-links">
                 <a href="https://github.com/ma4980" target="_blank" rel="noopener" aria-label="GitHub"><img
                         src="assets/github.png" alt="GitHub" class="footer-icon-img"></a>
-                <a href="https://www.instagram.com/liu0308/" target="_blank" rel="noopener"
+                <a href="https://www.instagram.com/liu030308/" target="_blank" rel="noopener"
                     class="ig-hover-qr-container" aria-label="Instagram"><img src="assets/IG.png" alt="Instagram"
                         class="footer-icon-img"><span class="ig-hover-qr footer-qr-position"><img
                             src="assets/IMG_20260614_201934_141.png" alt="Instagram QR Code"><span
