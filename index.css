@@ -968,7 +968,7 @@ input, textarea, [contenteditable="true"] {
     justify-content: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity var(--transition-normal);
+    transition: opacity var(--transition-normal), background var(--transition-normal);
 }
 
 .lightbox.active {
@@ -982,7 +982,7 @@ input, textarea, [contenteditable="true"] {
     right: 2rem;
     background: none;
     border: none;
-    color: var(--text-primary);
+    color: #f8fafc;
     cursor: pointer;
     font-size: 2rem;
     transition: color var(--transition-fast), transform var(--transition-fast);
@@ -995,9 +995,9 @@ input, textarea, [contenteditable="true"] {
 
 .lightbox-nav {
     position: absolute;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #f8fafc;
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -1039,20 +1039,58 @@ input, textarea, [contenteditable="true"] {
     object-fit: contain;
     border-radius: var(--radius-md);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     cursor: pointer;
 }
 
 .lightbox-caption {
-    color: var(--text-primary);
-    font-size: 1.1rem;
+    color: #f8fafc;
+    font-size: 1.05rem;
+    font-weight: 500;
     text-align: center;
-    background: rgba(15, 23, 42, 0.7);
-    padding: 0.8rem 1.5rem;
+    background: rgba(15, 23, 42, 0.85);
+    padding: 0.8rem 1.6rem;
     border-radius: var(--radius-full);
-    border: 1px solid var(--border-color);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Light Theme Lightbox Overrides */
+[data-theme="light"] .lightbox {
+    background: rgba(248, 250, 252, 0.96);
+}
+
+[data-theme="light"] .lightbox-close {
+    color: #0f172a;
+}
+
+[data-theme="light"] .lightbox-close:hover {
+    color: var(--accent-cyan);
+}
+
+[data-theme="light"] .lightbox-nav {
+    background: rgba(15, 23, 42, 0.08);
+    border-color: rgba(15, 23, 42, 0.15);
+    color: #0f172a;
+}
+
+[data-theme="light"] .lightbox-nav:hover {
+    background: var(--accent-cyan);
+    color: #ffffff;
+}
+
+[data-theme="light"] .lightbox-caption {
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(15, 23, 42, 0.12);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .lightbox-content img {
+    border-color: rgba(15, 23, 42, 0.12);
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
 }
 
 .lightbox.hide {
@@ -1300,15 +1338,24 @@ input, textarea, [contenteditable="true"] {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--text-primary);
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
     padding: 0.25rem 0.75rem;
     border-radius: var(--radius-full);
     font-size: 0.75rem;
     font-weight: 600;
+    z-index: 2;
+    transition: all var(--transition-fast);
+}
+
+[data-theme="light"] .project-category-badge {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(15, 23, 42, 0.15);
+    color: #0f172a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .project-info {
