@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0f19" id="theme-color-meta">
     <link rel="icon" href="assets/名子.png" type="image/png">
     <title data-i18n="page_title">劉峻瑋 | Jun Wei Liu</title>
     <meta name="description"
@@ -507,7 +508,7 @@
                 <div class="portfolio-filters reveal">
                     <button class="filter-btn active" data-filter="all" data-i18n="filter_all">全部</button>
                     <button class="filter-btn" data-filter="academic" data-i18n="filter_academic">學術與研討會</button>
-                    <button class="filter-btn" data-filter="aiot" data-i18n="filter_aiot">AIoT 邊緣運算</button>
+                    <button class="filter-btn" data-filter="ta" data-i18n="filter_ta">課程助教</button>
                     <button class="filter-btn" data-filter="infra" data-i18n="filter_infra">基礎設施</button>
                     <button class="filter-btn" data-filter="mfg" data-i18n="filter_mfg">數位製造</button>
                     <button class="filter-btn" data-filter="memories" data-i18n="filter_memories">過往與生活</button>
@@ -582,12 +583,12 @@
                     </article>
 
                     <!-- Project 5: Teaching Assistant -->
-                    <article class="project-card glassmorphism reveal delay-100" data-category="aiot"
+                    <article class="project-card glassmorphism reveal delay-100" data-category="ta"
                         data-gallery="assistant">
                         <div class="project-img-wrapper">
                             <img src="assets/project-assistant.jpg" alt="嵌入式系統與 AIoT 課程助教" class="project-img" loading="lazy"
                                 data-i18n-alt="proj_ta_alt">
-                            <div class="project-category-badge" data-i18n="proj_ta_badge">教學服務</div>
+                            <div class="project-category-badge" data-i18n="proj_ta_badge">課程助教</div>
                         </div>
                         <div class="project-info">
                             <span class="project-tech-tags">
@@ -595,12 +596,12 @@
                                 <span class="tech-tag">Lab Instruction</span>
                                 <span class="tech-tag">Microprocessor</span>
                             </span>
-                            <h3 class="project-title" data-i18n="proj_ta_title">課程助理</h3>
+                            <h3 class="project-title" data-i18n="proj_ta_title">課程助教</h3>
                             <p class="project-desc" data-i18n="proj_ta_desc">
-                                擔任電子工程系專業課程教學助理，負責實驗課環境建置指導、電子電路除錯教學、微處理器程式撰寫引導，並協助維護實驗室設備與教材準備。
+                                擔任電子工程系專業課程助教，負責實驗課環境建置指導、電子電路除錯教學、微處理器程式撰寫引導，並協助維護實驗室設備與教材準備。
                             </p>
                             <a href="#" class="btn-project-link">
-                                <span data-i18n="proj_ta_link">教學花絮照片</span> <i data-lucide="external-link"></i>
+                                <span data-i18n="proj_ta_link">助教花絮照片</span> <i data-lucide="external-link"></i>
                             </a>
                         </div>
                     </article>
@@ -736,17 +737,7 @@
                             </div>
                         </div>
 
-                        <div class="lab-status-panel">
-                            <div class="lab-status-header">
-                                <span class="status-indicator active"></span>
-                                <span class="status-title" data-i18n="contact_status_title">Lab Node Status:
-                                    Online</span>
-                            </div>
-                            <div class="lab-stats">
-                                <span data-i18n="contact_status_cpu">PVE CPU Usage: 14%</span>
-                                <span data-i18n="contact_status_latency">Network Latency: 4ms</span>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -792,6 +783,11 @@
         <button class="lightbox-nav next" id="lightbox-next" aria-label="下一張" data-i18n-aria-label="lightbox_next"><i
                 data-lucide="chevron-right"></i></button>
     </div>
+
+    <!-- Floating Back to Top Button -->
+    <button id="btn-back-to-top" class="btn-back-to-top" aria-label="返回頂部" title="返回頂部">
+        <i data-lucide="chevron-up"></i>
+    </button>
 
     <!-- Main JavaScript -->
     <script src="script.js"></script>

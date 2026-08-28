@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'projects_tagline': '從實作中累積，以成果來證明',
             'filter_all': '全部',
             'filter_academic': '學術與研討會',
-            'filter_aiot': 'AIoT 邊緣運算',
+            'filter_ta': '課程助教',
             'filter_infra': '基礎設施',
             'filter_mfg': '數位製造',
             'filter_memories': '過往與生活',
@@ -261,10 +261,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'proj_mfg_title': 'Creality 3D 列印機極客改裝',
             'proj_mfg_desc': '將 Creality 3D 列印機升級為主動雙軸，重寫 Klipper 控制韌體，並用 Fusion 360 設計散熱風道與列印零件，顯著提升了列印精度與速度。',
             'proj_mfg_link': '設計零件 STL',
-            'proj_ta_badge': '教學服務',
-            'proj_ta_title': '課程助理',
-            'proj_ta_desc': '擔任電子工程系專業課程教學助理，負責實驗課環境建置指導、電子電路除錯教學、微處理器程式撰寫引導，並協助維護實驗室設備與教材準備。',
-            'proj_ta_link': '教學花絮照片',
+            'proj_ta_badge': '課程助教',
+            'proj_ta_title': '課程助教',
+            'proj_ta_desc': '擔任電子工程系專業課程助教，負責實驗課環境建置指導、電子電路除錯教學、微處理器程式撰寫引導，並協助維護實驗室設備與教材準備。',
+            'proj_ta_link': '助教花絮照片',
             'proj_grad_badge': '過往紀錄',
             'proj_grad_title': '我的過往：求學與畢業紀念',
             'proj_grad_desc': '記錄我在雲林西螺農工電子科與國立虎尾科技大學電子工程系的學習歲月，收錄了與老師、實驗室學長及同儕們珍貴的學士服合影。',
@@ -332,9 +332,9 @@ document.addEventListener('DOMContentLoaded', () => {
             'gallery_acad_6': '在研討會晚宴上與參會的好友及合作夥伴們合影留念',
             'gallery_acad_7': 'IEEE研討會晚宴現場佈置與精緻會場環境',
             'gallery_drone_1': 'ROS 2 無人機 AI 賦能自主飛行 - 開發邊緣端 YOLOv8 避障自主飛行控制系統',
-            'gallery_ta_1': '於嵌入式系統與 AIoT 課程擔任助教，進行課程教學與系統環境操作示範 (1)',
-            'gallery_ta_2': '於嵌入式系統與 AIoT 課程擔任助教，進行課程教學與系統環境操作示範 (2)',
-            'gallery_ta_3': '於嵌入式系統與 AIoT 課程擔任助教，進行課程教學與系統環境操作示範 (3)',
+            'gallery_ta_1': '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (1)',
+            'gallery_ta_2': '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (2)',
+            'gallery_ta_3': '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (3)',
             'gallery_infra_1': '個人 Homelab 機櫃 - Proxmox PVE 集群虛擬化與 OpenWrt 軟路由 VLAN 拓撲佈置',
             'gallery_mfg_1': '3D 列印機極客改裝 - Creality 主動雙軸硬體升級與 Klipper 韌體客製化調校',
             'gallery_grad_1': '國立虎尾科技大學電子系 - 與實驗室的學長們拍學士服照 (1)',
@@ -539,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'projects_tagline': 'Learning by doing, proving with results',
             'filter_all': 'All',
             'filter_academic': 'Academic & Conferences',
-            'filter_aiot': 'AIoT Edge',
+            'filter_ta': 'Course TA',
             'filter_infra': 'Infrastructure',
             'filter_mfg': 'Digital Mfg',
             'filter_memories': 'Memories & Life',
@@ -838,7 +838,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'projects_tagline': '実践から学び、成果で証明する',
             'filter_all': 'すべて',
             'filter_academic': '學術・学会発表',
-            'filter_aiot': 'AIoTエッジ',
+            'filter_ta': '講義助教',
             'filter_infra': 'インフラ構築',
             'filter_mfg': 'デジタル製造',
             'filter_memories': '思い出 & 日常',
@@ -1267,37 +1267,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. Navbar scroll class addition
+    // 5. Throttled Scroll Listener & Scroll Spy (60fps optimized)
     const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
-
-    // 6. Scroll Spy (Highlight active nav link)
+    const btnBackToTop = document.getElementById('btn-back-to-top');
     const sections = document.querySelectorAll('section');
+
+    if (btnBackToTop) {
+        btnBackToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    let isScrollTicking = false;
     window.addEventListener('scroll', () => {
-        let currentSectionId = '';
-        const scrollPosition = window.scrollY + 150; // offset for navbar height
+        if (!isScrollTicking) {
+            window.requestAnimationFrame(() => {
+                const currentScrollY = window.scrollY;
 
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.offsetHeight;
-            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-                currentSectionId = section.getAttribute('id');
-            }
-        });
+                // Toggle Navbar scrolled style
+                if (currentScrollY > 50) {
+                    if (navbar) navbar.classList.add('scrolled');
+                } else {
+                    if (navbar) navbar.classList.remove('scrolled');
+                }
 
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${currentSectionId}`) {
-                link.classList.add('active');
-            }
-        });
-    });
+                // Toggle Back to Top button visibility
+                if (btnBackToTop) {
+                    if (currentScrollY > 400) {
+                        btnBackToTop.classList.add('show');
+                    } else {
+                        btnBackToTop.classList.remove('show');
+                    }
+                }
+
+                // Scroll Spy (Highlight active nav link)
+                let currentSectionId = '';
+                const scrollPosition = currentScrollY + 150;
+
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight;
+                    if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                        currentSectionId = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${currentSectionId}`) {
+                        link.classList.add('active');
+                    }
+                });
+
+                isScrollTicking = false;
+            });
+            isScrollTicking = true;
+        }
+    }, { passive: true });
 
     // 7. Geek Interactive Terminal Emulator
     const terminalInput = document.getElementById('terminal-input');
@@ -1583,9 +1612,9 @@ document.addEventListener('DOMContentLoaded', () => {
             { src: 'assets/project-drone.png', caption: 'ROS 2 無人機 AI 賦能自主飛行 - 開發邊緣端 YOLOv8 避障自主飛行控制系統', caption_key: 'gallery_drone_1' }
         ],
         assistant: [
-            { src: 'assets/project-assistant.jpg', caption: '於嵌入式系統與 AIoT 課程擔任助教，進行課程教學與系統環境操作示範 (1)', caption_key: 'gallery_ta_1' },
-            { src: 'assets/IMG_20260518_142139.jpg', caption: '於嵌入式系統與 AIoT 課程擔任助教，進行課程教學與系統環境操作示範 (2)', caption_key: 'gallery_ta_2' },
-            { src: 'assets/IMG_20260518_142242.jpg', caption: '於嵌入式系統與 AIoT 課程擔任助教，進行課程教學與系統環境操作示範 (3)', caption_key: 'gallery_ta_3' }
+            { src: 'assets/project-assistant.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (1)', caption_key: 'gallery_ta_1' },
+            { src: 'assets/IMG_20260518_142139.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (2)', caption_key: 'gallery_ta_2' },
+            { src: 'assets/IMG_20260518_142242.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (3)', caption_key: 'gallery_ta_3' }
         ],
         infra: [
             { src: 'assets/project-homelab.png', caption: '個人 Homelab 機櫃 - Proxmox PVE 集群虛擬化與 OpenWrt 軟路由 VLAN 拓撲佈置', caption_key: 'gallery_infra_1' }
@@ -2106,6 +2135,11 @@ document.addEventListener('DOMContentLoaded', () => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
                     colors = getThemeColors();
+                    const currentTheme = document.documentElement.getAttribute('data-theme');
+                    const metaThemeColor = document.getElementById('theme-color-meta');
+                    if (metaThemeColor) {
+                        metaThemeColor.setAttribute('content', currentTheme === 'light' ? '#f8fafc' : '#0b0f19');
+                    }
                 }
             });
         });
