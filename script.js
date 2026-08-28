@@ -19,6 +19,71 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Toast notification helper
+    const showToast = (message) => {
+        let toast = document.querySelector('.toast-notification');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerHTML = `<span class="toast-icon"><i data-lucide="check-circle-2"></i></span><span class="toast-text"></span>`;
+            document.body.appendChild(toast);
+        }
+        
+        const textEl = toast.querySelector('.toast-text');
+        if (textEl) textEl.textContent = message;
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    };
+
+    // Copy email to clipboard and trigger mailto
+    const handleEmailCopy = (e) => {
+        if (e) e.preventDefault();
+        
+        const doCopy = () => {
+            const toastMsg = (translations[activeLanguage] && translations[activeLanguage]['toast_email_copied']) 
+                || '已複製信箱位址！';
+            showToast(`${toastMsg} (${email})`);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(email).then(doCopy).catch(() => {
+                fallbackCopy(email);
+            });
+        } else {
+            fallbackCopy(email);
+        }
+
+        setTimeout(() => {
+            window.location.href = `mailto:${email}`;
+        }, 200);
+    };
+
+    const fallbackCopy = (text) => {
+        const tempInput = document.createElement('input');
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        try {
+            document.execCommand('copy');
+            const toastMsg = (translations[activeLanguage] && translations[activeLanguage]['toast_email_copied']) 
+                || '已複製信箱位址！';
+            showToast(`${toastMsg} (${email})`);
+        } catch (err) {
+            showToast(`信箱位址: ${email}`);
+        }
+        document.body.removeChild(tempInput);
+    };
+
+    // Bind click events to all email action buttons
+    document.querySelectorAll('.btn-email-action, .email-placeholder').forEach(el => {
+        el.addEventListener('click', handleEmailCopy);
+    });
+
     // Prevent image context menu and dragging for minor protection
     document.querySelectorAll('img').forEach(img => {
         img.addEventListener('contextmenu', e => e.preventDefault());
