@@ -15,7 +15,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="劉峻瑋 | Jun Wei Liu">
     <meta property="og:description" content="網路工程師與 AIoT/邊緣運算開發者個人網站。專注於 Proxmox、Docker、ROS 2、3D 列印。">
-    <meta property="og:image" content="assets/profile/og-preview.jpg">
+    <meta property="og:image" content="assets/profile/og-preview.webp">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,6 +29,40 @@
 
     <!-- Main CSS -->
     <link rel="stylesheet" href="index.css">
+    <!-- PWA & Mobile Web App -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Jun Wei Liu">
+    <link rel="apple-touch-icon" href="assets/icon/logo.png">
+
+    <!-- Security & Privacy Policies -->
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
+    <!-- Twitter Card & Canonical SEO -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="劉峻瑋 | Jun Wei Liu - 個人官方網站">
+    <meta name="twitter:description" content="網路工程師與 AIoT/邊緣運算開發者個人網站。專注於 Proxmox、Docker、ROS 2、3D 列印。">
+    <meta name="twitter:image" content="assets/profile/og-preview.webp">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "劉峻瑋 (Jun Wei Liu)",
+      "jobTitle": "Network & AIoT Engineer",
+      "alumniOf": "國立虎尾科技大學 (National Formosa University)",
+      "url": "https://liu0308.us.kg",
+      "image": "assets/profile/profile-avatar.webp",
+      "sameAs": [
+        "https://github.com/asaz1115",
+        "https://www.instagram.com/liu_03.08"
+      ]
+    }
+    </script>
 </head>
 
 <body>
@@ -42,8 +76,8 @@
     <header class="navbar" id="navbar">
         <div class="container navbar-container">
             <a href="#" class="nav-logo">
-                <img src="assets/icon/logo-white.png" alt="Jun Wei Liu Logo" class="logo-img logo-dark-theme">
-                <img src="assets/icon/logo.png" alt="Jun Wei Liu Logo" class="logo-img logo-light-theme">
+                <img src="assets/icon/logo-white.webp" alt="Jun Wei Liu Logo" class="logo-img logo-dark-theme" width="140" height="42" decoding="async">
+                <img src="assets/icon/logo.webp" alt="Jun Wei Liu Logo" class="logo-img logo-light-theme" width="140" height="42" decoding="async">
             </a>
 
             <nav class="nav-menu" id="nav-menu">
@@ -160,6 +194,11 @@
                             <span data-i18n="hero_btn_contact">與我聯絡</span>
                             <i data-lucide="mail"></i>
                         </a>
+                        <!-- Download CV Framework (Hidden by default) -->
+                        <a href="#" class="btn btn-secondary btn-download-cv hidden" style="display: none;" download>
+                            <span data-i18n="hero_btn_cv">下載履歷</span>
+                            <i data-lucide="file-text"></i>
+                        </a>
                     </div>
                 </div>
 
@@ -234,7 +273,7 @@
                     <!-- Profile Photo Card -->
                     <div class="about-profile-photo-card glassmorphism reveal reveal-left">
                         <div class="about-profile-img-container">
-                            <img src="assets/profile/profile-avatar.jpg" alt="劉峻瑋 Jun Wei Liu" class="about-profile-img"
+                            <img src="assets/profile/profile-avatar-thumb.webp" alt="劉峻瑋 Jun Wei Liu" class="about-profile-img" width="220" height="220" loading="lazy" decoding="async"
                                 data-i18n-alt="profile_img_alt">
                         </div>
                         <div class="about-profile-info">
@@ -243,12 +282,12 @@
                             <span class="profile-role" data-i18n="about_role">Network & AIoT Developer</span>
                             <div class="profile-socials">
                                 <a href="https://github.com/ma4980" target="_blank" rel="noopener"
-                                    aria-label="GitHub"><img src="assets/icon/github.png" alt="GitHub"
+                                    aria-label="GitHub"><img src="assets/icon/github.webp" alt="GitHub" width="20" height="20" loading="lazy" decoding="async"
                                         class="social-icon-img"></a>
                                 <a href="https://www.instagram.com/liu030308/" target="_blank" rel="noopener"
                                     class="ig-hover-qr-container" aria-label="Instagram"><img src="assets/icon/instagram.png"
                                         alt="Instagram" class="social-icon-img"><span class="ig-hover-qr"><img
-                                            src="assets/icon/ig-qr.png" alt="Instagram QR Code"><span
+                                            src="assets/icon/ig-qr.webp" alt="Instagram QR Code" width="140" height="205" loading="lazy" decoding="async"><span
                                             class="qr-tooltip-text" data-i18n="qr_tooltip">掃描追蹤 IG</span></span></a>
                                 <a href="mailto:liu0308@liu0308.us.kg" class="btn-email-action" aria-label="Email"
                                     title="發送 Email / 複製位址" data-i18n-title="about_email_title"><i
@@ -518,8 +557,8 @@
                 <div class="portfolio-grid" id="portfolio-grid">
                     <article class="project-card glassmorphism reveal" data-category="academic" data-gallery="academic">
                         <div class="project-img-wrapper">
-                            <img src="assets/projects/project-academic-cover.jpg" alt="ICCT-Pacific 最佳學生海報獎" class="project-img"
-                                loading="lazy" data-i18n-alt="proj_acad_alt">
+                            <img src="assets/projects/project-academic-cover-thumb.webp" alt="ICCT-Pacific 最佳學生海報獎" class="project-img"
+                                width="600" height="338" loading="lazy" decoding="async" data-i18n-alt="proj_acad_alt">
                             <div class="project-category-badge" data-i18n="proj_acad_badge">學術成果</div>
                         </div>
                         <div class="project-info">
@@ -541,8 +580,8 @@
                     <article class="project-card glassmorphism reveal delay-200" data-category="infra"
                         data-gallery="infra">
                         <div class="project-img-wrapper">
-                            <img src="assets/projects/project-homelab-cover.png" alt="伺服器與 NAS 基礎設施配置" class="project-img"
-                                loading="lazy" data-i18n-alt="proj_infra_alt">
+                            <img src="assets/projects/project-homelab-cover-thumb.webp" alt="伺服器與 NAS 基礎設施配置" class="project-img"
+                                width="600" height="338" loading="lazy" decoding="async" data-i18n-alt="proj_infra_alt">
                             <div class="project-category-badge" data-i18n="proj_infra_badge">基礎設施</div>
                         </div>
                         <div class="project-info">
@@ -563,7 +602,7 @@
 
                     <article class="project-card glassmorphism reveal" data-category="mfg" data-gallery="mfg">
                         <div class="project-img-wrapper">
-                            <img src="assets/3DP/3dp-enclosure-mod.jpg" alt="3D 列印機改裝與維修" class="project-img" loading="lazy" decoding="async"
+                            <img src="assets/3DP/3dp-enclosure-mod-thumb.webp" alt="3D 列印機改裝與維修" class="project-img" width="600" height="338" loading="lazy" decoding="async"
                                 data-i18n-alt="proj_mfg_alt">
                             <div class="project-category-badge" data-i18n="proj_mfg_badge">數位製造</div>
                         </div>
@@ -588,7 +627,7 @@
                     <article class="project-card glassmorphism reveal delay-100" data-category="ta"
                         data-gallery="assistant">
                         <div class="project-img-wrapper">
-                            <img src="assets/projects/project-assistant-cover.jpg" alt="嵌入式系統與 AIoT 課程助教" class="project-img"
+                            <img src="assets/projects/project-assistant-cover-thumb.webp" alt="嵌入式系統與 AIoT 課程助教" width="600" height="338" loading="lazy" decoding="async" class="project-img"
                                 loading="lazy" data-i18n-alt="proj_ta_alt">
                             <div class="project-category-badge" data-i18n="proj_ta_badge">課程助教</div>
                         </div>
@@ -612,7 +651,7 @@
                     <article class="project-card glassmorphism reveal delay-200" data-category="memories"
                         data-gallery="graduation">
                         <div class="project-img-wrapper">
-                            <img src="assets/graduation/graduation-senior-1.jpg" alt="我的過往：學士服合影" class="project-img" loading="lazy"
+                            <img src="assets/graduation/graduation-senior-1-thumb.webp" alt="我的過往：學士服合影" class="project-img" width="600" height="338" loading="lazy" decoding="async"
                                 data-i18n-alt="proj_grad_alt">
                             <div class="project-category-badge" data-i18n="proj_grad_badge">過往紀錄</div>
                         </div>
@@ -635,8 +674,8 @@
                     <!-- Project 7: Friends & Travels -->
                     <article class="project-card glassmorphism reveal" data-category="memories" data-gallery="friends">
                         <div class="project-img-wrapper">
-                            <img src="assets/travel/travel-okayama-castle.jpg" alt="我的朋友們：旅行紀念" class="project-img" loading="lazy"
-                                data-i18n-alt="proj_travel_alt">
+                            <img src="assets/travel/travel-okayama-castle-thumb.webp" alt="我的朋友們：旅行紀念" class="project-img"
+                                width="600" height="338" loading="lazy" decoding="async" data-i18n-alt="proj_travel_alt">
                             <div class="project-category-badge" data-i18n="proj_travel_badge">生活足跡</div>
                         </div>
                         <div class="project-info">
@@ -668,8 +707,8 @@
                 <div class="friends-grid">
                     <div class="friend-card glassmorphism reveal">
                         <div class="friend-img-wrapper">
-                            <img src="assets/profile/partner-avatar.jpg" alt="合作夥伴極摯友 鐘明穎 Ming-Ying Chung"
-                                class="friend-img" loading="lazy" data-i18n-alt="friend_img_alt">
+                            <img src="assets/profile/partner-avatar-thumb.webp" alt="合作夥伴極摯友 鐘明穎 Ming-Ying Chung"
+                                class="friend-img" width="80" height="80" loading="lazy" decoding="async" data-i18n-alt="friend_img_alt">
                         </div>
                         <div class="friend-info">
                             <h3 class="friend-name" data-i18n="friend_name">合作夥伴極摯友 鐘明穎 (Ming-Ying Chung)</h3>
@@ -713,7 +752,7 @@
                             </div>
                             <div class="contact-item">
                                 <a href="https://github.com/ma4980" target="_blank" rel="noopener" class="contact-icon"
-                                    aria-label="GitHub"><img src="assets/icon/github.png" alt="GitHub"
+                                    aria-label="GitHub"><img src="assets/icon/github.webp" alt="GitHub" width="20" height="20" loading="lazy" decoding="async"
                                         class="contact-icon-img"></a>
                                 <div class="contact-value">
                                     <span class="contact-label" data-i18n="contact_label_github">GitHub</span>
@@ -733,14 +772,14 @@
                                 </div>
                             </div>
                             <div class="contact-item">
-                                <div class="contact-icon"><img src="assets/icon/instagram.png" alt="Instagram"
+                                <div class="contact-icon"><img src="assets/icon/instagram.webp" alt="Instagram" width="20" height="20" loading="lazy" decoding="async"
                                         class="contact-icon-img"></div>
                                 <div class="contact-value">
                                     <span class="contact-label" data-i18n="contact_label_instagram">Instagram</span>
                                     <a href="https://www.instagram.com/liu030308/" target="_blank" rel="noopener"
                                         class="contact-link ig-hover-qr-container">@liu030308<span
                                             class="ig-hover-qr contact-qr-position"><img
-                                                src="assets/icon/ig-qr.png" alt="Instagram QR Code"><span
+                                                src="assets/icon/ig-qr.webp" alt="Instagram QR Code" width="140" height="205" loading="lazy" decoding="async"><span
                                                 class="qr-tooltip-text" data-i18n="qr_tooltip">掃描追蹤 IG</span></span></a>
                                 </div>
                             </div>
@@ -768,11 +807,11 @@
             </div>
             <div class="footer-links">
                 <a href="https://github.com/ma4980" target="_blank" rel="noopener" aria-label="GitHub"><img
-                        src="assets/icon/github.png" alt="GitHub" class="footer-icon-img"></a>
+                        src="assets/icon/github.webp" alt="GitHub" width="20" height="20" loading="lazy" decoding="async" class="footer-icon-img"></a>
                 <a href="https://www.instagram.com/liu030308/" target="_blank" rel="noopener"
-                    class="ig-hover-qr-container" aria-label="Instagram"><img src="assets/icon/instagram.png" alt="Instagram"
+                    class="ig-hover-qr-container" aria-label="Instagram"><img src="assets/icon/instagram.webp" alt="Instagram" width="20" height="20" loading="lazy" decoding="async"
                         class="footer-icon-img"><span class="ig-hover-qr footer-qr-position"><img
-                            src="assets/icon/ig-qr.png" alt="Instagram QR Code"><span
+                            src="assets/icon/ig-qr.webp" alt="Instagram QR Code" width="140" height="205" loading="lazy" decoding="async"><span
                             class="qr-tooltip-text" data-i18n="qr_tooltip">掃描追蹤 IG</span></span></a>
                 <a href="#" class="btn-email-action" aria-label="Email"><i data-lucide="mail"></i></a>
             </div>

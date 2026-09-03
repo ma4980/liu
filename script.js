@@ -1,6 +1,17 @@
 // JavaScript Logic for Jun Wei Liu's Geek Portfolio
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Register Service Worker for PWA and offline caching
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').then((reg) => {
+                console.log('[PWA] Service Worker registered with scope:', reg.scope);
+            }).catch((err) => {
+                console.warn('[PWA] Service Worker registration failed:', err);
+            });
+        });
+    }
+
     // DOM Elements Selector Cache (declared first to avoid Temporal Dead Zone / undefined issues)
     const langContainers = document.querySelectorAll('.lang-dropdown-container');
     const langOptions = document.querySelectorAll('.lang-option');
@@ -169,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'hero_subtitle': '專注於 <strong class="highlight">網路工程</strong> 與 <strong class="highlight">AIoT 邊緣運算</strong>，熱衷於底層虛擬化、網路基礎設施建置，以及軟硬體整合的數位製造實作者。',
             'hero_btn_projects': '瀏覽作品',
             'hero_btn_contact': '與我聯絡',
+            'hero_btn_cv': '下載履歷',
             // About Me Section
             'about_title': '關於我',
             'about_tagline': '底層探索與數位製造的實踐者',
@@ -471,6 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'hero_subtitle': 'Focusing on <strong class="highlight">Network Engineering</strong> and <strong class="highlight">AIoT Edge Computing</strong>. Passionate about virtualization, infrastructure deployments, and software/hardware integration.',
             'hero_btn_projects': 'View Projects',
             'hero_btn_contact': 'Contact Me',
+            'hero_btn_cv': 'Download CV',
             // About Me Section
             'about_title': 'About Me',
             'about_tagline': 'Exploring the hardware layers and digital manufacturing',
@@ -773,6 +786,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'hero_subtitle': '<strong class="highlight">ネットワークエンジニアリング</strong> と <strong class="highlight">AIoTエッジコンピューティング</strong>に注力。仮想環境構築、インフラデプロイ、ソフト・ハード統合開発を得意としています。',
             'hero_btn_projects': 'プロジェクトを見る',
             'hero_btn_contact': 'お問い合わせ',
+            'hero_btn_cv': '履歴書をダウンロード',
             // About Me Section
             'about_title': '自己紹介',
             'about_tagline': '低レイヤの探索とデジタルマニュファクチャリングの対話',
@@ -1402,86 +1416,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, { passive: true });
 
-    // 7. Geek Interactive Terminal Emulator
-    const terminalInput = document.getElementById('terminal-input');
-    const terminalBody = document.getElementById('terminal-body');
-    const terminalHistory = document.getElementById('terminal-history');
 
-    // Make clicking the terminal anywhere focus the input
-    terminalBody.addEventListener('click', () => {
-        terminalInput.focus();
-    });
-
-    // Process Terminal Commands
-    terminalInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            const commandText = terminalInput.value.trim();
-            const lowerCmd = commandText.toLowerCase();
-            
-            if (commandText === '') return;
-
-            // 1. Create history line for current command
-            const userLine = document.createElement('div');
-            userLine.className = 'terminal-line';
-            userLine.innerHTML = `<span class="term-prompt">guest@junwei-host:~$</span> <span class="term-command">${commandText}</span>`;
-            terminalHistory.appendChild(userLine);
-
-            // 2. Create output element
-            const outputLine = document.createElement('div');
-            outputLine.className = 'terminal-output';
-
-            // 3. Logic router
-            switch (lowerCmd) {
-                case 'help':
-                    outputLine.innerText = translations[activeLanguage]['term_help'];
-                    break;
-                case 'experience':
-                    outputLine.innerText = translations[activeLanguage]['term_experience'];
-                    break;
-                case 'skills':
-                    outputLine.innerText = translations[activeLanguage]['term_skills'];
-                    break;
-                case 'projects':
-                    outputLine.innerText = translations[activeLanguage]['term_projects'];
-                    break;
-                case 'contact':
-                    let contactMsg = translations[activeLanguage]['term_contact'];
-                    if (contactMsg.includes('{email}')) {
-                        contactMsg = contactMsg.replace(/{email}/g, email);
-                    }
-                    outputLine.innerText = contactMsg;
-                    break;
-                case 'clear':
-                    terminalHistory.innerHTML = '';
-                    outputLine.style.display = 'none';
-                    // clear preset elements as well
-                    const presets = terminalBody.querySelectorAll('.terminal-line:not(.terminal-input-line), .terminal-output');
-                    presets.forEach(p => p.remove());
-                    break;
-                case 'neofetch':
-                    outputLine.className = 'terminal-output neofetch-output';
-                    outputLine.innerHTML = translations[activeLanguage]['term_neofetch'];
-                    break;
-                case 'gui':
-                    outputLine.innerText = translations[activeLanguage]['term_gui_msg'];
-                    setTimeout(() => {
-                        document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
-                    }, 500);
-                    break;
-                default:
-                    const errMsg = translations[activeLanguage]['term_cmd_not_found'].replace('{cmd}', commandText);
-                    outputLine.innerHTML = errMsg;
-            }
-
-            if (lowerCmd !== 'clear') {
-                terminalHistory.appendChild(outputLine);
-            }
-            
-            // Clear input and scroll down
-            terminalInput.value = '';
-            terminalBody.scrollTop = terminalBody.scrollHeight;
-        }
-    });
 
     // 7. Skills Tab Switching & Progress Bar Animation
     const tabBtns = document.querySelectorAll('.tab-btn');
@@ -1674,46 +1609,46 @@ document.addEventListener('DOMContentLoaded', () => {
     // Photo databases for each project
     const galleries = {
         academic: [
-            { src: 'assets/projects/project-academic-cover.jpg', caption: 'ICCT-Pacific 國際學術會議 - 榮獲最佳學生海報獎 (Best Student Poster Award) 頒獎合影', caption_key: 'gallery_acad_1' },
-            { src: 'assets/academic/academic-poster-presentation.jpg', caption: '日本山口大學 - IEEE ICCT-Pacific 會議現場海報展展示與講解', caption_key: 'gallery_acad_2' },
-            { src: 'assets/academic/academic-award-certificate.jpg', caption: '最佳學生海報獎 (Best Student Poster Award) 官方學術研討獎狀', caption_key: 'gallery_acad_3' },
-            { src: 'assets/academic/academic-dinner-exchange.jpg', caption: '與日本山口大學的大學生及參會學者於晚宴中進行學術與文化交流', caption_key: 'gallery_acad_4' },
-            { src: 'assets/academic/academic-dinner-performance.jpg', caption: '研討會晚宴 - 欣賞日本山口溫泉當地的傳統舞蹈表演', caption_key: 'gallery_acad_5' },
-            { src: 'assets/academic/academic-dinner-group.jpg', caption: '在研討會晚宴上與參會的好友及合作夥伴們合影留念', caption_key: 'gallery_acad_6' },
-            { src: 'assets/academic/academic-banquet-hall.jpg', caption: 'IEEE研討會晚宴現場佈置與精緻會場環境', caption_key: 'gallery_acad_7' }
+            { src: 'assets/projects/project-academic-cover.webp', caption: 'ICCT-Pacific 國際學術會議 - 榮獲最佳學生海報獎 (Best Student Poster Award) 頒獎合影', caption_key: 'gallery_acad_1' },
+            { src: 'assets/academic/academic-poster-presentation.webp', caption: '日本山口大學 - IEEE ICCT-Pacific 會議現場海報展展示與講解', caption_key: 'gallery_acad_2' },
+            { src: 'assets/academic/academic-award-certificate.webp', caption: '最佳學生海報獎 (Best Student Poster Award) 官方學術研討獎狀', caption_key: 'gallery_acad_3' },
+            { src: 'assets/academic/academic-dinner-exchange.webp', caption: '與日本山口大學的大學生及參會學者於晚宴中進行學術與文化交流', caption_key: 'gallery_acad_4' },
+            { src: 'assets/academic/academic-dinner-performance.webp', caption: '研討會晚宴 - 欣賞日本山口溫泉當地的傳統舞蹈表演', caption_key: 'gallery_acad_5' },
+            { src: 'assets/academic/academic-dinner-group.webp', caption: '在研討會晚宴上與參會的好友及合作夥伴們合影留念', caption_key: 'gallery_acad_6' },
+            { src: 'assets/academic/academic-banquet-hall.webp', caption: 'IEEE研討會晚宴現場佈置與精緻會場環境', caption_key: 'gallery_acad_7' }
         ],
         drone: [
-            { src: 'assets/projects/project-drone-ui.png', caption: 'ROS 2 無人機 AI 賦能自主飛行 - 開發邊緣端 YOLOv8 避障自主飛行控制系統', caption_key: 'gallery_drone_1' }
+            { src: 'assets/projects/project-drone-ui.webp', caption: 'ROS 2 無人機 AI 賦能自主飛行 - 開發邊緣端 YOLOv8 避障自主飛行控制系統', caption_key: 'gallery_drone_1' }
         ],
         assistant: [
-            { src: 'assets/projects/project-assistant-cover.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (1)', caption_key: 'gallery_ta_1' },
-            { src: 'assets/ta/ta-lab-instruction-1.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (2)', caption_key: 'gallery_ta_2' },
-            { src: 'assets/ta/ta-lab-instruction-3.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (3)', caption_key: 'gallery_ta_3' }
+            { src: 'assets/projects/project-assistant-cover.webp', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (1)', caption_key: 'gallery_ta_1' },
+            { src: 'assets/ta/ta-lab-instruction-1.webp', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (2)', caption_key: 'gallery_ta_2' },
+            { src: 'assets/ta/ta-lab-instruction-3.webp', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (3)', caption_key: 'gallery_ta_3' }
         ],
         infra: [
-            { src: 'assets/projects/project-homelab-cover.png', caption: '個人 Homelab 機櫃 - Proxmox PVE 集群虛擬化與 OpenWrt 軟路由 VLAN 拓撲佈置', caption_key: 'gallery_infra_1' }
+            { src: 'assets/projects/project-homelab-cover.webp', caption: '個人 Homelab 機櫃 - Proxmox PVE 集群虛擬化與 OpenWrt 軟路由 VLAN 拓撲佈置', caption_key: 'gallery_infra_1' }
         ],
         mfg: [
-            { src: 'assets/3DP/3dp-enclosure-mod.jpg', caption: 'Creality 3D 列印機保溫箱工作站 - 全機組裝、自製 3D 列印結構件與 Klipper 溫控環境', caption_key: 'gallery_mfg_1' },
-            { src: 'assets/3DP/3dp-linear-rail-mod.jpg', caption: 'Y 軸 MGN 雙線性導軌改裝 - 替換傳統滾輪結構，實現零間隙、高剛性之高速穩定列印', caption_key: 'gallery_mfg_2' },
-            { src: 'assets/3DP/3dp-extruder-repair.jpg', caption: '近端擠出機與噴頭維修調校 - 拆解清理堵頭、更換鐵氟龍導管與散熱風扇維護', caption_key: 'gallery_mfg_3' },
-            { src: 'assets/3DP/3dp-chassis-maintenance.jpg', caption: '底盤傳動維護與皮帶張力調校 - Y 軸同步帶校正、限位開關檢測與機台日常保養', caption_key: 'gallery_mfg_4' }
+            { src: 'assets/3DP/3dp-enclosure-mod.webp', caption: 'Creality 3D 列印機保溫箱工作站 - 全機組裝、自製 3D 列印結構件與 Klipper 溫控環境', caption_key: 'gallery_mfg_1' },
+            { src: 'assets/3DP/3dp-linear-rail-mod.webp', caption: 'Y 軸 MGN 雙線性導軌改裝 - 替換傳統滾輪結構，實現零間隙、高剛性之高速穩定列印', caption_key: 'gallery_mfg_2' },
+            { src: 'assets/3DP/3dp-extruder-repair.webp', caption: '近端擠出機與噴頭維修調校 - 拆解清理堵頭、更換鐵氟龍導管與散熱風扇維護', caption_key: 'gallery_mfg_3' },
+            { src: 'assets/3DP/3dp-chassis-maintenance.webp', caption: '底盤傳動維護與皮帶張力調校 - Y 軸同步帶校正、限位開關檢測與機台日常保養', caption_key: 'gallery_mfg_4' }
         ],
         graduation: [
-            { src: 'assets/graduation/graduation-senior-1.jpg', caption: '國立虎尾科技大學電子系 - 與實驗室的學長們拍學士服照 (1)', caption_key: 'gallery_grad_1' },
-            { src: 'assets/graduation/graduation-senior-2.jpg', caption: '國立虎尾科技大學電子系 - 與實驗室的學長們拍學士服照 (2)', caption_key: 'gallery_grad_2' },
-            { src: 'assets/graduation/graduation-dean.jpg', caption: '國立虎尾科技大學電子系 - 畢業典禮與院長及實驗室學長合影', caption_key: 'gallery_grad_3' },
-            { src: 'assets/graduation/graduation-teacher.jpg', caption: '雲林西螺農工電子科 - 畢業時與班導楊媽穿著學士服合影留念', caption_key: 'gallery_grad_4' },
-            { src: 'assets/graduation/graduation-friend.jpg', caption: '雲林西螺農工電子科 - 畢業時與合作夥伴極摯友鐘明穎在西螺農工校園合影', caption_key: 'gallery_grad_5' }
+            { src: 'assets/graduation/graduation-senior-1.webp', caption: '國立虎尾科技大學電子系 - 與實驗室的學長們拍學士服照 (1)', caption_key: 'gallery_grad_1' },
+            { src: 'assets/graduation/graduation-senior-2.webp', caption: '國立虎尾科技大學電子系 - 與實驗室的學長們拍學士服照 (2)', caption_key: 'gallery_grad_2' },
+            { src: 'assets/graduation/graduation-dean.webp', caption: '國立虎尾科技大學電子系 - 畢業典禮與院長及實驗室學長合影', caption_key: 'gallery_grad_3' },
+            { src: 'assets/graduation/graduation-teacher.webp', caption: '雲林西螺農工電子科 - 畢業時與班導楊媽穿著學士服合影留念', caption_key: 'gallery_grad_4' },
+            { src: 'assets/graduation/graduation-friend.webp', caption: '雲林西螺農工電子科 - 畢業時與合作夥伴極摯友鐘明穎在西螺農工校園合影', caption_key: 'gallery_grad_5' }
         ],
         friends: [
-            { src: 'assets/travel/travel-okayama-castle.jpg', caption: '日本岡山市 - 與朋友們一同造訪著名的「岡山城」合照', caption_key: 'gallery_friends_1' },
-            { src: 'assets/travel/travel-yamaguchi-univ.jpg', caption: '日本山口大學 - 研討會發表期間與朋友們在校園景點合影留念', caption_key: 'gallery_friends_2' },
-            { src: 'assets/travel/travel-friend-campus.jpg', caption: '雲林西螺農工電子科 - 與合作夥伴極摯友鐘明穎在西螺農工校園合影', caption_key: 'gallery_friends_3' },
-            { src: 'assets/travel/travel-itsukushima-shrine.jpg', caption: '日本廣島廿日市 - 與合作夥伴極摯友鐘明穎在著名景點嚴島神社合影留念', caption_key: 'gallery_friends_4' }
+            { src: 'assets/travel/travel-okayama-castle.webp', caption: '日本岡山市 - 與朋友們一同造訪著名的「岡山城」合照', caption_key: 'gallery_friends_1' },
+            { src: 'assets/travel/travel-yamaguchi-univ.webp', caption: '日本山口大學 - 研討會發表期間與朋友們在校園景點合影留念', caption_key: 'gallery_friends_2' },
+            { src: 'assets/travel/travel-friend-campus.webp', caption: '雲林西螺農工電子科 - 與合作夥伴極摯友鐘明穎在西螺農工校園合影', caption_key: 'gallery_friends_3' },
+            { src: 'assets/travel/travel-itsukushima-shrine.webp', caption: '日本廣島廿日市 - 與合作夥伴極摯友鐘明穎在著名景點嚴島神社合影留念', caption_key: 'gallery_friends_4' }
         ],
         ig: [
-            { src: 'assets/icon/ig-qr.png', caption: '掃描 QR Code 追蹤我的 Instagram', caption_key: 'gallery_ig_1' }
+            { src: 'assets/icon/ig-qr.webp', caption: '掃描 QR Code 追蹤我的 Instagram', caption_key: 'gallery_ig_1' }
         ]
     };
 
@@ -2141,6 +2076,21 @@ document.addEventListener('DOMContentLoaded', () => {
             animationFrameId = requestAnimationFrame(animate);
         };
 
+        // Pause particles when tab is hidden or when reduced motion is preferred
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden || prefersReducedMotion) {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+            } else {
+                if (!animationFrameId && !document.body.classList.contains('eco-mode')) {
+                    animate();
+                }
+            }
+        });
+
         window.addEventListener('resize', resizeCanvas, { passive: true });
         
         window.addEventListener('perfModeChanged', () => {
@@ -2226,6 +2176,237 @@ document.addEventListener('DOMContentLoaded', () => {
         resizeCanvas();
         animate();
     };
+
+    
+    // ==========================================
+    // 5. Geek Interactive Terminal Emulator (History & Commands)
+    // ==========================================
+    const initTerminal = () => {
+        const termInput = document.getElementById('terminal-input');
+        const termHistory = document.getElementById('terminal-history');
+        const termBody = document.getElementById('terminal-body');
+        const termWrapper = document.querySelector('.terminal-wrapper');
+
+        if (!termInput || !termHistory) return;
+
+        let commandHistory = [];
+        let historyIndex = -1;
+
+        // Auto-focus terminal input on clicking anywhere in terminal
+        if (termWrapper) {
+            termWrapper.addEventListener('click', () => {
+                termInput.focus();
+            });
+        }
+
+        const appendHistoryLine = (command, outputHtml, isError = false) => {
+            const lineDiv = document.createElement('div');
+            lineDiv.className = 'terminal-entry';
+            lineDiv.innerHTML = `
+                <div class="terminal-line">
+                    <span class="term-prompt">guest@junwei-host:~$</span>
+                    <span class="term-command">${escapeHtml(command)}</span>
+                </div>
+                ${outputHtml ? `<div class="terminal-output ${isError ? 'term-error' : ''}">${outputHtml}</div>` : ''}
+            `;
+            termHistory.appendChild(lineDiv);
+            if (termBody) {
+                termBody.scrollTop = termBody.scrollHeight;
+            }
+        };
+
+        const escapeHtml = (str) => {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        };
+
+        const executeCommand = (rawCmd) => {
+            const cmd = rawCmd.trim();
+            if (!cmd) {
+                appendHistoryLine('', '');
+                return;
+            }
+
+            commandHistory.push(cmd);
+            historyIndex = commandHistory.length;
+
+            const parts = cmd.split(' ');
+            const mainCmd = parts[0].toLowerCase();
+            const arg = parts.slice(1).join(' ').trim();
+
+            switch (mainCmd) {
+                case 'help':
+                    appendHistoryLine(cmd, `
+                        <div class="term-help-list">
+                            <div>可用指令清單：</div>
+                            <div>• <span class="cmd-highlight">skills</span> - 瀏覽專業技能與架構</div>
+                            <div>• <span class="cmd-highlight">projects</span> - 瀏覽所有精選專案作品</div>
+                            <div>• <span class="cmd-highlight">contact</span> - 取得聯絡信箱與社群資訊</div>
+                            <div>• <span class="cmd-highlight">whoami</span> - 顯示個人身分與極客資訊</div>
+                            <div>• <span class="cmd-highlight">theme [dark|light]</span> - 即時切換全站色彩主題</div>
+                            <div>• <span class="cmd-highlight">lang [zh|en|ja]</span> - 即時切換全站語系</div>
+                            <div>• <span class="cmd-highlight">ls</span> - 列出虛擬檔案系統目錄</div>
+                            <div>• <span class="cmd-highlight">cat [file]</span> - 讀取虛擬文件內容 (例如: cat info.txt)</div>
+                            <div>• <span class="cmd-highlight">date</span> - 顯示系統目前時間</div>
+                            <div>• <span class="cmd-highlight">clear</span> - 清空終端機歷史輸出</div>
+                            <div>• <span class="cmd-highlight">sudo</span> - 嘗試取得超級管理員權限</div>
+                        </div>
+                    `);
+                    break;
+
+                case 'skills':
+                    appendHistoryLine(cmd, `正在為您定位至 <strong>專業技能</strong> 區塊...`);
+                    const skillsEl = document.getElementById('skills');
+                    if (skillsEl) skillsEl.scrollIntoView({ behavior: 'smooth' });
+                    break;
+
+                case 'projects':
+                    appendHistoryLine(cmd, `正在為您定位至 <strong>專案作品</strong> 區塊...`);
+                    const projectsEl = document.getElementById('projects');
+                    if (projectsEl) projectsEl.scrollIntoView({ behavior: 'smooth' });
+                    break;
+
+                case 'contact':
+                    appendHistoryLine(cmd, `正在為您定位至 <strong>聯絡我</strong> 區塊... (Email: liu0308@liu0308.us.kg)`);
+                    const contactEl = document.getElementById('contact');
+                    if (contactEl) contactEl.scrollIntoView({ behavior: 'smooth' });
+                    break;
+
+                case 'experience':
+                case 'about':
+                    appendHistoryLine(cmd, `正在為您定位至 <strong>關於我與經歷</strong> 區塊...`);
+                    const aboutEl = document.getElementById('about');
+                    if (aboutEl) aboutEl.scrollIntoView({ behavior: 'smooth' });
+                    break;
+
+                case 'whoami':
+                    appendHistoryLine(cmd, `
+                        <div><strong>劉峻瑋 (Jun Wei Liu)</strong></div>
+                        <div style="color: var(--text-secondary); margin-top: 2px;">• 雲林縣虎尾科技大學 電子工程系 碩士班</div>
+                        <div style="color: var(--text-secondary);">• 專注領域：網路工程 (Network Engineering)、AIoT 邊緣運算、虛擬化、3D 列印數位製造</div>
+                        <div style="color: var(--accent-cyan); margin-top: 4px;">Status: Available for collaboration.</div>
+                    `);
+                    break;
+
+                case 'theme':
+                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+                    if (!arg) {
+                        appendHistoryLine(cmd, `目前主題: <strong>${currentTheme}</strong>。可用參數: <span class="cmd-highlight">theme dark</span> 或 <span class="cmd-highlight">theme light</span>`);
+                    } else if (arg.toLowerCase() === 'dark' || arg.toLowerCase() === 'light') {
+                        const target = arg.toLowerCase();
+                        document.documentElement.setAttribute('data-theme', target);
+                        localStorage.setItem('theme', target);
+                        const metaThemeColor = document.getElementById('theme-color-meta');
+                        if (metaThemeColor) {
+                            metaThemeColor.setAttribute('content', target === 'light' ? '#f8fafc' : '#0b0f19');
+                        }
+                        appendHistoryLine(cmd, `[System] 已成功將網站色彩切換為 <strong>${target.toUpperCase()}</strong> 主題！`);
+                    } else {
+                        appendHistoryLine(cmd, `無效的參數: "${escapeHtml(arg)}"。請輸入 <span class="cmd-highlight">theme dark</span> 或 <span class="cmd-highlight">theme light</span>`, true);
+                    }
+                    break;
+
+                case 'lang':
+                    if (!arg) {
+                        appendHistoryLine(cmd, `目前語言: <strong>${activeLanguage}</strong>。可用參數: <span class="cmd-highlight">lang zh</span>, <span class="cmd-highlight">lang en</span>, <span class="cmd-highlight">lang ja</span>`);
+                    } else {
+                        const langMap = { 'zh': 'zh-TW', 'zhtw': 'zh-TW', 'tw': 'zh-TW', 'en': 'en', 'ja': 'ja', 'jp': 'ja' };
+                        const targetLang = langMap[arg.toLowerCase()];
+                        if (targetLang && typeof changeLanguage === 'function') {
+                            changeLanguage(targetLang);
+                            appendHistoryLine(cmd, `[System] 語言已切換為: <strong>${targetLang}</strong>`);
+                        } else {
+                            appendHistoryLine(cmd, `不支援的語言代碼: "${escapeHtml(arg)}"。可用代碼: zh, en, ja`, true);
+                        }
+                    }
+                    break;
+
+                case 'ls':
+                case 'dir':
+                    appendHistoryLine(cmd, `
+                        <div style="color: var(--accent-cyan); display: flex; flex-wrap: wrap; gap: 1.5rem;">
+                            <span>📄 info.txt</span>
+                            <span>📄 skills.md</span>
+                            <span>📁 projects/</span>
+                            <span>📁 3dp_mods/</span>
+                            <span>📄 resume.pdf</span>
+                            <span>⚙️ contact.sh</span>
+                        </div>
+                    `);
+                    break;
+
+                case 'cat':
+                    if (!arg) {
+                        appendHistoryLine(cmd, `用法: cat [檔案名稱] (例如: cat info.txt)`, true);
+                    } else if (arg === 'info.txt') {
+                        appendHistoryLine(cmd, `"底層架構是我的畫布，硬體電路是我的畫筆，網路通訊是我的語言。"`);
+                    } else if (arg === 'skills.md') {
+                        appendHistoryLine(cmd, `[技術核心] Proxmox PVE, OpenWrt, Docker, ROS 2, Embedded C/C++, Python, Fusion 360, Klipper 3D 列印`);
+                    } else if (arg === 'resume.pdf') {
+                        appendHistoryLine(cmd, `[系統提示] 履歷檔案準備中，若有合作或聘用需求歡迎直接來信: <a href="mailto:liu0308@liu0308.us.kg" style="color:var(--accent-cyan)">liu0308@liu0308.us.kg</a>`);
+                    } else if (arg === 'contact.sh') {
+                        appendHistoryLine(cmd, `curl -X POST https://api.liu0308.us.kg/contact -d '{"email": "liu0308@liu0308.us.kg"}'`);
+                    } else {
+                        appendHistoryLine(cmd, `cat: ${escapeHtml(arg)}: 沒有此一檔案或目錄`, true);
+                    }
+                    break;
+
+                case 'date':
+                    appendHistoryLine(cmd, new Date().toLocaleString());
+                    break;
+
+                case 'clear':
+                case 'cls':
+                    termHistory.innerHTML = '';
+                    break;
+
+                case 'sudo':
+                    appendHistoryLine(cmd, `<span style="color: var(--accent-pink);">[Security Warning] guest is not in the sudoers file. This incident has been logged and reported to Jun Wei Liu.</span>`, true);
+                    break;
+
+                case 'gui':
+                case 'home':
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    appendHistoryLine(cmd, `返回頂部首頁。`);
+                    break;
+
+                default:
+                    appendHistoryLine(cmd, `指令未找到: "${escapeHtml(cmd)}"。請輸入 <span class="cmd-highlight">help</span> 查看可用指令清單。`, true);
+                    break;
+            }
+        };
+
+        termInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const cmd = termInput.value;
+                termInput.value = '';
+                executeCommand(cmd);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (commandHistory.length > 0) {
+                    if (historyIndex > 0) {
+                        historyIndex--;
+                    } else {
+                        historyIndex = 0;
+                    }
+                    termInput.value = commandHistory[historyIndex] || '';
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (commandHistory.length > 0) {
+                    if (historyIndex < commandHistory.length - 1) {
+                        historyIndex++;
+                        termInput.value = commandHistory[historyIndex] || '';
+                    } else {
+                        historyIndex = commandHistory.length;
+                        termInput.value = '';
+                    }
+                }
+            }
+        });
+    };
+
+    initTerminal();
 
     initBgParticles();
 });

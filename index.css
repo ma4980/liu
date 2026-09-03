@@ -2676,3 +2676,30 @@ body.eco-mode .navbar.scrolled {
     color: #ffffff;
 }
 
+/* Terminal Enhancements */
+.terminal-entry {
+    margin-bottom: 0.75rem;
+}
+
+.terminal-entry .terminal-line {
+    margin-bottom: 0.25rem;
+}
+
+.term-error {
+    color: var(--accent-pink, #f43f5e) !important;
+}
+
+.term-help-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    line-height: 1.6;
+}
+
+/* Hidden CV Download Button Framework */
+.btn-download-cv.hidden,
+.btn-download-cv[style*="display: none"] {
+    display: none !important;
+}
+
+
