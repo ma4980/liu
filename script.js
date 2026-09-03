@@ -323,9 +323,9 @@ document.addEventListener('DOMContentLoaded', () => {
             'proj_infra_desc': '從零建構個人機櫃，採用 Proxmox VE 進行多虛擬機器管理。上層透過 OpenWrt 作為軟路由核心提供 VLAN 隔離、負載均衡與 Docker 微服務部署。',
             'proj_infra_link': '機櫃拓撲與配置',
             'proj_mfg_badge': '數位製造',
-            'proj_mfg_title': 'Creality 3D 列印機極客改裝',
-            'proj_mfg_desc': '將 Creality 3D 列印機升級為主動雙軸，重寫 Klipper 控制韌體，並用 Fusion 360 設計散熱風道與列印零件，顯著提升了列印精度與速度。',
-            'proj_mfg_link': '設計零件 STL',
+            'proj_mfg_title': 'Creality 3D 列印機改裝與維修',
+            'proj_mfg_desc': '升級 Y 軸 MGN 雙線性導軌消除底板晃動，重寫 Klipper 控制韌體，並針對近端擠出機與噴頭進行深度拆解維修與自製 3D 列印結構件，顯著提升列印精度與高速穩定性。',
+            'proj_mfg_link': '查看維修與改裝相片',
             'proj_ta_badge': '課程助教',
             'proj_ta_title': '課程助教',
             'proj_ta_desc': '擔任電子工程系專業課程助教，負責實驗課環境建置指導、電子電路除錯教學、微處理器程式撰寫引導，並協助維護實驗室設備與教材準備。',
@@ -401,7 +401,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'gallery_ta_2': '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (2)',
             'gallery_ta_3': '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (3)',
             'gallery_infra_1': '個人 Homelab 機櫃 - Proxmox PVE 集群虛擬化與 OpenWrt 軟路由 VLAN 拓撲佈置',
-            'gallery_mfg_1': '3D 列印機極客改裝 - Creality 主動雙軸硬體升級與 Klipper 韌體客製化調校',
+            'gallery_mfg_1': 'Creality 3D 列印機保溫箱工作站 - 全機組裝、自製 3D 列印結構件與 Klipper 溫控環境',
+            'gallery_mfg_2': 'Y 軸 MGN 雙線性導軌改裝 - 替換傳統滾輪結構，實現零間隙、高剛性之高速穩定列印',
+            'gallery_mfg_3': '近端擠出機與噴頭維修調校 - 拆解清理堵頭、更換鐵氟龍導管與散熱風扇維護',
+            'gallery_mfg_4': '底盤傳動維護與皮帶張力調校 - Y 軸同步帶校正、限位開關檢測與機台日常保養',
             'gallery_grad_1': '國立虎尾科技大學電子系 - 與實驗室的學長們拍學士服照 (1)',
             'gallery_grad_2': '國立虎尾科技大學電子系 - 與實驗室的學長們拍學士服照 (2)',
             'gallery_grad_3': '國立虎尾科技大學電子系 - 畢業典禮與院長及實驗室學長合影',
@@ -622,9 +625,9 @@ document.addEventListener('DOMContentLoaded', () => {
             'proj_infra_desc': 'Built a custom home server rack from scratch. Uses Proxmox VE for virtualization, with OpenWrt routing handling VLAN isolation, load balancing, and Docker services.',
             'proj_infra_link': 'Rack Topology & Config',
             'proj_mfg_badge': 'Digital Mfg',
-            'proj_mfg_title': 'Creality 3D Printer Modding',
-            'proj_mfg_desc': 'Upgraded a Creality 3D printer with dual Z-axes, compiled custom Klipper firmware, and designed cooling ducts in Fusion 360 to significantly improve print speed and quality.',
-            'proj_mfg_link': 'Design Parts STL',
+            'proj_mfg_title': 'Creality 3D Printer Modding & Repair',
+            'proj_mfg_desc': 'Upgraded with Y-axis dual MGN linear rails to eliminate bed wobble, tuned custom Klipper firmware, and performed deep direct-drive extruder and hotend maintenance with custom 3D printed parts.',
+            'proj_mfg_link': 'View Mod & Repair Photos',
             'proj_ta_badge': 'Teaching Service',
             'proj_ta_title': 'Embedded Systems & AIoT Course TA',
             'proj_ta_desc': 'Served as a Teaching Assistant for Electronic Engineering, setting up lab environments, troubleshooting circuits, and tutoring microcontroller programming.',
@@ -700,7 +703,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'gallery_ta_2': 'Serving as a Teaching Assistant for Embedded Systems & AIoT (2)',
             'gallery_ta_3': 'Serving as a Teaching Assistant for Embedded Systems & AIoT (3)',
             'gallery_infra_1': 'Homelab Rack - Proxmox virtualization & Multi-VLAN OpenWrt networking',
-            'gallery_mfg_1': '3D Printer Modding - Creality printer dual Z-axis upgrade & Klipper firmware tuning',
+            'gallery_mfg_1': 'Creality 3D Printer Enclosure Setup - Full machine assembly, custom brackets & Klipper thermal monitoring',
+            'gallery_mfg_2': 'Y-Axis Dual MGN Linear Rail Upgrade - Replacing V-slot wheels with precision linear guides for zero-wobble high-speed printing',
+            'gallery_mfg_3': 'Direct-Drive Extruder & Hotend Repair - Nozzle teardown, PTFE tube replacement & cooling fan maintenance',
+            'gallery_mfg_4': 'Chassis & Motion Maintenance - Synchronous belt tension calibration, optical endstop inspection & upkeep',
             'gallery_grad_1': 'NFU Electronic Engineering - Photo with lab seniors in academic dress (1)',
             'gallery_grad_2': 'NFU Electronic Engineering - Photo with lab seniors in academic dress (2)',
             'gallery_grad_3': 'NFU Electronic Engineering - Graduation ceremony with Dean and lab seniors',
@@ -921,9 +927,9 @@ document.addEventListener('DOMContentLoaded', () => {
             'proj_infra_desc': 'サーバラックをゼロから自作。Proxmox VEによる仮想化とOpenWrtソフトルータによるVLAN隔離、負荷分散、Dockerマイクロサービスのデプロイを管理。',
             'proj_infra_link': 'インフラ構成とトポロジ',
             'proj_mfg_badge': 'デジタル製造',
-            'proj_mfg_title': 'Creality 3D プリンター改造',
-            'proj_mfg_desc': 'Creality製プリンターをデュアルZ軸にアップグレードし、Klipperファームウェアを構築。Fusion 360で冷却ダクト部品を設計し、精度と印刷速度を向上。',
-            'proj_mfg_link': '設計部品 STL',
+            'proj_mfg_title': 'Creality 3D プリンター改造と修理',
+            'proj_mfg_desc': 'Y軸にMGNデュアルリニアガイドを増設してブレを解消し、ダイレクトエクストルーダーの分解修理を実施。独自プリント部品の設計とKlipper調整により印刷精度と安定性を大幅に向上。',
+            'proj_mfg_link': '改造と修理の写真を見る',
             'proj_ta_badge': '教育支援',
             'proj_ta_title': '組み込みシステムと AIoT 講義助教',
             'proj_ta_desc': '電子工学科のティーチングアシスタントとして実験環境構築を指導し、回路トラブルシューティングやマイコンプログラミングの学習支援を担当。',
@@ -999,7 +1005,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'gallery_ta_2': '組み込みシステム・AIoTコースの講義アシスタントを務める様子 (2)',
             'gallery_ta_3': '組み込みシステム・AIoTコースの講義アシスタントを務める様子 (3)',
             'gallery_infra_1': 'Homelabサーバラック - Proxmoxによる仮想化とVLAN OpenWrt構築',
-            'gallery_mfg_1': '3Dプリンター改造 - Creality製デュアルZ軸化およびKlipper調整',
+            'gallery_mfg_1': 'Creality 3D プリンター保温エンクロージャー - 全体組立、独自3Dプリント部品とKlipper温度監視',
+            'gallery_mfg_2': 'Y軸MGNリニアガイド改造 - 従来ホイールから高精度リニアガイドへ換装し高速印刷のブレを低減',
+            'gallery_mfg_3': 'エクストルーダー＆ホットエンド分解修理 - ノズル清掃、PTFEチューブ交換、冷却ファン保守',
+            'gallery_mfg_4': 'シャーシ駆動部保守 - Y軸タイミングベルト張力調整、リミットスイッチ点検およびメンテナンス',
             'gallery_grad_1': 'NFU 電子工学科 - 卒業式を控えて実験室の先輩たちとのアカデミックドレス写真 (1)',
             'gallery_grad_2': 'NFU 電子工学科 - 卒業式を控えて実験室の先輩たちとのアカデミックドレス写真 (2)',
             'gallery_grad_3': 'NFU 電子工学科 - 卒業式で学部長、実験室の先輩たちと記念撮影',
@@ -1665,43 +1674,46 @@ document.addEventListener('DOMContentLoaded', () => {
     // Photo databases for each project
     const galleries = {
         academic: [
-            { src: 'assets/project-academic.jpg', caption: 'ICCT-Pacific 國際學術會議 - 榮獲最佳學生海報獎 (Best Student Poster Award) 頒獎合影', caption_key: 'gallery_acad_1' },
-            { src: 'assets/IMG_20260329_101926.jpg', caption: '日本山口大學 - IEEE ICCT-Pacific 會議現場海報展展示與講解', caption_key: 'gallery_acad_2' },
-            { src: 'assets/IMG_20260330_104057.jpg', caption: '最佳學生海報獎 (Best Student Poster Award) 官方學術研討獎狀', caption_key: 'gallery_acad_3' },
-            { src: 'assets/IMG_20260328_191334.jpg', caption: '與日本山口大學的大學生及參會學者於晚宴中進行學術與文化交流', caption_key: 'gallery_acad_4' },
-            { src: 'assets/IMG_20260329_185750.jpg', caption: '研討會晚宴 - 欣賞日本山口溫泉當地的傳統舞蹈表演', caption_key: 'gallery_acad_5' },
-            { src: 'assets/IMG_20260329_201629865_HDR.jpg', caption: '在研討會晚宴上與參會的好友及合作夥伴們合影留念', caption_key: 'gallery_acad_6' },
-            { src: 'assets/IMG_20260329_204830050_HDR.jpg', caption: 'IEEE研討會晚宴現場佈置與精緻會場環境', caption_key: 'gallery_acad_7' }
+            { src: 'assets/projects/project-academic-cover.jpg', caption: 'ICCT-Pacific 國際學術會議 - 榮獲最佳學生海報獎 (Best Student Poster Award) 頒獎合影', caption_key: 'gallery_acad_1' },
+            { src: 'assets/academic/academic-poster-presentation.jpg', caption: '日本山口大學 - IEEE ICCT-Pacific 會議現場海報展展示與講解', caption_key: 'gallery_acad_2' },
+            { src: 'assets/academic/academic-award-certificate.jpg', caption: '最佳學生海報獎 (Best Student Poster Award) 官方學術研討獎狀', caption_key: 'gallery_acad_3' },
+            { src: 'assets/academic/academic-dinner-exchange.jpg', caption: '與日本山口大學的大學生及參會學者於晚宴中進行學術與文化交流', caption_key: 'gallery_acad_4' },
+            { src: 'assets/academic/academic-dinner-performance.jpg', caption: '研討會晚宴 - 欣賞日本山口溫泉當地的傳統舞蹈表演', caption_key: 'gallery_acad_5' },
+            { src: 'assets/academic/academic-dinner-group.jpg', caption: '在研討會晚宴上與參會的好友及合作夥伴們合影留念', caption_key: 'gallery_acad_6' },
+            { src: 'assets/academic/academic-banquet-hall.jpg', caption: 'IEEE研討會晚宴現場佈置與精緻會場環境', caption_key: 'gallery_acad_7' }
         ],
         drone: [
-            { src: 'assets/project-drone.png', caption: 'ROS 2 無人機 AI 賦能自主飛行 - 開發邊緣端 YOLOv8 避障自主飛行控制系統', caption_key: 'gallery_drone_1' }
+            { src: 'assets/projects/project-drone-ui.png', caption: 'ROS 2 無人機 AI 賦能自主飛行 - 開發邊緣端 YOLOv8 避障自主飛行控制系統', caption_key: 'gallery_drone_1' }
         ],
         assistant: [
-            { src: 'assets/project-assistant.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (1)', caption_key: 'gallery_ta_1' },
-            { src: 'assets/IMG_20260518_142139.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (2)', caption_key: 'gallery_ta_2' },
-            { src: 'assets/IMG_20260518_142242.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (3)', caption_key: 'gallery_ta_3' }
+            { src: 'assets/projects/project-assistant-cover.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (1)', caption_key: 'gallery_ta_1' },
+            { src: 'assets/ta/ta-lab-instruction-1.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (2)', caption_key: 'gallery_ta_2' },
+            { src: 'assets/ta/ta-lab-instruction-3.jpg', caption: '於嵌入式系統與 AIoT 課程擔任課程助教，進行課程教學與系統環境操作示範 (3)', caption_key: 'gallery_ta_3' }
         ],
         infra: [
-            { src: 'assets/project-homelab.png', caption: '個人 Homelab 機櫃 - Proxmox PVE 集群虛擬化與 OpenWrt 軟路由 VLAN 拓撲佈置', caption_key: 'gallery_infra_1' }
+            { src: 'assets/projects/project-homelab-cover.png', caption: '個人 Homelab 機櫃 - Proxmox PVE 集群虛擬化與 OpenWrt 軟路由 VLAN 拓撲佈置', caption_key: 'gallery_infra_1' }
         ],
         mfg: [
-            { src: 'assets/project-3dprint.png', caption: '3D 列印機極客改裝 - Creality 主動雙軸硬體升級與 Klipper 韌體客製化調校', caption_key: 'gallery_mfg_1' }
+            { src: 'assets/3DP/3dp-enclosure-mod.jpg', caption: 'Creality 3D 列印機保溫箱工作站 - 全機組裝、自製 3D 列印結構件與 Klipper 溫控環境', caption_key: 'gallery_mfg_1' },
+            { src: 'assets/3DP/3dp-linear-rail-mod.jpg', caption: 'Y 軸 MGN 雙線性導軌改裝 - 替換傳統滾輪結構，實現零間隙、高剛性之高速穩定列印', caption_key: 'gallery_mfg_2' },
+            { src: 'assets/3DP/3dp-extruder-repair.jpg', caption: '近端擠出機與噴頭維修調校 - 拆解清理堵頭、更換鐵氟龍導管與散熱風扇維護', caption_key: 'gallery_mfg_3' },
+            { src: 'assets/3DP/3dp-chassis-maintenance.jpg', caption: '底盤傳動維護與皮帶張力調校 - Y 軸同步帶校正、限位開關檢測與機台日常保養', caption_key: 'gallery_mfg_4' }
         ],
         graduation: [
-            { src: 'assets/grad-nfue-senior1.jpg', caption: '國立虎尾科技大學電子系 - 與實驗室的學長們拍學士服照 (1)', caption_key: 'gallery_grad_1' },
-            { src: 'assets/grad-nfue-senior2.jpg', caption: '國立虎尾科技大學電子系 - 與實驗室的學長們拍學士服照 (2)', caption_key: 'gallery_grad_2' },
-            { src: 'assets/grad-nfue-dean.jpg', caption: '國立虎尾科技大學電子系 - 畢業典禮與院長及實驗室學長合影', caption_key: 'gallery_grad_3' },
-            { src: 'assets/grad-siluo-teacher.jpg', caption: '雲林西螺農工電子科 - 畢業時與班導楊媽穿著學士服合影留念', caption_key: 'gallery_grad_4' },
-            { src: 'assets/grad-siluo-friend.jpg', caption: '雲林西螺農工電子科 - 畢業時與合作夥伴極摯友鐘明穎在西螺農工校園合影', caption_key: 'gallery_grad_5' }
+            { src: 'assets/graduation/graduation-senior-1.jpg', caption: '國立虎尾科技大學電子系 - 與實驗室的學長們拍學士服照 (1)', caption_key: 'gallery_grad_1' },
+            { src: 'assets/graduation/graduation-senior-2.jpg', caption: '國立虎尾科技大學電子系 - 與實驗室的學長們拍學士服照 (2)', caption_key: 'gallery_grad_2' },
+            { src: 'assets/graduation/graduation-dean.jpg', caption: '國立虎尾科技大學電子系 - 畢業典禮與院長及實驗室學長合影', caption_key: 'gallery_grad_3' },
+            { src: 'assets/graduation/graduation-teacher.jpg', caption: '雲林西螺農工電子科 - 畢業時與班導楊媽穿著學士服合影留念', caption_key: 'gallery_grad_4' },
+            { src: 'assets/graduation/graduation-friend.jpg', caption: '雲林西螺農工電子科 - 畢業時與合作夥伴極摯友鐘明穎在西螺農工校園合影', caption_key: 'gallery_grad_5' }
         ],
         friends: [
-            { src: 'assets/friend-okayama.jpg', caption: '日本岡山市 - 與朋友們一同造訪著名的「岡山城」合照', caption_key: 'gallery_friends_1' },
-            { src: 'assets/friend-yamaguchi.jpg', caption: '日本山口大學 - 研討會發表期間與朋友們在校園景點合影留念', caption_key: 'gallery_friends_2' },
-            { src: 'assets/friend-fongying.jpg', caption: '雲林西螺農工電子科 - 與合作夥伴極摯友鐘明穎在西螺農工校園合影', caption_key: 'gallery_friends_3' },
-            { src: 'assets/IMG_20260331_125117466.jpg', caption: '日本廣島廿日市 - 與合作夥伴極摯友鐘明穎在著名景點嚴島神社合影留念', caption_key: 'gallery_friends_4' }
+            { src: 'assets/travel/travel-okayama-castle.jpg', caption: '日本岡山市 - 與朋友們一同造訪著名的「岡山城」合照', caption_key: 'gallery_friends_1' },
+            { src: 'assets/travel/travel-yamaguchi-univ.jpg', caption: '日本山口大學 - 研討會發表期間與朋友們在校園景點合影留念', caption_key: 'gallery_friends_2' },
+            { src: 'assets/travel/travel-friend-campus.jpg', caption: '雲林西螺農工電子科 - 與合作夥伴極摯友鐘明穎在西螺農工校園合影', caption_key: 'gallery_friends_3' },
+            { src: 'assets/travel/travel-itsukushima-shrine.jpg', caption: '日本廣島廿日市 - 與合作夥伴極摯友鐘明穎在著名景點嚴島神社合影留念', caption_key: 'gallery_friends_4' }
         ],
         ig: [
-            { src: 'assets/IMG_20260614_201934_141.png', caption: '掃描 QR Code 追蹤我的 Instagram', caption_key: 'gallery_ig_1' }
+            { src: 'assets/icon/ig-qr.png', caption: '掃描 QR Code 追蹤我的 Instagram', caption_key: 'gallery_ig_1' }
         ]
     };
 
